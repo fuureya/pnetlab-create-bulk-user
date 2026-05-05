@@ -4,12 +4,17 @@ use App\Controllers\UserController;
 
 $userController = new UserController();
 $requestMethod = $_SERVER["REQUEST_METHOD"];
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri = explode('/', $uri);
+
+// Ambil path setelah domain/api/bulkuser
+// Jika URL: /api/bulkuser/users -> path_only: users
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = str_replace('/api/bulkuser/', '', $path);
+$path = trim($path, '/');
+$uri = explode('/', $path);
 
 // Router
-// Endpoint: /users
-if (isset($uri[1]) && $uri[1] === 'users') {
+// Endpoint: users
+if (isset($uri[0]) && $uri[0] === 'users') {
     switch ($requestMethod) {
         case 'GET':
             $userController->index();
@@ -19,7 +24,7 @@ if (isset($uri[1]) && $uri[1] === 'users') {
             $userController->create($data);
             break;
         case 'DELETE':
-            $id = $uri[2] ?? null;
+            $id = $uri[1] ?? null;
             if ($id) {
                 $userController->delete($id);
             } else {
