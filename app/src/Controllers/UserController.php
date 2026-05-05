@@ -15,7 +15,8 @@ class UserController {
     }
 
     public function index() {
-        $query = "SELECT username, name, email, pod, role, expired_time FROM users ORDER BY username ASC";
+        // Mengambil data lengkap sesuai dump database user
+        $query = "SELECT pod, username, name, email, role, online_time, offline, expired_time, user_status FROM users ORDER BY pod ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,7 +32,7 @@ class UserController {
         }
 
         // Cek duplicate username
-        $check = $this->conn->prepare("SELECT id FROM users WHERE username = ?");
+        $check = $this->conn->prepare("SELECT username FROM users WHERE username = ?");
         $check->execute([$data['username']]);
         if ($check->rowCount() > 0) {
             http_response_code(409);
@@ -39,10 +40,10 @@ class UserController {
             return;
         }
 
-        // Cari POD ID otomatis
+        // Cari POD ID otomatis (Mencari angka terkecil yang belum terpakai)
         $pod_stmt = $this->conn->query("SELECT pod FROM users WHERE pod IS NOT NULL ORDER BY pod ASC");
         $used_pods = $pod_stmt->fetchAll(PDO::FETCH_COLUMN);
-        $assigned_pod = 0;
+        $assigned_pod = 1; // Mulai dari 1 sesuai dump Anda
         while (in_array($assigned_pod, $used_pods)) {
             $assigned_pod++;
         }
@@ -50,8 +51,9 @@ class UserController {
         $time_now = time();
         $hashed_password = hash('sha256', $data['password']);
         
-        $query = "INSERT INTO users (username, email, name, password, role, offline, user_status, pod, online_time, expired_time)
-                  VALUES (:username, :email, :name, :password, :role, 1, 1, :pod, :online_time, :expired_time)";
+        // Query INSERT disesuaikan dengan field yang ada di dump
+        $query = "INSERT INTO users (username, email, name, password, role, offline, user_status, pod, online_time, expired_time, expiration, folder, html5)
+                  VALUES (:username, :email, :name, :password, :role, 1, 1, :pod, :online_time, :expired_time, -1, '/', 1)";
         
         $stmt = $this->conn->prepare($query);
         $stmt->execute([
@@ -68,7 +70,11 @@ class UserController {
         echo json_encode([
             "status" => "success", 
             "message" => "User created successfully",
-            "data" => ["username" => $data['username'], "pod" => $assigned_pod]
+            "data" => [
+                "username" => $data['username'], 
+                "pod" => $assigned_pod,
+                "role" => $data['role'] ?? 1
+            ]
         ]);
     }
 
