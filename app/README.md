@@ -21,6 +21,11 @@ Mengambil semua data user PNetLab.
 - **Method**: `GET`
 - **URL**: `/bulkuser/api/v2/users`
 - **Auth**: Required Header `X-API-KEY`
+- **Contoh cURL**:
+```bash
+curl -X GET "http://domain.com/bulkuser/api/v2/users" \
+     -H "X-API-KEY: YOUR_API_KEY_HERE"
+```
 
 ### 2. Create User
 Membuat user baru. Sistem akan otomatis mencari nomor POD terkecil yang tersedia.
@@ -36,13 +41,29 @@ Membuat user baru. Sistem akan otomatis mencari nomor POD terkecil yang tersedia
   "expired_days": 7
 }
 ```
-*Catatan: `expired_days` diisi angka hari. Jika tidak diisi, akun bersifat selamanya.*
+- **Contoh cURL**:
+```bash
+curl -X POST "http://domain.com/bulkuser/api/v2/users" \
+     -H "X-API-KEY: YOUR_API_KEY_HERE" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "username": "wahidah_user",
+           "password": "wahidahgaming12345",
+           "name": "Wahidah Gaming",
+           "expired_days": 7
+         }'
+```
 
 ### 3. Delete User
 Menghapus user berdasarkan ID database.
 - **Method**: `DELETE`
 - **URL**: `/bulkuser/api/v2/users/{id}`
 - **Auth**: Required Header `X-API-KEY`
+- **Contoh cURL**:
+```bash
+curl -X DELETE "http://domain.com/bulkuser/api/v2/users/10" \
+     -H "X-API-KEY: YOUR_API_KEY_HERE"
+```
 
 ## 🛡 Fitur Teknis
 - **Anti SQL Injection**: Menggunakan PDO Prepared Statements.

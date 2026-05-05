@@ -1,21 +1,19 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /bulkuser/api/v2/
+
+    # Otomatis deteksi base path atau biarkan kosong jika menggunakan Alias yang benar
+    # RewriteBase /bulkuser/api/v2/
 
     # Prevent directory listing
     Options -Indexes
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)/$ /$1 [L,R=301]
 
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 
-    # Prevent access to .env and other sensitive files
-    <FilesMatch "^\.env|composer\.(json|lock)|Dockerfile">
+    # Prevent access to .env
+    <FilesMatch "^\.env">
         Order allow,deny
         Deny from all
     </FilesMatch>
