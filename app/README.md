@@ -19,13 +19,13 @@ API ini dilindungi menggunakan **API Key Authentication**. Setiap permintaan waj
 ### 1. List Users
 Mengambil semua data user PNetLab.
 - **Method**: `GET`
-- **URL**: `/api/bulkuser/users`
+- **URL**: `/bulkuser/api/v2/users`
 - **Auth**: Required Header `X-API-KEY`
 
 ### 2. Create User
 Membuat user baru. Sistem akan otomatis mencari nomor POD terkecil yang tersedia.
 - **Method**: `POST`
-- **URL**: `/api/bulkuser/users`
+- **URL**: `/bulkuser/api/v2/users`
 - **Auth**: Required Header `X-API-KEY`
 - **Body (JSON)**:
 ```json
@@ -41,7 +41,7 @@ Membuat user baru. Sistem akan otomatis mencari nomor POD terkecil yang tersedia
 ### 3. Delete User
 Menghapus user berdasarkan ID database.
 - **Method**: `DELETE`
-- **URL**: `/api/bulkuser/users/{id}`
+- **URL**: `/bulkuser/api/v2/users/{id}`
 - **Auth**: Required Header `X-API-KEY`
 
 ## 🛡 Fitur Teknis

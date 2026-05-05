@@ -1,0 +1,7 @@
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to everything in the project root
+# except for the public folder (which is handled by its own .htaccess)
+RewriteEngine On
+RewriteRule ^$ public/ [L]

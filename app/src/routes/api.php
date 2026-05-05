@@ -5,10 +5,9 @@ use App\Controllers\UserController;
 $userController = new UserController();
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-// Ambil path setelah domain/api/bulkuser
-// Jika URL: /api/bulkuser/users -> path_only: users
+// Ambil path setelah domain/bulkuser/api/v2/
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = str_replace('/api/bulkuser/', '', $path);
+$path = str_replace('/bulkuser/api/v2/', '', $path);
 $path = trim($path, '/');
 $uri = explode('/', $path);
 
