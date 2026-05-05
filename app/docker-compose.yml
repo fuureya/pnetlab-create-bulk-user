@@ -5,14 +5,13 @@ services:
     build: .
     container_name: pnetlab-user-app
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-8000}:8000"
     volumes:
       - ./src:/var/www/html
     environment:
-      # Ganti dengan IP Host atau gunakan host.docker.internal (dengan extra_hosts)
-      - DB_HOST=host.docker.internal
-      - DB_NAME=pnetlab_db
-      - DB_USER=your_local_mysql_user
-      - DB_PASS=your_local_mysql_password
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
     extra_hosts:
       - "host.docker.internal:host-gateway"
