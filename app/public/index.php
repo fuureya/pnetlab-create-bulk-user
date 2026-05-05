@@ -17,7 +17,9 @@ spl_autoload_register(function ($class) {
     if (strncmp($prefix, $class, $len) !== 0) return;
     $relative_class = substr($class, $len);
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-    if (file_exists($file)) require $file;
+    if (file_exists($file)) {
+        require $file;
+    }
 });
 
 // Load .env manually for native PHP
@@ -36,4 +38,4 @@ use App\Middleware\AuthMiddleware;
 AuthMiddleware::check();
 
 // Load Routes
-require_once __DIR__ . '/../src/routes/api.php';
+require_once __DIR__ . '/../src/Routes/api.php';
