@@ -28,7 +28,7 @@ if (isset($uri[0]) && $uri[0] === 'users') {
                 $userController->delete($id);
             } else {
                 http_response_code(400);
-                echo json_encode(["status" => "error", "message" => "ID required"]);
+                echo json_encode(["status" => "error", "message" => "Username required"]);
             }
             break;
         default:

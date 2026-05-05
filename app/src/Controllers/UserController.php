@@ -15,7 +15,7 @@ class UserController {
     }
 
     public function index() {
-        $query = "SELECT id, username, name, email, pod, role, expired_time FROM users ORDER BY id DESC";
+        $query = "SELECT username, name, email, pod, role, expired_time FROM users ORDER BY username ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
