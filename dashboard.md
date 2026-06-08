@@ -1,134 +1,162 @@
-# PropertyVue Design System
+# Flip7 Design System
 
 ## Overview
 
-PropertyVue is a map-heavy, listing-card, search-driven design system built for real estate listing and property search platforms. It uses a clean blue primary palette alongside functional greens and grays to prioritize data density without sacrificing clarity. The system is engineered for rapid filtering, comparison, and at-a-glance property evaluation.
+Flip7 is a retro-playful, teal-coral-gold design system crafted for the Flip7 card game scoring mini-program. Inspired by the original Flip7 board game packaging, it blends vintage warmth with modern mobile UX. The visual language is bold, joyful, and tactile -- combining BounceBox's bubbly energy with QuizForge's competitive gamification patterns. Every element feels like a game piece you want to tap.
 
 ---
 
 ## Colors
 
-- **Primary Blue** (#2563EB): Primary actions, map pins
-- **Secondary Green** (#16A34A): Price tags, availability
-- **Tertiary Gray** (#6B7280): Metadata, secondary content
-- **Background** (#F9FAFB): Page background
-- **Surface Default** (#FFFFFF): Card backgrounds
-- **Success** (#16A34A): Available, new listing
-- **Warning** (#D97706): Price reduced, pending
-- **Error** (#DC2626): Sold, off-market, errors
-- **Info** (#2563EB): Featured, open house
+- **Primary Teal** (#2BA8A2): Main UI, backgrounds, avatars, progress bars
+- **Primary Light** (#3CC4BD): Hover states, lighter accents
+- **Primary Dark** (#1E8C86): Deep backgrounds, text on light surfaces
+- **Primary BG** (#E8F6F5): Subtle teal tint for backgrounds
+- **Accent Gold** (#FFD23F): CTAs, highlights, first-player badges, celebrations
+- **Accent Light** (#FFE47A): Soft gold tints, active states
+- **Accent Dark** (#E6B800): Gold hover states, depth
+- **Coral** (#EF6C4A): BOOM state, warnings, ranking #3, energy
+- **Coral Light** (#FF8A6A): Soft coral tints
+- **Coral Dark** (#D45233): Coral depth, hover
+- **Cream** (#FFF8E7): Card backgrounds, input surfaces
+- **Sky Blue** (#5DADE2): Flip7 bonus, info states
+- **Surface Base** (#EFF8F7): Page background
+- **Surface Card** (#FFFFFF): Card backgrounds
+- **Success** (#27AE60): Positive states
+- **Error** (#E74C3C): Error states
 
 ## Typography
 
-- **Headline Font**: Red Hat Display
-- **Body Font**: DM Sans
-- **Mono Font**: Fira Code
-
-- **Display**: Red Hat Display 36px black, 1.2 line height
-- **H1**: Red Hat Display 30px bold, 1.25 line height
-- **H2**: Red Hat Display 24px bold, 1.3 line height
-- **H3**: Red Hat Display 20px semibold, 1.35 line height
-- **H4**: Red Hat Display 16px semibold, 1.4 line height
-- **Body LG**: DM Sans 18px regular, 1.6 line height
-- **Body**: DM Sans 16px regular, 1.6 line height
-- **Body SM**: DM Sans 14px regular, 1.5 line height
-- **Caption**: DM Sans 12px medium, 1.4 line height
-- **Code**: Fira Code 14px regular, 1.6 line height
+- **Headline Style**: System font stack, extra-bold (800), generous letter-spacing (4-6rpx)
+- **Body Font**: -apple-system, BlinkMacSystemFont, PingFang SC, Microsoft YaHei
+- **Display**: 72rpx extra-bold
+- **h1**: 48rpx extra-bold
+- **h2**: 36rpx extra-bold
+- **h3**: 32rpx bold
+- **body**: 28rpx medium
+- **sm**: 24rpx medium
+- **xs**: 20rpx medium
 
 ---
 
 ## Spacing
 
-Base unit: **8px**
-- **xs**: 4px — Inline icon gaps
-- **sm**: 8px — Tight component padding
-- **md**: 16px — Default padding
-- **lg**: 24px — Card padding
-- **xl**: 32px — Section gaps
-- **2xl**: 48px — Layout sections
-- **3xl**: 64px — Page-level spacing
+Base unit: **8rpx**
+- **xs**: 8rpx
+- **sm**: 16rpx
+- **md**: 24rpx
+- **lg**: 32rpx
+- **xl**: 48rpx
 
 ## Border Radius
 
-- **sm** (4px): Chips, badges
-- **DEFAULT** (8px): Buttons, cards, inputs
-- **md** (12px): Modals, large containers
-- **lg** (16px): Map panels
-- **full** (9999px): Avatars, status dots
+- **sm** (8rpx): Small tags, inputs
+- **md** (16rpx): Cards, buttons, inputs
+- **lg** (24rpx): Feature cards, panels, scoring items
+- **xl** (32rpx): Hero cards, modals, logo
+- **round** (999rpx): Pill buttons, badges, rank badges
 
-## Elevation
+## Elevation -- Colored Glow System
 
-Material-inspired shadows with neutral gray base.
-- **sm**: 1px offset, 2px blur, #000000 at 6%; 1px offset, 3px blur, #000000 at 10%. Buttons, chips.
-- **DEFAULT**: 2px offset, 4px blur, #000000 at 6%; 4px offset, 6px blur, #000000 at 10%. Cards.
-- **md**: 4px offset, 8px blur, #000000 at 7%; 10px offset, 20px blur, #000000 at 10%. Elevated cards.
-- **lg**: 10px offset, 20px blur, #000000 at 10%; 20px offset, 48px blur, #000000 at 12%. Modals, map panels.
+- **shadow-sm**: 0 2rpx 8rpx black at 8%
+- **shadow-md**: 0 4rpx 16rpx black at 12%
+- **shadow-lg**: 0 8rpx 32rpx black at 16%
+- **shadow-card**: 0 4rpx 20rpx teal at 10%
+- **shadow-coral-glow**: 0 4rpx 20rpx coral at 35%
+- **shadow-teal-glow**: 0 4rpx 20rpx teal at 30%
+- **shadow-accent-glow**: 0 4rpx 20rpx gold at 40%
+- **shadow-sky-glow**: 0 4rpx 16rpx sky-blue at 30%
+- **shadow-focus**: 0 0 0 4rpx primary at 15%
 
 ## Components
 
+### Logo (Setup Page Header)
+
+Inspired by the original Flip7 board game packaging. Three layers:
+
+#### Fan Cards Background
+- 5 colored cards fanned out behind the text
+- Rotation angles: -24deg, -12deg, 0deg, 12deg, 24deg
+
+#### FLIP7 Text
+- Entire text group rotated -3deg
+- Wrapped in a cream-colored parallelogram background (skewX(-6deg) + dark border)
+- "FLIP": 88rpx extra-bold, primary-dark, light text-shadow
+- "7": 152rpx extra-bold, accent gold, rotated 4-6deg, multi-layer dark text-shadow stroke
+
+#### Ribbon Banner
+- Classic retro folded-ribbon style from the original packaging
+- Main body: Cream background, 3rpx dark border
+- Side tails: pseudo-elements extending behind (z-index: -1), offset top: 8rpx for 3D fold effect
+- Tail color: slightly darker cream with matching border
+- Text: primary-dark, extra-bold, letter-spacing 8rpx
+
 ### Buttons
-#### Variants
-- **Primary**: #2563EB fill, #FFFFFF text, no border, #1D4ED8 fill.
-- **Secondary**: transparent fill, #2563EB text, 1px #2563EB border, #2563EB10 fill.
-- **Ghost**: transparent fill, #111827 text, no border, #F3F4F6 fill.
-- **Destructive**: #DC2626 fill, #FFFFFF text, no border, #B91C1C fill.
-#### Sizes
-Sizes: sm (6px 12px, 14px, 32px), md (8px 20px, 16px, 40px), lg (12px 28px, 18px, 48px).
-#### Disabled State
-0.5 opacity.
-- disabled cursor
-- No hover or focus effects applied
+
+Pill shape (999rpx radius), minimum 72rpx height, bounce transition curve.
+
+#### Primary (Gold CTA)
+- Gradient gold background, gloss overlay via ::before
+- Shadow: shadow-accent-glow, Active: scale(0.95)
+
+#### Counter Buttons (+/-)
+- Rounded square (16rpx radius), 80rpx x 80rpx
+- Minus: coral themed, Plus: teal themed
+
+#### BOOM Button
+- Active: coral fill, shadow-coral-glow, pulse animation
+
+#### Flip7 Button
+- Active: sky-blue fill, shadow-sky-glow
+
+### Cards (Scoring Items)
+
+White background, 24rpx radius, shadow-card, 6rpx colored left accent bar.
+- Default: teal-light left border
+- Highlighted: gold left border, golden gradient, shadow-accent-glow
+- BOOM Active: coral left border, coral gradient, pulse animation
+
+### Victory Rankings (2nd/3rd Place)
+
+Tiered visual treatment for podium positions:
+- Silver (2nd): 8rpx silver accent bar, silver gradient avatar (64rpx), medal emoji, enlarged score
+- Bronze (3rd): 8rpx coral accent bar, coral gradient avatar (60rpx), medal emoji, coral score
+- Others (4th+): Default styling, standard avatar (56rpx)
+
+### Section Titles
+
+- Emoji icon in view container (not text) for consistent alignment
+- 3rpx dashed bottom border for playful feel
+
 ---
 
-### Cards
-- **Default**: #FFFFFF fill, 1px #E5E7EB border, sm shadow, 8px radius.
-- **Elevated**: #FFFFFF fill, no border, md shadow, 8px radius.
-** 16px **padding, ** top slot with border-radius 8px 8px 0 0, aspect ratio 16:10 **image area, ** absolute top-right, background #16A34A, text white, padding 4px 10px, radius 0 8px 0 4px **price badge.
----
+## Animations
 
-### Inputs
-- **Default**: 1px #E5E7EB border, #FFFFFF fill, no shadow.
-- **Hover**: 1px #2563EB border, #FFFFFF fill, no shadow.
-- **Focus**: 2px #2563EB border, #FFFFFF fill, 3px ring #2563EB25 shadow.
-- **Error**: 2px #DC2626 border, #FFFFFF fill, 3px ring #DC262625 shadow.
-- **Disabled**: 1px #E5E7EB border, #F3F4F6 fill, no shadow.
-** 40px | **Padding:** 8px 12px | **Radius:** 8px **height, ** DM Sans 14px/500, color #111827, bottom margin 6px **label, ** DM Sans 12px/400, color #6B7280, top margin 4px **helper text, ** DM Sans 12px/400, color #DC2626, top margin 4px **error text.
----
+### Confetti (Victory)
+- 10 pieces, varied sizes/shapes/colors, 3.2-4.5s fall with rotation
 
-### Chips
-- **Filter**: #FFFFFF fill, #111827 text, 1px #E5E7EB border.
-- **Filter Active**: #2563EB fill, #FFFFFF text, no border.
-- **Status Success**: #16A34A18 fill, #16A34A text, no border.
-- **Status Warning**: #D9770618 fill, #D97706 text, no border.
-- **Status Error**: #DC262618 fill, #DC2626 text, no border.
-** 4px 12px | **Radius:** 4px | **Font:** 12px/500 **padding.
----
+### Crown Bounce
+- 1.5s infinite, 4-step keyframe with rotation wobble
 
-### Lists
-** 48px **row height, ** 8px 16px **padding, ** 1px #F3F4F6 **divider, ** #F9FAFB **hover background, ** #2563EB08 **active background, ** DM Sans 16px/400 for label, 14px/400 #6B7280 for description **font, ** 40px x 40px, radius 4px, 12px right margin **leading thumbnail.
----
+### Glow Pulse (Winner Card)
+- 2s infinite, opacity 0.5-1.0, scale 1.0-1.03
 
-### Checkboxes
-** 18px x 18px | **Radius:** 4px **size, ** border 2px #D1D5DB, background #FFFFFF **unchecked, ** background #2563EB, border none, checkmark #FFFFFF **checked, ** background #2563EB, dash #FFFFFF **indeterminate, ** 50% opacity, disabled cursor **disabled, ** 8px left of label text **label spacing.
----
+### BOOM Pulse
+- 2s infinite, border/shadow oscillation
 
-### Radio Buttons
-** 18px x 18px | **Radius:** full (circle) **size, ** border 2px #D1D5DB, background #FFFFFF **unchecked, ** border 2px #2563EB, inner dot 8px #2563EB **selected, ** 50% opacity, disabled cursor **disabled, ** 8px left of label text **label spacing.
----
-
-### Tooltips
-** #111827 **background, ** #FFFFFF, DM Sans 12px/400 **text, ** 6px 12px | **Radius:** 8px **padding, ** 6px triangle matching background **arrow, ** 220px **max width, ** 200ms show, 0ms hide **delay.
 ---
 
 ## Do's and Don'ts
 
-1. **Do** always pair the map view with a list/card view -- users switch between both frequently.
-2. **Do** use Blue (#2563EB) for all primary interactive elements to maintain a single action color.
-3. **Do** show price, beds, baths, and sqft on the card surface -- these are the top-four scanning criteria.
-4. **Don't** hide search filters behind a toggle; keep the most common filters persistently visible.
-5. **Don't** use green for anything other than price/availability signals to avoid semantic confusion.
-6. **Do** provide skeleton loaders for listing cards, especially during map-driven searches.
-7. **Don't** load full-resolution images in listing grids; use optimized thumbnails with lazy loading.
-8. **Do** use consistent card sizes in grid layouts for clean visual alignment.
-9. **Don't** stack more than three filter rows without collapsing into an expandable panel.
-10. **Do** ensure map pins use the Blue primary with a white center dot for maximum visibility.
+1. Do use colored glow shadows for interactive elements.
+2. Do use pill-shaped buttons consistently.
+3. Do use cream (#FFF8E7) for input surfaces.
+4. Don't use plain black shadows on interactive elements.
+5. Do celebrate game moments visually with matching brand colors.
+6. Do use dashed borders for section dividers.
+7. Don't make micro-interaction animations longer than 500ms.
+8. Do use left-border color accents on cards for state communication.
+9. Do ensure all touch targets are at least 72rpx.
+10. Do use view (not text) for emoji containers in WeChat mini-programs.
+11. Do use the retro folded-ribbon pattern for banner elements.
+12. Don't rely on percentage heights in pseudo-elements inside flex children.
