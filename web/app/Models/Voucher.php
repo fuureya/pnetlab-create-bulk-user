@@ -14,6 +14,8 @@ class Voucher extends Model
         'password',
         'pod_id',
         'status',
+        'duration_days',
+        'activated_at',
         'expired_at',
     ];
 }

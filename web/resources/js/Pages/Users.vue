@@ -21,13 +21,18 @@ const isModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const editMode = ref(false);
 const currentVoucherId = ref(null);
+const visiblePasswords = ref({});
+
+const togglePassword = (id) => {
+    visiblePasswords.value[id] = !visiblePasswords.value[id];
+};
 
 const form = useForm({
     username: '',
     password: '',
     pod_id: 1,
     status: 'belum aktif',
-    expired_at: ''
+    duration_days: 7
 });
 
 const openCreateModal = () => {
@@ -41,10 +46,10 @@ const openEditModal = (voucher) => {
     editMode.value = true;
     currentVoucherId.value = voucher.id;
     form.username = voucher.username;
-    form.password = ''; // password field left blank intentionally on edit unless they want to change it
+    form.password = voucher.password;
     form.pod_id = voucher.pod_id;
     form.status = voucher.status;
-    form.expired_at = voucher.expired_at ? voucher.expired_at.slice(0, 16) : ''; // format for datetime-local
+    form.duration_days = voucher.duration_days;
     form.clearErrors();
     isModalOpen.value = true;
 };
@@ -68,12 +73,18 @@ const submit = () => {
     if (editMode.value) {
         form.put(route('users.update', currentVoucherId.value), {
             preserveScroll: true,
-            onSuccess: () => closeModal(),
+            onSuccess: () => {
+                closeModal();
+                window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil diperbarui.', icon: 'success', confirmButtonText: 'Oke' });
+            },
         });
     } else {
         form.post(route('users.store'), {
             preserveScroll: true,
-            onSuccess: () => closeModal(),
+            onSuccess: () => {
+                closeModal();
+                window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
+            },
         });
     }
 };
@@ -81,7 +92,10 @@ const submit = () => {
 const deleteVoucher = () => {
     router.delete(route('users.destroy', currentVoucherId.value), {
         preserveScroll: true,
-        onSuccess: () => closeDeleteModal(),
+        onSuccess: () => {
+            closeDeleteModal();
+            window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil dihapus.', icon: 'success', confirmButtonText: 'Oke' });
+        },
     });
 };
 </script>
@@ -139,7 +153,16 @@ const deleteVoucher = () => {
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-[14px] text-[#0F0F0F]">
-                                    {{ voucher.password }}
+                                    <div class="flex items-center justify-between w-32">
+                                        <span class="font-['Roboto_Mono'] text-[#606060] tracking-widest" v-if="!visiblePasswords[voucher.id]">••••••••</span>
+                                        <span class="font-['Roboto_Mono']" v-else>{{ voucher.password }}</span>
+                                        <button @click="togglePassword(voucher.id)" class="text-[#606060] hover:text-[#065FD4] transition-colors p-1 rounded-full hover:bg-[#F2F2F2]">
+                                            <!-- Eye Open Icon -->
+                                            <svg v-if="!visiblePasswords[voucher.id]" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                            <!-- Eye Closed Icon -->
+                                            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                                        </button>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
                                     {{ voucher.pod_id }}
@@ -158,7 +181,7 @@ const deleteVoucher = () => {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-[14px]" :class="voucher.expired_at ? 'text-[#0F0F0F]' : 'text-[#606060]'">
-                                    {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : 'Selamanya (Tidak Expired)' }}
+                                    {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : `Belum Diaktifkan (${voucher.duration_days} Hari)` }}
                                 </td>
                                 <td class="px-6 py-4 text-right flex justify-end gap-2">
                                     <button @click="openEditModal(voucher)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit">
@@ -203,11 +226,11 @@ const deleteVoucher = () => {
 
                     <div>
                         <InputLabel for="password" value="Password" />
-                        <TextInput id="password" type="text" class="mt-1 block w-full" v-model="form.password" required />
+                        <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required />
                         <InputError class="mt-2" :message="form.errors.password" />
                     </div>
 
-                    <div>
+                    <div v-if="editMode">
                         <InputLabel for="status" value="Status" />
                         <select id="status" v-model="form.status" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]">
                             <option value="aktif">Aktif</option>
@@ -220,9 +243,14 @@ const deleteVoucher = () => {
                     </div>
 
                     <div>
-                        <InputLabel for="expired_at" value="Expired At (Optional)" />
-                        <TextInput id="expired_at" type="datetime-local" class="mt-1 block w-full" v-model="form.expired_at" />
-                        <InputError class="mt-2" :message="form.errors.expired_at" />
+                        <InputLabel for="duration_days" value="Paket Durasi Aktif" />
+                        <select id="duration_days" v-model="form.duration_days" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]" required>
+                            <option value="7">1 Minggu (7 Hari)</option>
+                            <option value="14">2 Minggu (14 Hari)</option>
+                            <option value="21">3 Minggu (21 Hari)</option>
+                            <option value="30">1 Bulan (30 Hari)</option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.duration_days" />
                     </div>
 
                     <div class="mt-6 flex justify-end gap-3">

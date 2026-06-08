@@ -23,7 +23,7 @@ class VoucherController extends Controller
             'password' => 'required|string',
             'pod_id' => 'nullable|integer',
             'status' => 'required|in:aktif,nonaktif,terbeli,belum aktif,expired',
-            'expired_at' => 'nullable|date',
+            'duration_days' => 'required|integer',
         ]);
 
         if (!isset($validated['pod_id'])) {
@@ -42,7 +42,7 @@ class VoucherController extends Controller
             'password' => 'nullable|string',
             'pod_id' => 'nullable|integer',
             'status' => 'required|in:aktif,nonaktif,terbeli,belum aktif,expired',
-            'expired_at' => 'nullable|date',
+            'duration_days' => 'required|integer',
         ]);
 
         if (empty($validated['password'])) {

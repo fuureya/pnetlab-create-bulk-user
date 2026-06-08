@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->integer('pod_id')->default(1);
             $table->enum('status', ['aktif', 'nonaktif', 'terbeli', 'belum aktif', 'expired'])->default('belum aktif');
+            $table->integer('duration_days')->default(7);
+            $table->timestamp('activated_at')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });
