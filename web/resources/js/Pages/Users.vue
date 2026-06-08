@@ -88,6 +88,7 @@ const closeDeleteModal = () => {
 };
 
 const submit = () => {
+    Swal.fire({ title: 'Memproses...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     if (editMode.value) {
         form.put(route('users.update', currentVoucherId.value), {
             preserveScroll: true,
@@ -108,6 +109,7 @@ const submit = () => {
 };
 
 const deleteVoucher = () => {
+    Swal.fire({ title: 'Menghapus...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     router.delete(route('users.destroy', currentVoucherId.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -118,6 +120,7 @@ const deleteVoucher = () => {
 };
 
 const submitBulk = () => {
+    Swal.fire({ title: 'Generate Massal...', text: 'Membuat voucher, mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     bulkForm.post(route('users.bulk_store'), {
         preserveScroll: true,
         onSuccess: () => {
