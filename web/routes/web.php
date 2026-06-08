@@ -14,9 +14,18 @@ Route::get('/', function () {
     ]);
 });
 
+use App\Http\Controllers\VoucherController;
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/users', [VoucherController::class, 'index'])->name('users');
+    Route::post('/users', [VoucherController::class, 'store'])->name('users.store');
+    Route::put('/users/{voucher}', [VoucherController::class, 'update'])->name('users.update');
+    Route::delete('/users/{voucher}', [VoucherController::class, 'destroy'])->name('users.destroy');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

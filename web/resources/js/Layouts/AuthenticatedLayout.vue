@@ -81,12 +81,13 @@ const sidebarExpanded = ref(true);
                         <span v-else class="text-[10px] font-[400] absolute mt-10">Overview</span>
                     </Link>
 
-                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
+                    <Link :href="route('users')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('users') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
                         <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('users')"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                         </div>
                         <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Users</span>
-                        <span v-else class="text-[10px] absolute mt-10">Users</span>
+                        <span v-else class="text-[10px] font-[400] absolute mt-10">Users</span>
                     </Link>
 
                     <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
