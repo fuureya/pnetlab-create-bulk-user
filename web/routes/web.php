@@ -22,6 +22,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', [VoucherController::class, 'index'])->name('users');
+    Route::post('/users/bulk', [VoucherController::class, 'bulkStore'])->name('users.bulk_store');
     Route::post('/users', [VoucherController::class, 'store'])->name('users.store');
     Route::put('/users/{voucher}', [VoucherController::class, 'update'])->name('users.update');
     Route::delete('/users/{voucher}', [VoucherController::class, 'destroy'])->name('users.destroy');

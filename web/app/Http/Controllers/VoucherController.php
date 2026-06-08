@@ -5,15 +5,46 @@ namespace App\Http\Controllers;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class VoucherController extends Controller
 {
     public function index()
     {
-        $vouchers = Voucher::latest()->paginate(10);
+        $vouchers = Voucher::latest()->paginate(15);
         return Inertia::render('Users', [
             'vouchers' => $vouchers
         ]);
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $validated = $request->validate([
+            'count' => 'required|integer|min:1|max:100',
+            'duration_days' => 'required|integer',
+        ]);
+
+        $count = $validated['count'];
+        $durationDays = $validated['duration_days'];
+
+        for ($i = 0; $i < $count; $i++) {
+            $username = strtolower(Str::random(8));
+            
+            // Ensure unique username
+            while (Voucher::where('username', $username)->exists()) {
+                $username = strtolower(Str::random(8));
+            }
+
+            Voucher::create([
+                'username' => $username,
+                'password' => strtolower(Str::random(8)),
+                'pod_id' => 1,
+                'status' => 'belum aktif',
+                'duration_days' => $durationDays,
+            ]);
+        }
+
+        return redirect()->back()->with('message', $count . ' vouchers generated successfully.');
     }
 
     public function store(Request $request)

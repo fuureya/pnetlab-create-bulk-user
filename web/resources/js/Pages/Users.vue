@@ -20,6 +20,7 @@ const props = defineProps({
 
 const isModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isBulkModalOpen = ref(false);
 const editMode = ref(false);
 const currentVoucherId = ref(null);
 const visiblePasswords = ref({});
@@ -35,6 +36,22 @@ const form = useForm({
     status: 'belum aktif',
     duration_days: 7
 });
+
+const bulkForm = useForm({
+    count: 10,
+    duration_days: 7
+});
+
+const openBulkModal = () => {
+    bulkForm.reset();
+    bulkForm.clearErrors();
+    isBulkModalOpen.value = true;
+};
+
+const closeBulkModal = () => {
+    isBulkModalOpen.value = false;
+    bulkForm.reset();
+};
 
 const openCreateModal = () => {
     editMode.value = false;
@@ -99,6 +116,16 @@ const deleteVoucher = () => {
         },
     });
 };
+
+const submitBulk = () => {
+    bulkForm.post(route('users.bulk_store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            closeBulkModal();
+            Swal.fire({ title: 'Berhasil!', text: `${bulkForm.count} Voucher berhasil di-generate.`, icon: 'success', confirmButtonText: 'Oke' });
+        },
+    });
+};
 </script>
 
 <template>
@@ -112,10 +139,16 @@ const deleteVoucher = () => {
                 <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Vouchers Management</h1>
                 <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage PNetLab vouchers, pods, and access expiration.</p>
             </div>
-            <button @click="openCreateModal" class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                Create New Voucher
-            </button>
+            <div class="flex gap-2">
+                <button @click="openBulkModal" class="bg-[#E5E5E5] hover:bg-[#D4D4D4] text-[#0F0F0F] px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    Bulk Generate
+                </button>
+                <button @click="openCreateModal" class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    Create New Voucher
+                </button>
+            </div>
         </div>
 
         <!-- Content Area -->
@@ -130,6 +163,7 @@ const deleteVoucher = () => {
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
+                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider w-16">No.</th>
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">User (Username)</th>
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Password</th>
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Pod ID</th>
@@ -140,9 +174,12 @@ const deleteVoucher = () => {
                         </thead>
                         <tbody class="divide-y divide-[#E5E5E5]">
                             <tr v-if="vouchers.data.length === 0">
-                                <td colspan="5" class="px-6 py-8 text-center text-[#606060]">No vouchers found. Create one to get started.</td>
+                                <td colspan="7" class="px-6 py-8 text-center text-[#606060]">No vouchers found. Create one to get started.</td>
                             </tr>
-                            <tr v-for="voucher in vouchers.data" :key="voucher.id" class="hover:bg-[#F8F8F8] transition-colors" :class="{'bg-[#FEF2F2]/30': voucher.status === 'nonaktif'}">
+                            <tr v-for="(voucher, index) in vouchers.data" :key="voucher.id" class="hover:bg-[#F8F8F8] transition-colors" :class="{'bg-[#FEF2F2]/30': voucher.status === 'nonaktif'}">
+                                <td class="px-6 py-4 text-[14px] text-[#606060]">
+                                    {{ (vouchers.current_page - 1) * vouchers.per_page + index + 1 }}
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-[#065FD4] text-white flex items-center justify-center text-[12px] font-[500]">
@@ -277,6 +314,41 @@ const deleteVoucher = () => {
                     <SecondaryButton @click="closeDeleteModal">Cancel</SecondaryButton>
                     <DangerButton @click="deleteVoucher">Delete</DangerButton>
                 </div>
+            </div>
+        </Modal>
+
+        <!-- Bulk Generate Modal -->
+        <Modal :show="isBulkModalOpen" @close="closeBulkModal">
+            <div class="p-6 font-['Roboto']">
+                <h2 class="text-lg font-medium text-gray-900 mb-6">
+                    Bulk Generate Vouchers
+                </h2>
+
+                <form @submit.prevent="submitBulk" class="space-y-4">
+                    <div>
+                        <InputLabel for="bulk_count" value="Jumlah Voucher (Max 100)" />
+                        <TextInput id="bulk_count" type="number" min="1" max="100" class="mt-1 block w-full" v-model="bulkForm.count" required autofocus />
+                        <InputError class="mt-2" :message="bulkForm.errors.count" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="bulk_duration_days" value="Paket Durasi Aktif" />
+                        <select id="bulk_duration_days" v-model="bulkForm.duration_days" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]" required>
+                            <option value="7">1 Minggu (7 Hari)</option>
+                            <option value="14">2 Minggu (14 Hari)</option>
+                            <option value="21">3 Minggu (21 Hari)</option>
+                            <option value="30">1 Bulan (30 Hari)</option>
+                        </select>
+                        <InputError class="mt-2" :message="bulkForm.errors.duration_days" />
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <SecondaryButton @click="closeBulkModal">Cancel</SecondaryButton>
+                        <PrimaryButton :class="{ 'opacity-25': bulkForm.processing }" :disabled="bulkForm.processing">
+                            Generate
+                        </PrimaryButton>
+                    </div>
+                </form>
             </div>
         </Modal>
 
