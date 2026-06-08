@@ -9,6 +9,7 @@ import DangerButton from '@/Components/DangerButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     vouchers: {
@@ -75,7 +76,7 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal();
-                window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil diperbarui.', icon: 'success', confirmButtonText: 'Oke' });
+                Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil diperbarui.', icon: 'success', confirmButtonText: 'Oke' });
             },
         });
     } else {
@@ -83,7 +84,7 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal();
-                window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
+                Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
             },
         });
     }
@@ -94,7 +95,7 @@ const deleteVoucher = () => {
         preserveScroll: true,
         onSuccess: () => {
             closeDeleteModal();
-            window.Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil dihapus.', icon: 'success', confirmButtonText: 'Oke' });
+            Swal.fire({ title: 'Berhasil!', text: 'Voucher berhasil dihapus.', icon: 'success', confirmButtonText: 'Oke' });
         },
     });
 };
