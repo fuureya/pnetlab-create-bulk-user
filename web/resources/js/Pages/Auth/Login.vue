@@ -37,52 +37,48 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit" class="font-['Roboto']">
+        <form @submit.prevent="submit" class="font-['Roboto'] flex flex-col gap-6">
             <div>
-                <InputLabel for="email" value="Email" class="text-[#0F0F0F] font-[500]" />
-
+                <InputLabel for="email" value="Email" class="text-[#0F0F0F] font-[500] mb-1" />
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full h-[40px]"
+                    class="block w-full"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-1" :message="form.errors.email" />
             </div>
 
-            <div class="mt-6">
-                <InputLabel for="password" value="Password" class="text-[#0F0F0F] font-[500]" />
-
+            <div>
+                <InputLabel for="password" value="Password" class="text-[#0F0F0F] font-[500] mb-1" />
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full h-[40px]"
+                    class="block w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError class="mt-1" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 block">
+            <div class="block">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-3 text-[14px] text-[#606060]"
+                    <span class="ms-3 text-[14px] font-[400] text-[#606060]"
                         >Remember me</span
                     >
                 </label>
             </div>
 
-            <div class="mt-8 flex items-center justify-between">
+            <div class="mt-2 flex items-center justify-between">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="rounded-md text-[14px] text-[#065FD4] font-[500] hover:underline focus:outline-none"
+                    class="text-[14px] text-[#065FD4] font-[500] hover:underline focus:outline-none"
                 >
                     Forgot password?
                 </Link>

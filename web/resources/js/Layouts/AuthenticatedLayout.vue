@@ -5,139 +5,116 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const sidebarExpanded = ref(true);
 </script>
 
 <template>
-    <div class="flex min-h-screen bg-[#F3F4F6] text-[#111827] font-['Inter']">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-[#E5E7EB] hidden md:flex flex-col shrink-0 z-20 relative">
-            <!-- Sidebar Header -->
-            <div class="h-20 flex items-center px-6 border-b border-[#E5E7EB]">
-                <Link :href="route('dashboard')">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-8 h-8 text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        <h1 class="text-xl font-semibold tracking-wide">
-                            Watt<span class="text-[#06B6D4]">Vision</span>
-                        </h1>
-                    </div>
+    <div class="flex flex-col min-h-screen bg-[#FFFFFF] font-['Roboto'] text-[#0F0F0F]">
+        
+        <!-- Topbar (56px) -->
+        <header class="h-[56px] bg-[#FFFFFF] flex items-center justify-between px-4 sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
+            <!-- Left: Hamburger & Logo -->
+            <div class="flex items-center gap-4">
+                <button @click="sidebarExpanded = !sidebarExpanded" class="p-2 rounded-full hover:bg-[#F2F2F2] transition text-[#0F0F0F]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+                <Link :href="route('dashboard')" class="flex items-center gap-1" title="RedBroadcast Home">
+                    <svg class="w-[30px] h-[30px] text-[#FF0000]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                    </svg>
+                    <span class="text-[20px] font-[700] tracking-tighter">RedBroadcast</span>
                 </Link>
             </div>
             
-            <!-- Sidebar Links -->
-            <nav class="flex-1 py-6 flex flex-col gap-2 px-4">
-                <Link 
-                    :href="route('dashboard')" 
-                    class="flex items-center px-4 py-3 rounded-lg transition-colors gap-3 w-full text-[14px]"
-                    :class="route().current('dashboard') ? 'bg-[#F3F4F6] text-[#06B6D4] border-l-2 border-[#06B6D4] font-medium' : 'text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111827]'"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                    Dashboard
-                </Link>
-                
-                <Link 
-                    href="#" 
-                    class="flex items-center px-4 py-3 rounded-lg transition-colors gap-3 w-full text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111827] text-[14px]"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                    Consumo (kWh)
-                </Link>
-                
-                <Link 
-                    href="#" 
-                    class="flex items-center px-4 py-3 rounded-lg transition-colors gap-3 w-full text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111827] text-[14px]"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    Usuarios
-                </Link>
-            </nav>
-            
-            <div class="p-4 border-t border-[#E5E7EB]">
-                 <div class="flex items-center gap-3">
-                     <div class="w-2 h-2 rounded-full bg-[#22C55E] shadow-[0_0_8px_#22C55E]"></div>
-                     <span class="text-[#6B7280] text-[12px] font-medium tracking-wider uppercase">System Online</span>
-                 </div>
-            </div>
-        </aside>
+            <!-- Center: Spacer -->
+            <div class="flex-1"></div>
 
-        <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0">
-            <!-- Topbar -->
-            <header class="h-20 bg-white border-b border-[#E5E7EB] flex items-center justify-between px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="flex items-center md:hidden">
-                    <button @click="showingNavigationDropdown = !showingNavigationDropdown" class="p-2 rounded-md text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] focus:outline-none transition">
-                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                            <path :class="{'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            <path :class="{'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                    <Link :href="route('dashboard')" class="ml-4 md:hidden">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-6 h-6 text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        </div>
-                    </Link>
-                </div>
-                
-                <div class="hidden md:flex flex-1">
-                    <!-- Search bar placeholder -->
-                    <div class="relative w-64">
-                        <input type="text" class="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-md px-4 py-2 text-[14px] text-[#111827] focus:border-[#06B6D4] focus:ring-1 focus:ring-[#06B6D4] placeholder-[#6B7280]" placeholder="Search metrics...">
-                        <svg class="absolute right-3 top-2.5 w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </div>
-                </div>
-
-                <!-- User Dropdown -->
-                <div class="flex items-center">
+            <!-- Right: User -->
+            <div class="flex items-center gap-2">
+                <div class="ml-2">
                     <Dropdown align="right" width="48">
                         <template #trigger>
-                            <span class="inline-flex rounded-md cursor-pointer">
-                                <span class="inline-flex items-center text-[14px] font-medium text-[#111827] transition ease-in-out duration-150">
-                                    {{ $page.props.auth.user.name }}
-                                    <div class="ml-3 w-8 h-8 bg-[#F3F4F6] rounded-full flex items-center justify-center border border-[#E5E7EB]">
-                                        <svg class="w-4 h-4 text-[#06B6D4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                    </div>
-                                    <svg class="ml-2 -mr-0.5 h-4 w-4 text-[#6B7280]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                            </span>
+                            <button class="flex items-center p-1 rounded-[9999px] hover:bg-[#F2F2F2] transition">
+                                <div class="w-[36px] h-[36px] rounded-[9999px] bg-[#065FD4] text-white flex items-center justify-center text-[14px] font-[500]">
+                                    {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
+                                </div>
+                            </button>
                         </template>
-
                         <template #content>
-                            <div class="bg-white rounded-md border border-[#E5E7EB] shadow-md overflow-hidden">
-                                <DropdownLink :href="route('profile.edit')" class="text-[#111827] hover:bg-[#F3F4F6] text-[14px]">
-                                    Profile
-                                </DropdownLink>
-                                <DropdownLink :href="route('logout')" method="post" as="button" class="text-[#EF4444] hover:bg-[#F3F4F6] text-[14px]">
-                                    Log Out
-                                </DropdownLink>
+                            <div class="py-2 w-[300px] shadow-[0_4px_32px_rgba(0,0,0,0.1)] rounded-[4px]">
+                                <div class="px-4 py-3 flex items-start gap-4 border-b border-[#E5E5E5]">
+                                    <div class="w-10 h-10 rounded-[9999px] bg-[#065FD4] text-white flex items-center justify-center text-[16px] font-[500] shrink-0">
+                                        {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <p class="text-[16px] font-[500] text-[#0F0F0F]">{{ $page.props.auth.user.name }}</p>
+                                        <p class="text-[14px] font-[400] text-[#0F0F0F] mt-1">@{{ $page.props.auth.user.name.toLowerCase().replace(/\s+/g, '') }}</p>
+                                        <Link :href="route('profile.edit')" class="text-[14px] text-[#065FD4] font-[500] mt-2 block hover:underline">View your channel</Link>
+                                    </div>
+                                </div>
+                                <div class="py-2">
+                                    <DropdownLink :href="route('logout')" method="post" as="button" class="px-4 py-2 hover:bg-[#F2F2F2] flex items-center gap-4 text-[14px] font-[400] text-[#0F0F0F]">
+                                        <svg class="w-6 h-6 text-[#606060]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                                        Sign out
+                                    </DropdownLink>
+                                </div>
                             </div>
                         </template>
                     </Dropdown>
                 </div>
-            </header>
+            </div>
+        </header>
 
-            <!-- Mobile Navigation Menu -->
-            <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="md:hidden bg-white border-b border-[#E5E7EB]">
-                <div class="pt-2 pb-3 space-y-1">
-                    <Link :href="route('dashboard')" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium" :class="route().current('dashboard') ? 'border-[#06B6D4] text-[#06B6D4] bg-[#F3F4F6]' : 'border-transparent text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6]'">
-                        Dashboard
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <aside 
+                :class="sidebarExpanded ? 'w-[240px]' : 'w-[72px]'" 
+                class="hidden sm:flex flex-col shrink-0 bg-[#FFFFFF] hover:overflow-y-auto overflow-hidden transition-all duration-200 sticky top-[56px] h-[calc(100vh-56px)]"
+            >
+                <div class="py-3 px-3 flex flex-col gap-1">
+                    <Link :href="route('dashboard')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('dashboard') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('dashboard')"><path d="M4 21V10.08l8-6.96 8 6.96V21h-6v-6h-4v6H4z"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path d="M4 21V10.08l8-6.96 8 6.96V21h-6v-6h-4v6H4z"/></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Overview</span>
+                        <span v-else class="text-[10px] font-[400] absolute mt-10">Overview</span>
                     </Link>
-                    <Link href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6]">
-                        Consumo
+
+                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Users</span>
+                        <span v-else class="text-[10px] absolute mt-10">Users</span>
                     </Link>
-                    <Link href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6]">
-                        Usuarios
+
+                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Create User</span>
+                        <span v-else class="text-[10px] absolute mt-10">Create</span>
                     </Link>
                 </div>
-            </div>
 
-            <!-- Page Heading (Slot) -->
-            <div class="px-8 py-6" v-if="$slots.header">
-                <slot name="header" />
-            </div>
+                <div class="border-t border-[#E5E5E5] py-3 px-3 flex flex-col gap-1" v-if="sidebarExpanded">
+                    <div class="px-[16px] py-2 flex items-center font-[500] text-[16px]">
+                        System
+                    </div>
+                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] mr-6 shrink-0"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg></div>
+                        <span class="text-[14px]">Settings</span>
+                    </Link>
+                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] mr-6 shrink-0"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg></div>
+                        <span class="text-[14px]">Servers</span>
+                    </Link>
+                </div>
+            </aside>
 
-            <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <!-- Main Content Area -->
+            <main class="flex-1 bg-[#FFFFFF] overflow-x-hidden">
                 <slot />
             </main>
         </div>

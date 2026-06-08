@@ -20,9 +20,10 @@ import { Link } from '@inertiajs/vue3';
         </div>
 
         <div
-            class="mt-8 w-full overflow-hidden bg-[#FFFFFF] px-10 py-10 sm:max-w-md sm:rounded-[8px] border border-[#E5E5E5] shadow-[0_4px_32px_rgba(0,0,0,0.1)]"
+            class="mt-8 w-full bg-[#FFFFFF] px-10 py-10 sm:max-w-md border border-[#E5E5E5] rounded-[8px] shadow-[0_8px_40px_rgba(0,0,0,0.1)]"
         >
-            <h2 class="text-[24px] font-[700] text-[#0F0F0F] mb-6 text-center">Sign in</h2>
+            <h2 class="text-[24px] font-[700] text-[#0F0F0F] mb-2 text-center">Sign in</h2>
+            <p class="text-[14px] text-[#606060] mb-8 text-center font-[400]">to continue to RedBroadcast</p>
             <slot />
         </div>
     </div>
