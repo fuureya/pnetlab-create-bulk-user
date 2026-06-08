@@ -1,6 +1,7 @@
 <template>
     <button
-        class="inline-flex items-center justify-center rounded-lg border border-transparent bg-blue-600 px-5 py-2 text-base font-semibold text-white transition duration-150 ease-in-out hover:bg-blue-700 focus:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-800 shadow-sm"
+        class="inline-flex items-center justify-center rounded-[9999px] border border-transparent bg-[#065FD4] px-4 py-2 text-[14px] font-[500] text-[#FFFFFF] transition-colors duration-200 hover:bg-[#0056b3] focus:outline-none focus:ring-2 focus:ring-[#065FD4]/50 active:bg-[#004a99]"
+        style="min-height: 36px;"
     >
         <slot />
     </button>

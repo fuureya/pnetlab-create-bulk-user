@@ -1,25 +1,6 @@
-<script setup>
-import { onMounted, ref } from 'vue';
-
-const model = defineModel({
-    type: String,
-    required: true,
-});
-
-const input = ref(null);
-
-onMounted(() => {
-    if (input.value.hasAttribute('autofocus')) {
-        input.value.focus();
-    }
-});
-
-defineExpose({ focus: () => input.value.focus() });
-</script>
-
 <template>
     <input
-        class="rounded-lg border border-gray-200 bg-white shadow-sm focus:border-blue-600 focus:ring focus:ring-blue-600/25 px-3 py-2 text-gray-900 font-['DM_Sans'] h-[40px] text-[14px]"
+        class="rounded-[4px] border border-[#E5E5E5] bg-white text-[#0F0F0F] focus:border-[#065FD4] focus:ring-1 focus:ring-[#065FD4] px-4 py-2 text-[14px] transition-colors"
         v-model="model"
         ref="input"
     />

@@ -1,21 +1,28 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
     <div
-        class="flex min-h-screen flex-col items-center bg-gray-50 pt-6 sm:justify-center sm:pt-0"
+        class="flex min-h-screen flex-col items-center bg-[#FFFFFF] pt-12 sm:justify-center sm:pt-0 font-['Roboto']"
     >
         <div>
             <Link href="/">
-                <h1 class="text-3xl font-bold text-blue-600 font-['Red_Hat_Display']">PropertyVue</h1>
+                <div class="flex items-center gap-1 p-4">
+                    <svg class="w-8 h-8 text-[#FF0000]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                    </svg>
+                    <h1 class="text-[24px] font-[700] text-[#0F0F0F] tracking-tighter ml-1">
+                        RedBroadcast
+                    </h1>
+                </div>
             </Link>
         </div>
 
         <div
-            class="mt-8 w-full overflow-hidden bg-white px-8 py-6 border border-gray-200 shadow-sm sm:max-w-md sm:rounded-lg font-['DM_Sans']"
+            class="mt-8 w-full overflow-hidden bg-[#FFFFFF] px-10 py-10 sm:max-w-md sm:rounded-[8px] border border-[#E5E5E5] shadow-[0_4px_32px_rgba(0,0,0,0.1)]"
         >
+            <h2 class="text-[24px] font-[700] text-[#0F0F0F] mb-6 text-center">Sign in</h2>
             <slot />
         </div>
     </div>
