@@ -48,18 +48,13 @@ const faqs = [
                 <div class="font-poppins text-2xl font-extrabold text-gray-900 tracking-tight">
                     PNET<span class="text-shop-primary">Lab</span>
                 </div>
-                <div v-if="canLogin" class="flex gap-4">
-                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="text-sm font-bold text-gray-900 hover:text-shop-primary transition">
-                        Dashboard
-                    </Link>
-                    <template v-else>
-                        <Link :href="route('login')" class="text-sm font-bold text-gray-900 hover:text-shop-primary py-2 px-4 transition">
-                            Log in
-                        </Link>
-                        <Link v-if="canRegister" :href="route('register')" class="bg-shop-primary text-white text-sm font-bold py-2 px-5 rounded-full hover:bg-[#C026D3] transition">
-                            Register
-                        </Link>
-                    </template>
+
+                <!-- Right Links -->
+                <div class="hidden md:flex gap-8 items-center font-sans font-semibold text-[15px] text-gray-600">
+                    <a href="#" class="hover:text-shop-primary transition">Home</a>
+                    <a href="#about" class="hover:text-shop-primary transition">About</a>
+                    <a href="#pricing" class="hover:text-shop-primary transition">Pricing</a>
+                    <Link href="/aktivasi-voucher" class="hover:text-shop-primary transition">Aktivasi</Link>
                 </div>
             </div>
         </nav>
@@ -110,7 +105,7 @@ const faqs = [
         </section>
 
         <!-- What is PNETLab -->
-        <section class="bg-shop-surface border-y border-gray-200 py-20">
+        <section id="about" class="bg-shop-surface border-y border-gray-200 py-20">
             <div class="max-w-7xl mx-auto px-4 md:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <h2 class="font-poppins text-[40px] font-bold text-gray-900 leading-[1.2] tracking-[0.01em] mb-4">Apa Itu Lab PNETLab?</h2>
