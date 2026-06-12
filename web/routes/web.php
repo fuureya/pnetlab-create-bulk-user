@@ -15,6 +15,7 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\AktivasiVoucherController;
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -35,3 +36,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/aktivasi-voucher', [AktivasiVoucherController::class, 'index'])->name('aktivasi.index');
+Route::post('/aktivasi-voucher', [AktivasiVoucherController::class, 'activate'])->name('aktivasi.activate');
