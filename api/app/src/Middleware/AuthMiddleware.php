@@ -17,7 +17,10 @@ class AuthMiddleware {
             echo json_encode([
                 "status" => "error",
                 "message" => "Unauthorized: Invalid API Key",
-                "debug_hint" => "Pastikan header X-API-KEY sudah dikirim dengan benar"
+                "debug_hint" => "Pastikan header X-API-KEY sudah dikirim dengan benar",
+                "debug_provided" => $providedKey ?: 'KOSONG',
+                "debug_expected" => $apiKey ?: 'KOSONG',
+                "debug_env_loaded" => file_exists(__DIR__ . '/../../.env') ? 'YA' : 'TIDAK'
             ]);
             exit;
         }
