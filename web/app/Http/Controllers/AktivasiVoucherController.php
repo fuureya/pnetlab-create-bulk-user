@@ -31,13 +31,13 @@ class AktivasiVoucherController extends Controller
             ]);
         }
 
-        if ($voucher->status === 'active') {
+        if ($voucher->status === 'aktif') {
             return back()->withErrors([
                 'username' => 'Voucher sudah aktif.',
             ]);
         }
 
-        $voucher->status = 'active';
+        $voucher->status = 'aktif';
         $voucher->activated_at = Carbon::now();
         if ($voucher->duration_days) {
             $voucher->expired_at = Carbon::now()->addDays($voucher->duration_days);
