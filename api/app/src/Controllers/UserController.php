@@ -78,9 +78,9 @@ class UserController {
         ]);
     }
 
-    public function delete($id) {
-        $stmt = $this->conn->prepare("DELETE FROM users WHERE id = ? OR username = ?");
-        if ($stmt->execute([$id, $id])) {
+    public function delete($identifier) {
+        $stmt = $this->conn->prepare("DELETE FROM users WHERE username = ?");
+        if ($stmt->execute([$identifier])) {
             echo json_encode(["status" => "success", "message" => "User deleted"]);
         } else {
             echo json_encode(["status" => "error", "message" => "Delete failed"]);
@@ -89,8 +89,8 @@ class UserController {
 
     public function block($identifier) {
         // Mengubah user_status menjadi 0 (block/offline)
-        $stmt = $this->conn->prepare("UPDATE users SET user_status = 0 WHERE username = ? OR id = ?");
-        if ($stmt->execute([$identifier, $identifier])) {
+        $stmt = $this->conn->prepare("UPDATE users SET user_status = 0 WHERE username = ?");
+        if ($stmt->execute([$identifier])) {
             if ($stmt->rowCount() > 0) {
                 echo json_encode(["status" => "success", "message" => "User status changed to blocked"]);
             } else {
