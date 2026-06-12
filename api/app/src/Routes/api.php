@@ -23,12 +23,22 @@ if (isset($uri[0]) && $uri[0] === 'users') {
             $userController->create($data);
             break;
         case 'DELETE':
-            $id = $uri[1] ?? null;
-            if ($id) {
-                $userController->delete($id);
+            $identifier = $uri[1] ?? null;
+            if ($identifier) {
+                $userController->delete($identifier);
             } else {
                 http_response_code(400);
-                echo json_encode(["status" => "error", "message" => "Username required"]);
+                echo json_encode(["status" => "error", "message" => "Identifier required"]);
+            }
+            break;
+        case 'PUT':
+            $identifier = $uri[1] ?? null;
+            $action = $uri[2] ?? null;
+            if ($identifier && $action === 'block') {
+                $userController->block($identifier);
+            } else {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "Invalid endpoint or identifier missing"]);
             }
             break;
         default:
