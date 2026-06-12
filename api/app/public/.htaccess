@@ -12,6 +12,10 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 
+    # Pastikan header custom diteruskan ke PHP (terutama untuk mod_php/FastCGI)
+    SetEnvIf X-API-KEY "^(.*)$" HTTP_X_API_KEY=$1
+    SetEnvIf X-Api-Key "^(.*)$" HTTP_X_API_KEY=$1
+
     # Prevent access to .env
     <FilesMatch "^\.env">
         Order allow,deny
