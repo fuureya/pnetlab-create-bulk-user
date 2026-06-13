@@ -6,6 +6,7 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class VoucherController extends Controller
 {
@@ -90,5 +91,55 @@ class VoucherController extends Controller
         $voucher->delete();
 
         return redirect()->back()->with('message', 'Voucher deleted successfully.');
+    }
+
+    public function manualActivate(Voucher $voucher)
+    {
+        $apiUrl = env('PNETLAB_API_URL', 'http://domain.com/bulkuser/api/v2/users');
+        $apiKey = env('PNETLAB_API_KEY', 'YOUR_API_KEY_HERE');
+
+        try {
+            $response = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Content-Type' => 'application/json'
+            ])->post($apiUrl, [
+                'username' => $voucher->username,
+                'password' => $voucher->password,
+                'name' => $voucher->username,
+                'expired_days' => $voucher->duration_days
+            ]);
+
+            if ($response->successful()) {
+                $voucher->update(['status' => 'aktif']);
+                return back()->with('message', 'User berhasil diaktivasi di server PNETLab.');
+            } else {
+                return back()->withErrors(['api' => 'Gagal aktivasi API: ' . $response->body()]);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['api' => 'Koneksi API gagal: ' . $e->getMessage()]);
+        }
+    }
+
+    public function manualBlock(Voucher $voucher)
+    {
+        $baseUrl = rtrim(env('PNETLAB_API_URL', 'http://domain.com/bulkuser/api/v2/users'), '/');
+        // Because the API URL in .env is usually .../users, we append the username and block
+        $blockUrl = $baseUrl . '/' . urlencode($voucher->username) . '/block';
+        $apiKey = env('PNETLAB_API_KEY', 'YOUR_API_KEY_HERE');
+
+        try {
+            $response = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+            ])->put($blockUrl);
+
+            if ($response->successful()) {
+                $voucher->update(['status' => 'nonaktif']);
+                return back()->with('message', 'User berhasil diblokir di server PNETLab.');
+            } else {
+                return back()->withErrors(['api' => 'Gagal block API: ' . $response->body()]);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['api' => 'Koneksi API gagal: ' . $e->getMessage()]);
+        }
     }
 }

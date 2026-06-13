@@ -27,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users', [VoucherController::class, 'store'])->name('users.store');
     Route::put('/users/{voucher}', [VoucherController::class, 'update'])->name('users.update');
     Route::delete('/users/{voucher}', [VoucherController::class, 'destroy'])->name('users.destroy');
+    Route::post('/users/{voucher}/activate', [VoucherController::class, 'manualActivate'])->name('users.manual_activate');
+    Route::post('/users/{voucher}/block', [VoucherController::class, 'manualBlock'])->name('users.manual_block');
 });
 
 Route::middleware('auth')->group(function () {

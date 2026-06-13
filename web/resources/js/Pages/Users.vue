@@ -129,6 +129,40 @@ const submitBulk = () => {
         },
     });
 };
+
+const manualActivate = (id) => {
+    Swal.fire({ title: 'Aktivasi...', text: 'Mengirim request API PNETLab', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    router.post(route('users.manual_activate', id), {}, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            if (page.props.errors && page.props.errors.api) {
+                Swal.fire({ title: 'Gagal!', text: page.props.errors.api, icon: 'error', confirmButtonText: 'Tutup' });
+            } else {
+                Swal.fire({ title: 'Berhasil!', text: 'User berhasil diaktivasi.', icon: 'success', confirmButtonText: 'Oke' });
+            }
+        },
+        onError: (errors) => {
+            Swal.fire({ title: 'Error!', text: errors.api || 'Terjadi kesalahan sistem', icon: 'error', confirmButtonText: 'Tutup' });
+        }
+    });
+};
+
+const manualBlock = (id) => {
+    Swal.fire({ title: 'Block...', text: 'Mengirim request API PNETLab', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    router.post(route('users.manual_block', id), {}, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            if (page.props.errors && page.props.errors.api) {
+                Swal.fire({ title: 'Gagal!', text: page.props.errors.api, icon: 'error', confirmButtonText: 'Tutup' });
+            } else {
+                Swal.fire({ title: 'Berhasil!', text: 'User berhasil diblokir.', icon: 'success', confirmButtonText: 'Oke' });
+            }
+        },
+        onError: (errors) => {
+            Swal.fire({ title: 'Error!', text: errors.api || 'Terjadi kesalahan sistem', icon: 'error', confirmButtonText: 'Tutup' });
+        }
+    });
+};
 </script>
 
 <template>
@@ -225,7 +259,13 @@ const submitBulk = () => {
                                     {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : `Belum Diaktifkan (${voucher.duration_days} Hari)` }}
                                 </td>
                                 <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                    <button @click="openEditModal(voucher)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit">
+                                    <button v-if="voucher.status !== 'aktif'" @click="manualActivate(voucher.id)" class="p-1.5 text-[#2BA640] hover:bg-[#e6f4ea] rounded-[4px] transition-colors" title="Aktivasi API Manual">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    </button>
+                                    <button v-if="voucher.status === 'aktif'" @click="manualBlock(voucher.id)" class="p-1.5 text-[#FB8C00] hover:bg-[#FFF4E5] rounded-[4px] transition-colors" title="Block/Pending API Manual">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                    </button>
+                                    <button @click="openEditModal(voucher)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit Data">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                     </button>
                                     <button @click="openDeleteModal(voucher.id)" class="p-1.5 text-[#FF0000] hover:bg-[#FEF2F2] rounded-[4px] transition-colors" title="Delete">
