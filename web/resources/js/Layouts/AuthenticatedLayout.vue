@@ -78,61 +78,68 @@ const sidebarExpanded = ref(true);
                         <span v-else class="text-[10px] font-[400] absolute mt-10">Overview</span>
                     </Link>
 
-                    <Link :href="route('users')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('users') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('users')"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Users</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Users</span>
-                    </Link>
+                    <!-- User Only Links -->
+                    <template v-if="$page.props.auth.user.role === 'user'">
+                        <Link href="/riwayat-transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/riwayat-transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/riwayat-transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Riwayat Transaksi</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
+                        </Link>
+                    </template>
 
-                    <Link href="/produk" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/produk') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/produk')"><path d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Produk</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Produk</span>
-                    </Link>
+                    <!-- Admin Only Links -->
+                    <template v-if="$page.props.auth.user.role === 'admin'">
+                        <Link :href="route('users')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('users') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('users')"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Users</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Users</span>
+                        </Link>
 
-                    <Link href="/transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Transaksi</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
-                    </Link>
+                        <Link href="/produk" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/produk') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/produk')"><path d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Produk</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Produk</span>
+                        </Link>
 
-                    <Link href="/testimoni" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/testimoni') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/testimoni')"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.897 5.515 5 7.022V22l5.064-2.25c.306.015.617.03 1.936.03 5.514 0 10-3.589 10-8s-4.486-8-10-8zm0 14c-1.127 0-2-.134-2.5-.236l-2.483 1.103.013-2.127c-2.023-1.077-3.03-2.883-3.03-4.74 0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"/></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Testimoni</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Testimoni</span>
-                    </Link>
+                        <Link href="/transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Transaksi</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
+                        </Link>
 
-                    <Link href="/pendaftar" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/pendaftar') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/pendaftar')"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Pendaftar</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Pendaftar</span>
-                    </Link>
+                        <Link href="/testimoni" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/testimoni') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/testimoni')"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.897 5.515 5 7.022V22l5.064-2.25c.306.015.617.03 1.936.03 5.514 0 10-3.589 10-8s-4.486-8-10-8zm0 14c-1.127 0-2-.134-2.5-.236l-2.483 1.103.013-2.127c-2.023-1.077-3.03-2.883-3.03-4.74 0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Testimoni</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Testimoni</span>
+                        </Link>
 
-                    <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                        </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Create User</span>
-                        <span v-else class="text-[10px] absolute mt-10">Create</span>
-                    </Link>
+                        <Link href="/pendaftar" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/pendaftar') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/pendaftar')"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Pendaftar</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Pendaftar</span>
+                        </Link>
+                    </template>
                 </div>
 
-                <div class="border-t border-[#E5E5E5] py-3 px-3 flex flex-col gap-1" v-if="sidebarExpanded">
+                <div class="border-t border-[#E5E5E5] py-3 px-3 flex flex-col gap-1" v-if="sidebarExpanded && $page.props.auth.user.role === 'admin'">
                     <div class="px-[16px] py-2 flex items-center font-[500] text-[16px]">
                         System
                     </div>

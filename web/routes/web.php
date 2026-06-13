@@ -25,11 +25,15 @@ Route::get('/', function () {
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\AktivasiVoucherController;
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    Route::get('/riwayat-transaksi', function () {
+        return Inertia::render('UserTransaksi');
+    })->name('riwayat-transaksi');
+
     Route::get('/users', [VoucherController::class, 'index'])->name('users');
     Route::post('/users/bulk', [VoucherController::class, 'bulkStore'])->name('users.bulk_store');
     Route::post('/users', [VoucherController::class, 'store'])->name('users.store');

@@ -8,7 +8,9 @@ import { Head } from '@inertiajs/vue3';
 
     <AuthenticatedLayout>
         
-        <!-- Header Actions -->
+        <!-- Admin Dashboard -->
+        <div v-if="$page.props.auth.user.role === 'admin'">
+            <!-- Header Actions -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
             <div>
                 <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Users Overview</h1>
@@ -180,6 +182,78 @@ import { Head } from '@inertiajs/vue3';
                 </div>
             </div>
 
+            </div>
         </div>
+
+        <!-- User Dashboard -->
+        <div v-else class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto font-['Roboto']">
+            <div class="mb-8">
+                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Selamat Datang, {{ $page.props.auth.user.name }}!</h1>
+                <p class="text-[14px] text-[#606060] font-[400] mt-1">Kelola transaksi dan voucher Anda di sini.</p>
+            </div>
+
+            <!-- User KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                <!-- Card 1 -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
+                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Total Transaksi</p>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
+                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Aktif</p>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
+                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Expired</p>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between items-start">
+                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Profil Akun</p>
+                    <a :href="route('profile.edit')" class="text-[14px] text-[#065FD4] font-[500] hover:underline mt-2 flex items-center gap-1">
+                        Edit Profile
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sections Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Transaction History -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
+                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Riwayat Transaksi</h3>
+                    </div>
+                    <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
+                        <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <p class="text-[14px] text-[#606060] font-[400]">Belum ada transaksi pembelian voucher.</p>
+                        <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#065FD4] hover:bg-[#0056b3] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            Beli Voucher
+                        </a>
+                    </div>
+                </div>
+
+                <!-- My Vouchers -->
+                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
+                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Voucher Saya</h3>
+                    </div>
+                    <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
+                        <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                        <p class="text-[14px] text-[#606060] font-[400]">Anda belum memiliki voucher aktif.</p>
+                        <a href="/aktivasi-voucher" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#BF070F] hover:bg-[#8F050A] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
+                            Aktivasi Voucher
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
     </AuthenticatedLayout>
 </template>
