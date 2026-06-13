@@ -9,6 +9,10 @@ defineProps({
     canRegister: {
         type: Boolean,
     },
+    products: {
+        type: Array,
+        default: () => []
+    }
 });
 
 const openFaq = ref(null);
@@ -155,71 +159,24 @@ const faqs = [
                 <p class="font-sans text-[16px] text-gray-500 mt-3">Pilih paket yang sesuai dengan kebutuhan belajar dan target Anda.</p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Paket 1 -->
-                <div class="bg-shop-surface border border-gray-200 rounded-2xl p-6 hover:shadow-shop-lg hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                    <h3 class="font-poppins text-[22px] font-bold text-gray-900">1 Minggu</h3>
-                    <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">Cocok untuk latihan singkat atau sekadar mencoba lingkungan lab.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" v-if="products.length > 0">
+                <div v-for="product in products" :key="product.id" class="bg-shop-surface rounded-2xl p-6 transition-all duration-200 flex flex-col" :class="product.is_recommended ? 'border-2 border-shop-primary shadow-shop-md hover:shadow-shop-hover hover:-translate-y-1 relative overflow-hidden' : 'border border-gray-200 hover:shadow-shop-lg hover:-translate-y-1'">
+                    <div v-if="product.is_recommended" class="absolute top-0 right-0 bg-shop-primary text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-bl-lg">Recommended</div>
+                    <h3 class="font-poppins text-[22px] font-bold text-gray-900">{{ product.name }}</h3>
+                    <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">{{ product.description }}</p>
                     <div class="my-6">
-                        <span class="font-poppins text-[32px] font-extrabold text-shop-secondary">Rp XX.XXX</span>
+                        <span class="font-poppins text-[32px] font-extrabold text-shop-secondary">{{ product.price }}</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-1 text-[14px] text-gray-700">
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Akses Lab Selama 7 Hari</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Full Access PNETLab</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Support WhatsApp</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Bebas Membuat Topologi</li>
+                        <li v-for="(feature, idx) in product.features" :key="idx" class="flex items-start gap-3">
+                            <span class="text-shop-success">✔</span> {{ feature }}
+                        </li>
                     </ul>
-                    <a href="#" class="block w-full text-center bg-transparent text-shop-primary border-2 border-shop-primary rounded-full hover:bg-[#FDF4FF] py-[10px] font-bold transition">Pilih Paket</a>
+                    <Link href="/aktivasi-voucher" class="block w-full text-center rounded-full py-[10px] font-bold transition" :class="product.is_recommended ? 'bg-shop-primary text-white hover:bg-[#C026D3] py-[12px]' : 'bg-transparent text-shop-primary border-2 border-shop-primary hover:bg-[#FDF4FF]'">Pilih Paket</Link>
                 </div>
-
-                <!-- Paket 2 -->
-                <div class="bg-shop-surface border border-gray-200 rounded-2xl p-6 hover:shadow-shop-lg hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                    <h3 class="font-poppins text-[22px] font-bold text-gray-900">2 Minggu</h3>
-                    <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">Ideal untuk belajar mendalam menyelesaikan beberapa materi.</p>
-                    <div class="my-6">
-                        <span class="font-poppins text-[32px] font-extrabold text-shop-secondary">Rp XX.XXX</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1 text-[14px] text-gray-700">
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Akses Lab Selama 14 Hari</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Full Access PNETLab</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Bebas Membuat Topologi</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-primary font-bold">+</span> Bonus Template Lab</li>
-                    </ul>
-                    <a href="#" class="block w-full text-center bg-transparent text-shop-primary border-2 border-shop-primary rounded-full hover:bg-[#FDF4FF] py-[10px] font-bold transition">Pilih Paket</a>
-                </div>
-
-                <!-- Paket 3 -->
-                <div class="bg-shop-surface border-2 border-shop-primary shadow-shop-md rounded-2xl p-6 hover:shadow-shop-hover hover:-translate-y-1 transition-all duration-200 flex flex-col relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-shop-primary text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-bl-lg">Recommended</div>
-                    <h3 class="font-poppins text-[22px] font-bold text-gray-900">3 Minggu</h3>
-                    <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">Direkomendasikan untuk persiapan ujian dan sertifikasi.</p>
-                    <div class="my-6">
-                        <span class="font-poppins text-[32px] font-extrabold text-shop-secondary">Rp XX.XXX</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1 text-[14px] text-gray-700">
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Akses Lab Selama 21 Hari</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Support Prioritas</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-primary font-bold">+</span> Bonus Template Lab</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-primary font-bold">+</span> Bonus Panduan Praktik</li>
-                    </ul>
-                    <a href="#" class="block w-full text-center bg-shop-primary text-white rounded-full hover:bg-[#C026D3] py-[12px] font-bold transition">Pilih Paket</a>
-                </div>
-
-                <!-- Paket 4 -->
-                <div class="bg-shop-surface border border-gray-200 rounded-2xl p-6 hover:shadow-shop-lg hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                    <h3 class="font-poppins text-[22px] font-bold text-gray-900">4 Minggu</h3>
-                    <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">Paket lengkap & hemat untuk belajar intensif tanpa jeda.</p>
-                    <div class="my-6">
-                        <span class="font-poppins text-[32px] font-extrabold text-shop-secondary">Rp XX.XXX</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 flex-1 text-[14px] text-gray-700">
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Akses Lab Selama 30 Hari</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-success">✔</span> Support Prioritas</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-primary font-bold">+</span> Bonus Panduan Praktik</li>
-                        <li class="flex items-start gap-3"><span class="text-shop-tertiary text-lg leading-none">★</span> Konsultasi Networking</li>
-                    </ul>
-                    <a href="#" class="block w-full text-center bg-transparent text-shop-primary border-2 border-shop-primary rounded-full hover:bg-[#FDF4FF] py-[10px] font-bold transition">Pilih Paket</a>
-                </div>
+            </div>
+            <div v-else class="text-center py-10">
+                <p class="text-gray-500 italic text-[15px]">Belum ada paket produk yang tersedia saat ini.</p>
             </div>
         </section>
 

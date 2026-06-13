@@ -90,6 +90,24 @@ const sidebarExpanded = ref(true);
                         <span v-else class="text-[10px] font-[400] absolute mt-10">Users</span>
                     </Link>
 
+                    <Link href="/produk" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/produk') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/produk')"><path d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Produk</span>
+                        <span v-else class="text-[10px] font-[400] absolute mt-10">Produk</span>
+                    </Link>
+
+                    <Link href="/transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Transaksi</span>
+                        <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
+                    </Link>
+
                     <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
                         <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
