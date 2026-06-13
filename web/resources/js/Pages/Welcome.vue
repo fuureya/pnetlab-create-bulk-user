@@ -58,11 +58,15 @@ const faqs = [
                 </Link>
 
                 <!-- Right Links -->
-                <div class="hidden md:flex gap-8 items-center font-sans font-semibold text-[15px] text-gray-600">
+                <div class="hidden md:flex gap-6 lg:gap-8 items-center font-sans font-semibold text-[15px] text-gray-600">
                     <a href="#" class="hover:text-shop-primary transition">Home</a>
                     <a href="#about" class="hover:text-shop-primary transition">About</a>
                     <a href="#pricing" class="hover:text-shop-primary transition">Pricing</a>
                     <Link href="/aktivasi-voucher" class="hover:text-shop-primary transition">Aktivasi</Link>
+                    <Link href="/login" class="bg-shop-primary hover:bg-shop-secondary text-white px-5 py-2 rounded-full transition-colors flex items-center gap-2 shadow-sm">
+                        Member Area
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </Link>
                 </div>
             </div>
         </nav>

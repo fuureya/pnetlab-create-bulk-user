@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\PendaftarController;
 
 Route::get('/', function () {
     $products = \App\Models\Product::orderBy('duration_days', 'asc')->take(4)->get();
@@ -52,6 +53,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Pendaftar Routes (Manage web users)
+    Route::get('/pendaftar', [PendaftarController::class, 'index'])->name('pendaftar');
+    Route::post('/pendaftar', [PendaftarController::class, 'store'])->name('pendaftar.store');
+    Route::put('/pendaftar/{pendaftar}', [PendaftarController::class, 'update'])->name('pendaftar.update');
+    Route::delete('/pendaftar/{pendaftar}', [PendaftarController::class, 'destroy'])->name('pendaftar.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -90,6 +90,12 @@ const submit = () => {
                     Next
                 </PrimaryButton>
             </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-[14px] text-[#606060]">Belum punya akun? 
+                    <Link :href="route('register')" class="text-[#065FD4] font-[500] hover:underline">Register di sini</Link>
+                </p>
+            </div>
         </form>
     </GuestLayout>
 </template>
