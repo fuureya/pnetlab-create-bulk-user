@@ -4,15 +4,15 @@ import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Users Overview - PNetLab" />
+    <Head title="Users Overview - Meraki Labs" />
 
     <AuthenticatedLayout>
         
         <!-- Header Actions -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
             <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Dashboard Overview</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage PNetLab users, pods, and access expiration.</p>
+                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Users Overview</h1>
+                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage Meraki Labs users, pods, and access expiration.</p>
             </div>
             <button class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>

@@ -18,11 +18,8 @@ const sidebarExpanded = ref(true);
                 <button @click="sidebarExpanded = !sidebarExpanded" class="p-2 rounded-full hover:bg-[#F2F2F2] transition text-[#0F0F0F]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" /></svg>
                 </button>
-                <Link :href="route('dashboard')" class="flex items-center gap-1" title="RedBroadcast Home">
-                    <svg class="w-[30px] h-[30px] text-[#FF0000]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                    </svg>
-                    <span class="text-[20px] font-[700] tracking-tighter">RedBroadcast</span>
+                <Link :href="route('dashboard')" class="flex items-center gap-1" title="Meraki Labs Home">
+                    <img src="/img/logo.png" alt="Meraki Labs" class="h-8 md:h-10">
                 </Link>
             </div>
             

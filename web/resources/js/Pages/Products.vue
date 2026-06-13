@@ -115,7 +115,7 @@ const deleteProduct = () => {
 </script>
 
 <template>
-    <Head title="Products Management - PNetLab" />
+    <Head title="Products Management - Meraki Labs" />
 
     <AuthenticatedLayout>
         

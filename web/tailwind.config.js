@@ -19,9 +19,9 @@ export default {
             },
             colors: {
                 shop: {
-                    primary: '#D946EF',
-                    secondary: '#22D3EE',
-                    tertiary: '#FACC15',
+                    primary: '#BF070F',
+                    secondary: '#8F050A',
+                    tertiary: '#E60914',
                     background: '#FAFAFA',
                     surface: '#FFFFFF',
                     success: '#22C55E',
@@ -35,7 +35,7 @@ export default {
                 'shop-md': '0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05)',
                 'shop-lg': '0 10px 25px rgba(0,0,0,0.10), 0 6px 10px rgba(0,0,0,0.06)',
                 'shop-overlay': '0 25px 50px rgba(0,0,0,0.15), 0 12px 24px rgba(0,0,0,0.08)',
-                'shop-hover': '0 14px 32px rgba(217,70,239,0.12), 0 6px 12px rgba(0,0,0,0.06)',
+                'shop-hover': '0 14px 32px rgba(191,7,15,0.15), 0 6px 12px rgba(0,0,0,0.06)',
             }
         },
     },

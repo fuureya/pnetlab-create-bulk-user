@@ -109,7 +109,7 @@ const changePage = (url) => {
 </script>
 
 <template>
-    <Head title="Testimonials Management - PNetLab" />
+    <Head title="Testimonials Management - Meraki Labs" />
 
     <AuthenticatedLayout>
         

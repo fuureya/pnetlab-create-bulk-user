@@ -46,16 +46,16 @@ const faqs = [
 </script>
 
 <template>
-    <Head title="PNETLab - Belajar Networking Tanpa Ribet" />
+    <Head title="Meraki Labs - Belajar Networking Tanpa Ribet" />
 
     <div class="min-h-screen bg-shop-background font-sans text-gray-800 selection:bg-shop-primary selection:text-white">
         
         <!-- Navigation -->
         <nav class="sticky top-0 z-50 bg-shop-surface/90 backdrop-blur-md border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-                <div class="font-poppins text-2xl font-extrabold text-gray-900 tracking-tight">
-                    PNET<span class="text-shop-primary">Lab</span>
-                </div>
+                <Link href="/">
+                    <img src="/img/logo.png" alt="Meraki Labs" class="h-8 md:h-10">
+                </Link>
 
                 <!-- Right Links -->
                 <div class="hidden md:flex gap-8 items-center font-sans font-semibold text-[15px] text-gray-600">
@@ -74,7 +74,7 @@ const faqs = [
                     Belajar Networking <span class="text-shop-primary">Tanpa Ribet</span> Setup Lab
                 </h1>
                 <p class="font-sans text-[18px] text-gray-600 leading-[1.6] mb-8">
-                    Praktik langsung Mikrotik, Cisco, Juniper, Linux Server, dan teknologi jaringan lainnya. Tingkatkan kemampuan networking Anda menggunakan Lab PNETLab siap pakai tanpa perlu PC spesifikasi tinggi.
+                    Praktik langsung Mikrotik, Cisco, Juniper, Linux Server, dan teknologi jaringan lainnya. Tingkatkan kemampuan networking Anda menggunakan Meraki Labs siap pakai tanpa perlu PC spesifikasi tinggi.
                 </p>
                 <ul class="space-y-3 mb-10 text-[16px] text-gray-700 font-medium">
                     <li class="flex items-center gap-3">
@@ -106,17 +106,17 @@ const faqs = [
                 <div class="relative bg-shop-surface border border-gray-200 rounded-2xl shadow-shop-lg p-4 rotate-2 hover:rotate-0 transition-transform duration-500">
                     <div class="bg-gray-100 rounded-xl aspect-video flex flex-col items-center justify-center text-gray-400 overflow-hidden relative">
                         <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                        <span class="font-mono text-sm tracking-widest font-bold">PNETLAB_SIMULATION</span>
+                        <span class="font-mono text-sm tracking-widest font-bold">MERAKILABS_SIMULATION</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- What is PNETLab -->
+        <!-- What is Meraki Labs -->
         <section id="about" class="bg-shop-surface border-y border-gray-200 py-20">
             <div class="max-w-7xl mx-auto px-4 md:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <h2 class="font-poppins text-[40px] font-bold text-gray-900 leading-[1.2] tracking-[0.01em] mb-4">Apa Itu Lab PNETLab?</h2>
+                    <h2 class="font-poppins text-[40px] font-bold text-gray-900 leading-[1.2] tracking-[0.01em] mb-4">Apa Itu Meraki Labs?</h2>
                     <p class="font-sans text-[18px] text-gray-600 leading-[1.6]">
                         Platform simulasi jaringan profesional yang memungkinkan Anda membangun, mengelola, dan menguji berbagai topologi jaringan secara virtual tanpa harus memiliki perangkat fisik yang mahal.
                     </p>
@@ -293,7 +293,7 @@ const faqs = [
             <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
                 <h2 class="font-poppins text-[40px] md:text-[48px] font-extrabold leading-[1.1] mb-6">Siap Meningkatkan Skill Networking Anda?</h2>
                 <p class="font-sans text-[18px] text-white/90 mb-10 max-w-2xl mx-auto">
-                    Jangan habiskan waktu untuk instalasi dan konfigurasi lab yang rumit. Fokus pada pembelajaran dan praktik menggunakan Lab PNETLab yang sudah siap digunakan.
+                    Jangan habiskan waktu untuk instalasi dan konfigurasi lab yang rumit. Fokus pada pembelajaran dan praktik menggunakan Meraki Labs yang sudah siap digunakan.
                 </p>
                 <div class="flex flex-wrap justify-center gap-3 mb-10 text-[14px] font-bold">
                     <span class="bg-white/20 py-1.5 px-4 rounded-full">✅ Mikrotik</span>
@@ -308,7 +308,7 @@ const faqs = [
         </section>
         
         <footer class="bg-gray-900 text-gray-500 text-center py-6 text-[14px]">
-            &copy; {{ new Date().getFullYear() }} PNETLab. All rights reserved.
+            &copy; {{ new Date().getFullYear() }} Meraki Labs. All rights reserved.
         </footer>
     </div>
 </template>

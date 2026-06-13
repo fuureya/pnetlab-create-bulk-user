@@ -133,7 +133,7 @@ const submitBulk = () => {
 };
 
 const manualActivate = (id) => {
-    Swal.fire({ title: 'Aktivasi...', text: 'Mengirim request API PNETLab', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    Swal.fire({ title: 'Aktivasi...', text: 'Mengirim request API Meraki Labs', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     router.post(route('users.manual_activate', id), {}, {
         preserveScroll: true,
         onSuccess: (page) => {
@@ -150,7 +150,7 @@ const manualActivate = (id) => {
 };
 
 const manualBlock = (id) => {
-    Swal.fire({ title: 'Block...', text: 'Mengirim request API PNETLab', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    Swal.fire({ title: 'Block...', text: 'Mengirim request API Meraki Labs', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     router.post(route('users.manual_block', id), {}, {
         preserveScroll: true,
         onSuccess: (page) => {
@@ -168,15 +168,15 @@ const manualBlock = (id) => {
 </script>
 
 <template>
-    <Head title="Vouchers Management - PNetLab" />
+    <Head title="Vouchers Management - Meraki Labs" />
 
     <AuthenticatedLayout>
         
         <!-- Header Actions -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
             <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Vouchers Management</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage PNetLab vouchers, pods, and access expiration.</p>
+                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Users</h1>
+                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage Meraki Labs vouchers, pods, and access expiration.</p>
             </div>
             <div class="flex gap-2">
                 <button @click="openBulkModal" class="bg-[#E5E5E5] hover:bg-[#D4D4D4] text-[#0F0F0F] px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
