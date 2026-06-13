@@ -61,7 +61,18 @@ Menghapus user berdasarkan ID database.
 - **Auth**: Required Header `X-API-KEY`
 - **Contoh cURL**:
 ```bash
-curl -X DELETE "http://domain.com/bulkuser/api/v2/users/10" \
+curl -X DELETE "http://domain.com/bulkuser/api/v2/users/wahidah_user" \
+     -H "X-API-KEY: YOUR_API_KEY_HERE"
+```
+
+### 4. Block / Pending User
+Membekukan (block/offline) user dengan mengubah statusnya menjadi tidak aktif (user_status = 0).
+- **Method**: `PUT`
+- **URL**: `/bulkuser/api/v2/users/{username}/block`
+- **Auth**: Required Header `X-API-KEY`
+- **Contoh cURL**:
+```bash
+curl -X PUT "http://domain.com/bulkuser/api/v2/users/wahidah_user/block" \
      -H "X-API-KEY: YOUR_API_KEY_HERE"
 ```
 
