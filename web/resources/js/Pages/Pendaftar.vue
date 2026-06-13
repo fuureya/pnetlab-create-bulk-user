@@ -27,6 +27,7 @@ const showPassword = ref(false);
 const form = useForm({
     name: '',
     email: '',
+    role: 'user',
     password: '',
     password_confirmation: '',
 });
@@ -44,6 +45,7 @@ const openEditModal = (user) => {
     currentId.value = user.id;
     form.name = user.name;
     form.email = user.email;
+    form.role = user.role || 'user';
     form.password = '';
     form.password_confirmation = '';
     form.clearErrors();
@@ -164,17 +166,17 @@ const formatDate = (dateString) => {
                                 <td class="px-6 py-4 text-[14px] text-[#606060]">
                                     {{ (pendaftars.current_page - 1) * pendaftars.per_page + index + 1 }}
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-[9999px] flex items-center justify-center font-[500] text-[16px] bg-[#065FD4]/10 text-[#065FD4]">
-                                            {{ user.name.charAt(0).toUpperCase() }}
-                                        </div>
-                                        <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ user.name }} <span v-if="user.role === 'admin'" class="ml-2 text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Admin</span></p>
-                                            <p class="text-[12px] text-[#606060] mt-0.5">{{ user.email }}</p>
-                                        </div>
-                                    </div>
-                                </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-[9999px] flex items-center justify-center font-[500] text-[16px] bg-[#065FD4]/10 text-[#065FD4]">
+                                {{ user.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <div>
+                                <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ user.name }} <span v-if="user.role === 'admin'" class="ml-2 text-[10px] bg-red-100 text-[#065FD4] px-2 py-0.5 rounded-[4px] border border-[#065FD4]/20">Admin</span></p>
+                                <p class="text-[12px] text-[#606060] mt-0.5">{{ user.email }}</p>
+                            </div>
+                        </div>
+                    </td>
                                 <td class="px-6 py-4 text-[14px] text-[#0F0F0F]">
                                     {{ formatDate(user.created_at) }}
                                 </td>
@@ -233,6 +235,15 @@ const formatDate = (dateString) => {
                         <InputLabel for="email" value="Email" />
                         <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required />
                         <InputError class="mt-2" :message="form.errors.email" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="role" value="Role Pengguna" />
+                        <select id="role" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" v-model="form.role" required>
+                            <option value="user">User Biasa</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.role" />
                     </div>
 
                     <div class="relative">
