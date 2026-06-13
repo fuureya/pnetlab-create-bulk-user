@@ -110,7 +110,11 @@ class VoucherController extends Controller
             ]);
 
             if ($response->successful()) {
-                $voucher->update(['status' => 'aktif']);
+                $voucher->update([
+                    'status' => 'aktif',
+                    'activated_at' => now(),
+                    'expired_at' => now()->addDays($voucher->duration_days)
+                ]);
                 return back()->with('message', 'User berhasil diaktivasi di server PNETLab.');
             } else {
                 return back()->withErrors(['api' => 'Gagal aktivasi API: ' . $response->body()]);
