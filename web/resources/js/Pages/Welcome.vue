@@ -12,6 +12,10 @@ defineProps({
     products: {
         type: Array,
         default: () => []
+    },
+    testimonials: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -226,46 +230,40 @@ const faqs = [
         </section>
 
         <!-- Testimonials -->
-        <section class="bg-shop-surface py-20 border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 md:px-8">
-                <div class="text-center mb-16">
+        <section class="bg-shop-surface py-20 border-b border-gray-200 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 md:px-8 mb-16">
+                <div class="text-center">
                     <h2 class="font-poppins text-[40px] font-bold text-gray-900 leading-[1.2]">Testimoni Pengguna</h2>
                 </div>
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div class="bg-shop-background border border-gray-200 p-8 rounded-2xl relative">
+            </div>
+            
+            <div class="w-full relative group" v-if="testimonials.length > 0">
+                <!-- Auto-sliding track -->
+                <div class="flex gap-6 animate-slide group-hover:[animation-play-state:paused] w-max px-4">
+                    <!-- Duplicate array to create seamless loop -->
+                    <div v-for="(testi, index) in [...testimonials, ...testimonials]" :key="index" class="w-[320px] md:w-[400px] shrink-0 bg-shop-background border border-gray-200 p-8 rounded-2xl relative shadow-sm hover:shadow-md transition-shadow">
                         <div class="text-shop-tertiary text-4xl absolute top-4 right-6 opacity-30 font-serif">"</div>
-                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10">Lab sangat membantu untuk persiapan sertifikasi CCNA. Tinggal login dan langsung praktik.</p>
+                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10 h-[65px] overflow-hidden line-clamp-3">{{ testi.content }}</p>
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-shop-primary/10 flex items-center justify-center font-bold text-shop-primary">A</div>
-                            <div>
-                                <h5 class="font-bold text-[14px] text-gray-900">Andi</h5>
-                                <span class="text-[12px] text-gray-500">Network Engineer</span>
+                            <div :class="'w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0 ' + 
+                                (testi.color_theme === 'primary' ? 'bg-shop-primary/10 text-shop-primary' :
+                                testi.color_theme === 'secondary' ? 'bg-shop-secondary/10 text-shop-secondary' :
+                                testi.color_theme === 'success' ? 'bg-[#10B981]/10 text-[#10B981]' :
+                                testi.color_theme === 'warning' ? 'bg-[#F59E0B]/10 text-[#F59E0B]' :
+                                'bg-shop-info/10 text-shop-info')"
+                            >
+                                {{ testi.name.charAt(0).toUpperCase() }}
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-shop-background border border-gray-200 p-8 rounded-2xl relative">
-                        <div class="text-shop-tertiary text-4xl absolute top-4 right-6 opacity-30 font-serif">"</div>
-                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10">Lebih hemat dibanding membeli perangkat fisik. Sangat direkomendasikan untuk mahasiswa dan pemula.</p>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-shop-secondary/10 flex items-center justify-center font-bold text-shop-secondary">R</div>
-                            <div>
-                                <h5 class="font-bold text-[14px] text-gray-900">Rizky</h5>
-                                <span class="text-[12px] text-gray-500">Mahasiswa Teknik Informatika</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-shop-background border border-gray-200 p-8 rounded-2xl relative">
-                        <div class="text-shop-tertiary text-4xl absolute top-4 right-6 opacity-30 font-serif">"</div>
-                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10">Server stabil dan support sangat responsif ketika ada pertanyaan atau kendala.</p>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-shop-info/10 flex items-center justify-center font-bold text-shop-info">D</div>
-                            <div>
-                                <h5 class="font-bold text-[14px] text-gray-900">Dimas</h5>
-                                <span class="text-[12px] text-gray-500">System Administrator</span>
+                            <div class="overflow-hidden">
+                                <h5 class="font-bold text-[14px] text-gray-900 truncate">{{ testi.name }}</h5>
+                                <span class="text-[12px] text-gray-500 truncate block">{{ testi.role }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div v-else class="text-center py-10">
+                <p class="text-gray-500 italic text-[15px]">Belum ada testimoni.</p>
             </div>
         </section>
 
@@ -314,3 +312,14 @@ const faqs = [
         </footer>
     </div>
 </template>
+
+<style>
+/* Auto-slide Marquee Animation */
+@keyframes slide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 12px)); } /* -50% shifts by exactly half the total duplicated width. 12px accounts for half the 24px gap */
+}
+.animate-slide {
+    animation: slide 60s linear infinite;
+}
+</style>

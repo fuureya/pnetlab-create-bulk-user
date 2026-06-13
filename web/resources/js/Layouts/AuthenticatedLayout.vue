@@ -108,6 +108,15 @@ const sidebarExpanded = ref(true);
                         <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
                     </Link>
 
+                    <Link href="/testimoni" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/testimoni') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/testimoni')"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.897 5.515 5 7.022V22l5.064-2.25c.306.015.617.03 1.936.03 5.514 0 10-3.589 10-8s-4.486-8-10-8zm0 14c-1.127 0-2-.134-2.5-.236l-2.483 1.103.013-2.127c-2.023-1.077-3.03-2.883-3.03-4.74 0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                        </div>
+                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Testimoni</span>
+                        <span v-else class="text-[10px] font-[400] absolute mt-10">Testimoni</span>
+                    </Link>
+
                     <Link href="#" class="flex items-center px-[16px] h-[40px] rounded-[8px] hover:bg-[#F2F2F2] transition-colors font-[400]">
                         <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>

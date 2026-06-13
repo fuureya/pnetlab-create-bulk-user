@@ -6,15 +6,18 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TestimonialController;
 
 Route::get('/', function () {
     $products = \App\Models\Product::orderBy('duration_days', 'asc')->take(4)->get();
+    $testimonials = \App\Models\Testimonial::latest()->get();
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'products' => $products
+        'products' => $products,
+        'testimonials' => $testimonials
     ]);
 });
 
@@ -38,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/produk', [ProductController::class, 'store'])->name('products.store');
     Route::put('/produk/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/produk/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials');
+    Route::post('/testimoni', [TestimonialController::class, 'store'])->name('testimonials.store');
+    Route::put('/testimoni/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
+    Route::delete('/testimoni/{testimonial}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
 });
 
 Route::middleware('auth')->group(function () {
