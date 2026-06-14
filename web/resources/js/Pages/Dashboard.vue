@@ -1,6 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+
+defineProps({
+    stats: {
+        type: Object,
+        default: () => ({
+            total_transactions: 0,
+            active_vouchers: 0,
+            expired_vouchers: 0
+        })
+    }
+});
 </script>
 
 <template>
@@ -197,17 +208,17 @@ import { Head } from '@inertiajs/vue3';
                 <!-- Card 1 -->
                 <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
                     <p class="text-[14px] font-[500] text-[#606060] mb-2">Total Transaksi</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.total_transactions }}</h2>
                 </div>
                 <!-- Card 2 -->
                 <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
                     <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Aktif</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.active_vouchers }}</h2>
                 </div>
                 <!-- Card 3 -->
                 <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
                     <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Expired</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">0</h2>
+                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.expired_vouchers }}</h2>
                 </div>
                 <!-- Card 4 -->
                 <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between items-start">
@@ -228,12 +239,18 @@ import { Head } from '@inertiajs/vue3';
                         <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Riwayat Transaksi</h3>
                     </div>
                     <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
-                        <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <p class="text-[14px] text-[#606060] font-[400]">Belum ada transaksi pembelian voucher.</p>
-                        <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#065FD4] hover:bg-[#0056b3] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                            Beli Voucher
-                        </a>
+                        <div v-if="stats.total_transactions > 0">
+                            <p class="text-[14px] text-[#0F0F0F] font-[500] mb-2">Anda memiliki {{ stats.total_transactions }} riwayat transaksi.</p>
+                            <Link href="/riwayat-transaksi" class="text-[14px] text-[#065FD4] font-[500] hover:underline">Lihat Selengkapnya &rarr;</Link>
+                        </div>
+                        <div v-else>
+                            <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <p class="text-[14px] text-[#606060] font-[400]">Belum ada transaksi pembelian voucher.</p>
+                            <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#065FD4] hover:bg-[#0056b3] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                Beli Voucher
+                            </a>
+                        </div>
                     </div>
                 </div>
 

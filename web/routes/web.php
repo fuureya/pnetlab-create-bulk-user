@@ -24,14 +24,38 @@ Route::get('/', function () {
 
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\AktivasiVoucherController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MidtransWebhookController;
+
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'callback']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+    Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        if ($user->role === 'admin') {
+            return Inertia::render('Dashboard');
+        }
+
+        $totalTransactions = $user->transactions()->count();
+        $activeVouchers = $user->vouchers()->where('status', 'aktif')->count();
+        $expiredVouchers = $user->vouchers()->where('status', 'expired')->count();
+
+        return Inertia::render('Dashboard', [
+            'stats' => [
+                'total_transactions' => $totalTransactions,
+                'active_vouchers' => $activeVouchers,
+                'expired_vouchers' => $expiredVouchers
+            ]
+        ]);
     })->name('dashboard');
 
-    Route::get('/riwayat-transaksi', function () {
-        return Inertia::render('UserTransaksi');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+    Route::get('/riwayat-transaksi', function (\Illuminate\Http\Request $request) {
+        $transactions = $request->user()->transactions()->with('product')->latest()->get();
+        return Inertia::render('UserTransaksi', [
+            'transactions' => $transactions
+        ]);
     })->name('riwayat-transaksi');
 
     Route::get('/users', [VoucherController::class, 'index'])->name('users');

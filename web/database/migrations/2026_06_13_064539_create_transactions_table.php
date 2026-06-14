@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('order_id')->unique();
+            $table->integer('gross_amount');
+            $table->enum('status', ['pending', 'success', 'failed', 'expired'])->default('pending');
+            $table->string('snap_token')->nullable();
             $table->timestamps();
         });
     }

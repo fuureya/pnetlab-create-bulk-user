@@ -1,6 +1,7 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import axios from 'axios';
 
 defineProps({
     canLogin: {
@@ -43,6 +44,39 @@ const faqs = [
         a: "Sangat cocok. Banyak peserta menggunakan lab ini untuk persiapan MTCNA, MTCRE, CCNA, CCNP, JNCIA, dan sertifikasi lainnya."
     }
 ];
+
+const isProcessing = ref(false);
+
+const checkout = async (productId) => {
+    isProcessing.value = true;
+    try {
+        const response = await axios.post('/checkout', { product_id: productId });
+        const snapToken = response.data.snap_token;
+        
+        window.snap.pay(snapToken, {
+            onSuccess: function(result){
+                window.location.href = '/riwayat-transaksi';
+            },
+            onPending: function(result){
+                window.location.href = '/riwayat-transaksi';
+            },
+            onError: function(result){
+                alert('Pembayaran gagal!');
+            },
+            onClose: function(){
+                console.log('Customer closed the popup without finishing the payment');
+            }
+        });
+    } catch (error) {
+        if (error.response && error.response.status === 401) {
+            window.location.href = '/login';
+        } else {
+            alert('Gagal membuat transaksi, pastikan Anda sudah login.');
+        }
+    } finally {
+        isProcessing.value = false;
+    }
+};
 </script>
 
 <template>
@@ -180,7 +214,9 @@ const faqs = [
                             <span class="text-shop-success">✔</span> {{ feature }}
                         </li>
                     </ul>
-                    <Link href="/aktivasi-voucher" class="block w-full text-center rounded-full py-[10px] font-bold transition" :class="product.is_recommended ? 'bg-shop-primary text-white hover:bg-[#C026D3] py-[12px]' : 'bg-transparent text-shop-primary border-2 border-shop-primary hover:bg-[#FDF4FF]'">Pilih Paket</Link>
+                    <button @click="checkout(product.id)" :disabled="isProcessing" class="block w-full text-center rounded-full py-[10px] font-bold transition disabled:opacity-50" :class="product.is_recommended ? 'bg-shop-primary text-white hover:bg-[#C026D3] py-[12px]' : 'bg-transparent text-shop-primary border-2 border-shop-primary hover:bg-[#FDF4FF]'">
+                        {{ isProcessing ? 'Memproses...' : 'Pilih Paket' }}
+                    </button>
                 </div>
             </div>
             <div v-else class="text-center py-10">

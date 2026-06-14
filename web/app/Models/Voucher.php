@@ -10,6 +10,7 @@ class Voucher extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'username',
         'password',
         'pod_id',
@@ -18,4 +19,9 @@ class Voucher extends Model
         'activated_at',
         'expired_at',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
