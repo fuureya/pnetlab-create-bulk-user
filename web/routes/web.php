@@ -26,6 +26,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\AktivasiVoucherController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MidtransWebhookController;
+use App\Http\Controllers\TransactionController;
 
 Route::post('/midtrans/callback', [MidtransWebhookController::class, 'callback']);
 
@@ -33,7 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
         if ($user->role === 'admin') {
-            return Inertia::render('Dashboard');
+            $recentUsers = \App\Models\Voucher::with('user')->latest()->take(5)->get();
+            return Inertia::render('Dashboard', [
+                'recent_users' => $recentUsers
+            ]);
         }
 
         $totalTransactions = $user->transactions()->count();
@@ -75,6 +79,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/testimoni', [TestimonialController::class, 'store'])->name('testimonials.store');
     Route::put('/testimoni/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
     Route::delete('/testimoni/{testimonial}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
+
+    Route::get('/transaksi', [TransactionController::class, 'index'])->name('transactions');
 });
 
 Route::middleware('auth')->group(function () {

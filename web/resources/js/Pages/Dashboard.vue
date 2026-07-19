@@ -10,6 +10,10 @@ defineProps({
             active_vouchers: 0,
             expired_vouchers: 0
         })
+    },
+    recent_users: {
+        type: Array,
+        default: () => []
     }
 });
 </script>
@@ -90,104 +94,41 @@ defineProps({
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Role</th>
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Expired At</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#E5E5E5]">
-                            
-                            <tr class="hover:bg-[#F8F8F8] transition-colors">
+                            <tr v-for="voucher in recent_users" :key="voucher.id" :class="{'hover:bg-[#F8F8F8] transition-colors': true, 'bg-[#FEF2F2]/30': voucher.status === 'expired'}">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#065FD4] text-white flex items-center justify-center text-[12px] font-[500]">W</div>
+                                        <div :class="['w-8 h-8 rounded-full text-white flex items-center justify-center text-[12px] font-[500]', voucher.status === 'expired' ? 'bg-[#606060]' : 'bg-[#065FD4]']">
+                                            {{ (voucher.user?.name || voucher.username || '?').charAt(0).toUpperCase() }}
+                                        </div>
                                         <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">Wahidah Gaming</p>
-                                            <p class="text-[12px] text-[#606060]">wahidah_user</p>
+                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ voucher.user?.name || voucher.username }}</p>
+                                            <p class="text-[12px] text-[#606060]">{{ voucher.username }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
-                                    0
+                                    {{ voucher.pod_id }}
                                 </td>
                                 <td class="px-6 py-4 text-[14px] text-[#606060]">
                                     User
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20">
-                                        Active
+                                    <span :class="['inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] border', voucher.status === 'aktif' ? 'bg-[#e6f4ea] text-[#2BA640] border-[#2BA640]/20' : 'bg-[#FEF2F2] text-[#FF0000] border-[#FF0000]/20']">
+                                        {{ voucher.status === 'aktif' ? 'Active' : 'Expired' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    2026-06-15 12:00
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="p-1.5 text-[#606060] hover:bg-[#E5E5E5] rounded-[4px] transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                                    </button>
+                                <td :class="['px-6 py-4 text-[14px]', voucher.status === 'aktif' ? 'text-[#606060]' : 'text-[#FF0000]']">
+                                    {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : 'Never' }}
                                 </td>
                             </tr>
-
-                            <tr class="hover:bg-[#F8F8F8] transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#2BA640] text-white flex items-center justify-center text-[12px] font-[500]">T</div>
-                                        <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">Test User</p>
-                                            <p class="text-[12px] text-[#606060]">test_user_1</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
-                                    1
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    User
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20">
-                                        Active
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    Never
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="p-1.5 text-[#606060] hover:bg-[#E5E5E5] rounded-[4px] transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                                    </button>
+                            <tr v-if="!recent_users || recent_users.length === 0">
+                                <td colspan="5" class="px-6 py-4 text-center text-[14px] text-[#606060]">
+                                    No recent users found.
                                 </td>
                             </tr>
-
-                            <tr class="hover:bg-[#F8F8F8] transition-colors bg-[#FEF2F2]/30">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#606060] text-white flex items-center justify-center text-[12px] font-[500]">S</div>
-                                        <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">Student A</p>
-                                            <p class="text-[12px] text-[#606060]">student_a</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
-                                    2
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    User
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#FEF2F2] text-[#FF0000] border border-[#FF0000]/20">
-                                        Expired
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#FF0000]">
-                                    2026-06-07 10:00
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="p-1.5 text-[#606060] hover:bg-[#E5E5E5] rounded-[4px] transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                                    </button>
-                                </td>
-                            </tr>
-
                         </tbody>
                     </table>
                 </div>
