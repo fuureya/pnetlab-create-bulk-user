@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 defineProps({
     canLogin: {
@@ -61,7 +62,7 @@ const checkout = async (productId) => {
                 window.location.href = '/riwayat-transaksi';
             },
             onError: function(result){
-                alert('Pembayaran gagal!');
+                Swal.fire('Error', 'Pembayaran gagal!', 'error');
             },
             onClose: function(){
                 console.log('Customer closed the popup without finishing the payment');
@@ -71,7 +72,7 @@ const checkout = async (productId) => {
         if (error.response && error.response.status === 401) {
             window.location.href = '/login';
         } else {
-            alert('Gagal membuat transaksi, pastikan Anda sudah login.');
+            Swal.fire('Gagal', 'Gagal membuat transaksi, pastikan Anda sudah login.', 'error');
         }
     } finally {
         isProcessing.value = false;
