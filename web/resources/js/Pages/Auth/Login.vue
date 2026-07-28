@@ -6,6 +6,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
+import Swal from 'sweetalert2';
 
 defineProps({
     canResetPassword: {
@@ -27,6 +29,19 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+onMounted(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verified') === '1') {
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Email Anda telah berhasil diverifikasi. Silakan login.',
+            confirmButtonText: 'Oke',
+            confirmButtonColor: '#BF070F'
+        });
+    }
+});
 </script>
 
 <template>
