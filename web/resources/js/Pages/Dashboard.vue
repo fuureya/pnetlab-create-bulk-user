@@ -14,6 +14,10 @@ defineProps({
     recent_users: {
         type: Array,
         default: () => []
+    },
+    user_vouchers: {
+        type: Array,
+        default: () => []
     }
 });
 </script>
@@ -200,12 +204,42 @@ defineProps({
                     <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
                         <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Voucher Saya</h3>
                     </div>
-                    <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
+                    <div v-if="user_vouchers && user_vouchers.length > 0" class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
+                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Username</th>
+                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Password</th>
+                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#E5E5E5]">
+                                <tr v-for="voucher in user_vouchers" :key="voucher.id" class="hover:bg-[#F8F8F8] transition-colors">
+                                    <td class="px-6 py-4 text-[14px] font-[500] text-[#0F0F0F] font-['Roboto_Mono']">
+                                        {{ voucher.username }}
+                                    </td>
+                                    <td class="px-6 py-4 text-[14px] font-[500] text-[#0F0F0F] font-['Roboto_Mono']">
+                                        {{ voucher.password }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span v-if="voucher.status === 'aktif'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20">Aktif</span>
+                                        <span v-else-if="voucher.status === 'expired'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#fce8e6] text-[#c5221f] border border-[#c5221f]/20">Expired</span>
+                                        <span v-else class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#F2F2F2] text-[#606060] border border-[#E5E5E5]">Belum Aktif</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a v-if="voucher.status === 'belum aktif'" :href="route('aktivasi.index')" class="text-[12px] font-[500] text-[#065FD4] hover:underline">Aktivasi</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div v-else class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
                         <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-                        <p class="text-[14px] text-[#606060] font-[400]">Anda belum memiliki voucher aktif.</p>
-                        <a href="/aktivasi-voucher" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#BF070F] hover:bg-[#8F050A] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
-                            Aktivasi Voucher
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <p class="text-[14px] text-[#606060] font-[400]">Anda belum memiliki voucher.</p>
+                        <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#BF070F] hover:bg-[#8F050A] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
+                            Beli Voucher
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </a>
                     </div>
                 </div>

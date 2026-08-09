@@ -43,13 +43,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $totalTransactions = $user->transactions()->count();
         $activeVouchers = $user->vouchers()->where('status', 'aktif')->count();
         $expiredVouchers = $user->vouchers()->where('status', 'expired')->count();
+        $userVouchers = $user->vouchers()->latest()->get();
 
         return Inertia::render('Dashboard', [
             'stats' => [
                 'total_transactions' => $totalTransactions,
                 'active_vouchers' => $activeVouchers,
                 'expired_vouchers' => $expiredVouchers
-            ]
+            ],
+            'user_vouchers' => $userVouchers
         ]);
     })->name('dashboard');
 
@@ -62,6 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('riwayat-transaksi');
 
+    Route::get('/aktivasi-voucher', [AktivasiVoucherController::class, 'index'])->name('aktivasi.index');
+    Route::post('/aktivasi-voucher', [AktivasiVoucherController::class, 'activate'])->name('aktivasi.activate');
+});
+
+Route::middleware(['auth', 'verified', 'isAdmin'])->group(function () {
     Route::get('/users', [VoucherController::class, 'index'])->name('users');
     Route::post('/users/bulk', [VoucherController::class, 'bulkStore'])->name('users.bulk_store');
     Route::post('/users', [VoucherController::class, 'store'])->name('users.store');
@@ -81,13 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/testimoni/{testimonial}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
 
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transactions');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    
     // Pendaftar Routes (Manage web users)
     Route::get('/pendaftar', [PendaftarController::class, 'index'])->name('pendaftar');
     Route::post('/pendaftar', [PendaftarController::class, 'store'])->name('pendaftar.store');
@@ -95,7 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pendaftar/{pendaftar}', [PendaftarController::class, 'destroy'])->name('pendaftar.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::get('/aktivasi-voucher', [AktivasiVoucherController::class, 'index'])->name('aktivasi.index');
-Route::post('/aktivasi-voucher', [AktivasiVoucherController::class, 'activate'])->name('aktivasi.activate');
+require __DIR__.'/auth.php';

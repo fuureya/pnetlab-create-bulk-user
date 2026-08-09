@@ -37,6 +37,7 @@ class MidtransWebhookController extends Controller
                 // Generate Voucher for the user
                 Voucher::create([
                     'user_id' => $transaction->user_id,
+                    'transaction_id' => $transaction->id,
                     'username' => strtolower(Str::random(8)),
                     'password' => Str::random(8),
                     'duration_days' => $transaction->product->duration_days,

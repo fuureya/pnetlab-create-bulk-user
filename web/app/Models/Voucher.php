@@ -18,10 +18,16 @@ class Voucher extends Model
         'duration_days',
         'activated_at',
         'expired_at',
+        'transaction_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 }
