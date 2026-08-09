@@ -23,6 +23,28 @@ const formatDate = (dateString) => {
         minute: '2-digit'
     }).format(date);
 };
+
+const payTransaction = (token) => {
+    if (window.snap) {
+        window.snap.pay(token, {
+            onSuccess: function (result) {
+                window.location.reload();
+            },
+            onPending: function (result) {
+                window.location.reload();
+            },
+            onError: function (result) {
+                alert('Payment failed!');
+                window.location.reload();
+            },
+            onClose: function () {
+                // User closed the popup without finishing the payment
+            }
+        });
+    } else {
+        alert('Payment gateway is not loaded. Please refresh the page.');
+    }
+};
 </script>
 
 <template>
@@ -75,9 +97,14 @@ const formatDate = (dateString) => {
                                     <span v-if="trx.status === 'success'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20">
                                         Berhasil
                                     </span>
-                                    <span v-else-if="trx.status === 'pending'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#fff8e1] text-[#FB8C00] border border-[#FB8C00]/20">
-                                        Menunggu Pembayaran
-                                    </span>
+                                    <div v-else-if="trx.status === 'pending'" class="flex flex-col gap-2 items-start">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#fff8e1] text-[#FB8C00] border border-[#FB8C00]/20">
+                                            Menunggu Pembayaran
+                                        </span>
+                                        <button @click="payTransaction(trx.snap_token)" class="text-[12px] text-white bg-[#065FD4] hover:bg-[#0056b3] px-3 py-1 rounded-[4px] transition-colors shadow-sm">
+                                            Bayar Sekarang
+                                        </button>
+                                    </div>
                                     <span v-else class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#fce8e6] text-[#c5221f] border border-[#c5221f]/20">
                                         Gagal/Expired
                                     </span>

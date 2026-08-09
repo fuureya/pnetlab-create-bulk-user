@@ -6,6 +6,8 @@ use App\Models\Transaction;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransactionNotification;
 
 class MidtransWebhookController extends Controller
 {
@@ -43,11 +45,20 @@ class MidtransWebhookController extends Controller
                     'duration_days' => $transaction->product->duration_days,
                     'status' => 'belum aktif'
                 ]);
+
+                // Reload the transaction to get the newly created vouchers
+                $transaction->load('vouchers');
+                
+                // Send success email
+                Mail::to($transaction->user->email)->send(new TransactionNotification($transaction));
             }
         } elseif ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
             $transaction->update(['status' => 'failed']);
+            Mail::to($transaction->user->email)->send(new TransactionNotification($transaction));
         } elseif ($transactionStatus == 'pending') {
             $transaction->update(['status' => 'pending']);
+            // We usually don't send an email every time we get a pending webhook,
+            // as they get a pending email when they click checkout or first create it.
         }
 
         return response()->json(['message' => 'OK']);
