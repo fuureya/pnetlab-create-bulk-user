@@ -88,6 +88,15 @@ const sidebarExpanded = ref(true);
                             <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Riwayat Transaksi</span>
                             <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
                         </Link>
+
+                        <Link href="/aktivasi-voucher" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/aktivasi-voucher') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
+                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/aktivasi-voucher')"><path d="M15.5 2a6.5 6.5 0 0 0-6.02 9.02L2 18.5v3.5h3.5v-2h2v-2h2v-2h1.61a6.5 6.5 0 1 0 2.39-14M17 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+                            </div>
+                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Aktivasi Voucher</span>
+                            <span v-else class="text-[10px] font-[400] absolute mt-10">Aktivasi</span>
+                        </Link>
                     </template>
 
                     <!-- Admin Only Links -->
