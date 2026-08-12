@@ -33,11 +33,7 @@ class AktivasiVoucherController extends Controller
             ]);
         }
 
-        if ($voucher->user_id !== auth()->id()) {
-            return back()->withErrors([
-                'username' => 'Voucher ini bukan milik Anda.',
-            ]);
-        }
+        // Remove auth check to allow public activation
 
         if ($voucher->status === 'aktif') {
             return back()->withErrors([

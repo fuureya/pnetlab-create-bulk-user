@@ -30,6 +30,9 @@ use App\Http\Controllers\TransactionController;
 
 Route::post('/midtrans/callback', [MidtransWebhookController::class, 'callback']);
 
+Route::get('/aktivasi-voucher', [AktivasiVoucherController::class, 'index'])->name('aktivasi.index');
+Route::post('/aktivasi-voucher', [AktivasiVoucherController::class, 'activate'])->name('aktivasi.activate');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
@@ -63,9 +66,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'transactions' => $transactions
         ]);
     })->name('riwayat-transaksi');
-
-    Route::get('/aktivasi-voucher', [AktivasiVoucherController::class, 'index'])->name('aktivasi.index');
-    Route::post('/aktivasi-voucher', [AktivasiVoucherController::class, 'activate'])->name('aktivasi.activate');
 });
 
 Route::middleware(['auth', 'verified', 'isAdmin'])->group(function () {
