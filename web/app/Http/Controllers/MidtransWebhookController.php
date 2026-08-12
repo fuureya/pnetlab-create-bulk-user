@@ -13,6 +13,7 @@ class MidtransWebhookController extends Controller
 {
     public function callback(Request $request)
     {
+        \Illuminate\Support\Facades\Log::info('Midtrans Webhook Received: ', $request->all());
         $serverKey = env('MIDTRANS_SERVER_KEY');
         $orderId = $request->order_id;
         $statusCode = $request->status_code;

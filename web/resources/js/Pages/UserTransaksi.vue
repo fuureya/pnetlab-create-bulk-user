@@ -48,14 +48,14 @@ const payTransaction = (token) => {
 </script>
 
 <template>
-    <Head title="Riwayat Transaksi - Meraki Labs" />
+    <Head title="Riwayat Pembayaran - Meraki Labs" />
 
     <AuthenticatedLayout>
         
         <!-- Header Actions -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
             <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Riwayat Transaksi</h1>
+                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Riwayat Pembayaran</h1>
                 <p class="text-[14px] text-[#606060] font-[400] mt-1">Pantau seluruh riwayat pembelian voucher Anda di sini.</p>
             </div>
         </div>
@@ -114,7 +114,7 @@ const payTransaction = (token) => {
                     </table>
                 </div>
                 <div v-else class="p-10 text-center">
-                    <p class="text-[14px] text-[#606060] italic">Belum ada riwayat transaksi.</p>
+                    <p class="text-[14px] text-[#606060] italic">Belum ada riwayat pembayaran.</p>
                 </div>
             </div>
 

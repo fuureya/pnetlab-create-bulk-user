@@ -49,6 +49,11 @@ class CheckoutController extends Controller
                     'first_name' => $request->user()->name,
                     'email' => $request->user()->email,
                 ],
+                'callbacks' => [
+                    'finish' => env('MIDTRANS_FINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+                    'unfinish' => env('MIDTRANS_UNFINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+                    'error' => env('MIDTRANS_ERROR_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+                ]
             ]);
 
         if ($response->successful()) {

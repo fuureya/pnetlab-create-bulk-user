@@ -181,11 +181,11 @@ defineProps({
                 <!-- Transaction History -->
                 <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
                     <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
-                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Riwayat Transaksi</h3>
+                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Riwayat Pembayaran</h3>
                     </div>
                     <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
                         <div v-if="stats.total_transactions > 0">
-                            <p class="text-[14px] text-[#0F0F0F] font-[500] mb-2">Anda memiliki {{ stats.total_transactions }} riwayat transaksi.</p>
+                            <p class="text-[14px] text-[#0F0F0F] font-[500] mb-2">Anda memiliki {{ stats.total_transactions }} riwayat pembayaran.</p>
                             <Link href="/riwayat-transaksi" class="text-[14px] text-[#065FD4] font-[500] hover:underline">Lihat Selengkapnya &rarr;</Link>
                         </div>
                         <div v-else>
