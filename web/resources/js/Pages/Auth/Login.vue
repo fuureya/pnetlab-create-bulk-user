@@ -5,7 +5,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 
@@ -32,7 +32,19 @@ const submit = () => {
     });
 };
 
+const page = usePage();
+
 onMounted(() => {
+    if (page.props.flash && page.props.flash.error) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Perhatian',
+            text: page.props.flash.error,
+            confirmButtonText: 'Oke',
+            confirmButtonColor: '#BF070F'
+        });
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('verified') === '1') {
         Swal.fire({
