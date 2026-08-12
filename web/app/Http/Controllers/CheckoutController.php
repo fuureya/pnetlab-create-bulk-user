@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -33,39 +32,37 @@ class CheckoutController extends Controller
         ]);
 
         // Request Snap Token
-        $serverKey = env('MIDTRANS_SERVER_KEY');
-        $isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-        $baseUrl = $isProduction 
-            ? 'https://app.midtrans.com/snap/v1/transactions' 
-            : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
-        $response = Http::withBasicAuth($serverKey, '')
-            ->post($baseUrl, [
-                'transaction_details' => [
-                    'order_id' => $orderId,
-                    'gross_amount' => $grossAmount,
-                ],
-                'customer_details' => [
-                    'first_name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                ],
-                'callbacks' => [
-                    'finish' => env('MIDTRANS_FINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
-                    'unfinish' => env('MIDTRANS_UNFINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
-                    'error' => env('MIDTRANS_ERROR_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
-                ]
-            ]);
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => $grossAmount,
+            ],
+            'customer_details' => [
+                'first_name' => $request->user()->name,
+                'email' => $request->user()->email,
+            ],
+            'callbacks' => [
+                'finish' => env('MIDTRANS_FINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+                'unfinish' => env('MIDTRANS_UNFINISH_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+                'error' => env('MIDTRANS_ERROR_REDIRECT_URL', 'http://localhost:8000/riwayat-transaksi'),
+            ]
+        ];
 
-        if ($response->successful()) {
-            $snapToken = $response->json('token');
+        try {
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
             $transaction->update(['snap_token' => $snapToken]);
             
             return response()->json([
                 'snap_token' => $snapToken,
                 'transaction' => $transaction
             ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to generate snap token: ' . $e->getMessage()], 500);
         }
-
-        return response()->json(['error' => 'Failed to generate snap token'], 500);
     }
 }

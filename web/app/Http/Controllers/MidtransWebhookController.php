@@ -14,24 +14,23 @@ class MidtransWebhookController extends Controller
     public function callback(Request $request)
     {
         \Illuminate\Support\Facades\Log::info('Midtrans Webhook Received: ', $request->all());
-        $serverKey = env('MIDTRANS_SERVER_KEY');
-        $orderId = $request->order_id;
-        $statusCode = $request->status_code;
-        $grossAmount = $request->gross_amount;
-        $signatureKey = $request->signature_key;
+        
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
-        $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
-
-        if ($expectedSignature !== $signatureKey) {
-            return response()->json(['message' => 'Invalid signature'], 403);
+        try {
+            $notification = new \Midtrans\Notification();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Invalid notification: ' . $e->getMessage()], 403);
         }
+
+        $orderId = $notification->order_id;
+        $transactionStatus = $notification->transaction_status;
 
         $transaction = Transaction::where('order_id', $orderId)->first();
         if (!$transaction) {
             return response()->json(['message' => 'Transaction not found'], 404);
         }
-
-        $transactionStatus = $request->transaction_status;
 
         if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
             if ($transaction->status !== 'success') {
