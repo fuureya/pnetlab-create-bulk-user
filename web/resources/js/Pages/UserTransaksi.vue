@@ -1,7 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+
+const page = usePage();
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Swal from 'sweetalert2';
@@ -88,51 +90,10 @@ const copyInvoiceDetail = () => {
 };
 
 const payTransaction = (token) => {
-    if (window.snap) {
-        window.snap.pay(token, {
-            onSuccess: function (result) {
-                Swal.fire({
-                    title: 'Pembayaran Sukses!',
-                    text: 'Voucher Anda telah diterbitkan secara otomatis.',
-                    icon: 'success',
-                    confirmButtonText: 'Buka Dashboard',
-                    confirmButtonColor: '#BF070F'
-                }).then(() => {
-                    window.location.reload();
-                });
-            },
-            onPending: function (result) {
-                Swal.fire({
-                    title: 'Menunggu Pembayaran',
-                    text: 'Silakan selesaikan pembayaran sesuai instruksi Midtrans.',
-                    icon: 'info',
-                    confirmButtonText: 'Oke'
-                }).then(() => {
-                    window.location.reload();
-                });
-            },
-            onError: function (result) {
-                Swal.fire({
-                    title: 'Pembayaran Gagal',
-                    text: 'Terjadi kesalahan pada transaksi pembayaran.',
-                    icon: 'error',
-                    confirmButtonText: 'Tutup'
-                });
-            },
-            onClose: function () {
-                // User closed popup
-            }
-        });
-    } else {
-        Swal.fire({
-            title: 'Gateway Belum Siap',
-            text: 'Silakan muat ulang halaman untuk memuat payment gateway Midtrans.',
-            icon: 'warning',
-            confirmButtonText: 'Refresh Halaman'
-        }).then(() => {
-            window.location.reload();
-        });
-    }
+    if (!token) return;
+    const isProd = Boolean(page.props.midtrans_is_production);
+    const baseUrl = isProd ? 'https://app.midtrans.com/snap/v2/vtweb/' : 'https://app.sandbox.midtrans.com/snap/v2/vtweb/';
+    window.location.href = baseUrl + token;
 };
 </script>
 

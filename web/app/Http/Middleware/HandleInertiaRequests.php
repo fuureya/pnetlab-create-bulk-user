@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'midtrans_is_production' => (bool) env('MIDTRANS_IS_PRODUCTION', false),
         ];
     }
 }

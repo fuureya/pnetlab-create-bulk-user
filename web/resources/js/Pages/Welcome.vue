@@ -101,30 +101,25 @@ const checkout = async (productId) => {
     isProcessing.value = true;
     try {
         const response = await axios.post('/checkout', { product_id: productId });
-        const snapToken = response.data.snap_token;
+        const redirectUrl = response.data.redirect_url || (response.data.snap_token ? `https://app.sandbox.midtrans.com/snap/v2/vtweb/${response.data.snap_token}` : null);
         
-        window.snap.pay(snapToken, {
-            onSuccess: function(result){
-                window.location.href = '/riwayat-transaksi';
-            },
-            onPending: function(result){
-                window.location.href = '/riwayat-transaksi';
-            },
-            onError: function(result){
-                Swal.fire('Error', 'Pembayaran gagal!', 'error');
-            },
-            onClose: function(){
-                console.log('Customer closed popup without payment');
-            }
-        });
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+        } else {
+            throw new Error('URL pembayaran tidak ditemukan');
+        }
     } catch (error) {
+        isProcessing.value = false;
         if (error.response && error.response.status === 401) {
             window.location.href = '/login';
         } else {
-            Swal.fire('Gagal', 'Gagal membuat transaksi, pastikan Anda sudah login.', 'error');
+            Swal.fire({
+                title: 'Gagal',
+                text: error.response?.data?.error || 'Gagal membuat transaksi, pastikan Anda sudah login.',
+                icon: 'error',
+                confirmButtonColor: '#BF070F'
+            });
         }
-    } finally {
-        isProcessing.value = false;
     }
 };
 </script>

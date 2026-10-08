@@ -54,11 +54,18 @@ class CheckoutController extends Controller
         ];
 
         try {
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
+            $snapResponse = \Midtrans\Snap::createTransaction($params);
+            $snapToken = $snapResponse->token;
+            $baseUrl = env('MIDTRANS_IS_PRODUCTION', false)
+                ? 'https://app.midtrans.com/snap/v2/vtweb/'
+                : 'https://app.sandbox.midtrans.com/snap/v2/vtweb/';
+            $redirectUrl = !empty($snapResponse->redirect_url) ? $snapResponse->redirect_url : ($baseUrl . $snapToken);
+
             $transaction->update(['snap_token' => $snapToken]);
             
             return response()->json([
                 'snap_token' => $snapToken,
+                'redirect_url' => $redirectUrl,
                 'transaction' => $transaction
             ]);
         } catch (\Exception $e) {
