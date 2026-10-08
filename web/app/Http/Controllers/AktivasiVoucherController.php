@@ -33,9 +33,10 @@ class AktivasiVoucherController extends Controller
             ]);
         }
 
-        if ($voucher->user_id !== auth()->id()) {
+        // Cek jika voucher sudah dimiliki oleh akun lain
+        if ($voucher->user_id !== null && $voucher->user_id !== auth()->id()) {
             return back()->withErrors([
-                'username' => 'Voucher ini bukan milik Anda.',
+                'username' => 'Voucher ini bukan milik Anda atau sudah diklaim oleh akun lain.',
             ]);
         }
 
@@ -45,14 +46,19 @@ class AktivasiVoucherController extends Controller
             ]);
         }
 
-        $voucher->status = 'aktif';
-        $voucher->activated_at = Carbon::now();
-        if ($voucher->duration_days) {
-            $voucher->expired_at = Carbon::now()->addDays($voucher->duration_days);
+        if ($voucher->status === 'nonaktif') {
+            return back()->withErrors([
+                'username' => 'Voucher ini dinonaktifkan oleh administrator.',
+            ]);
         }
-        $voucher->save();
 
-        // Send API request
+        if ($voucher->status === 'expired') {
+            return back()->withErrors([
+                'username' => 'Voucher ini sudah kedaluwarsa.',
+            ]);
+        }
+
+        // Send API request ke server lab PNETLab
         try {
             $apiUrl = env('PNETLAB_API_URL', 'http://domain.com/bulkuser/api/v2/users');
             $apiKey = env('PNETLAB_API_KEY', 'YOUR_API_KEY_HERE');
@@ -68,7 +74,6 @@ class AktivasiVoucherController extends Controller
             ]);
 
             if (!$response->successful()) {
-                // If the API returns an error
                 return back()->withErrors([
                     'username' => 'Gagal membuat user di server lab: ' . $response->body()
                 ]);
@@ -78,6 +83,15 @@ class AktivasiVoucherController extends Controller
                 'username' => 'Koneksi ke server lab gagal: ' . $e->getMessage()
             ]);
         }
+
+        // Jika API sukses, kaitkan voucher ke user dan aktifkan
+        $voucher->user_id = auth()->id();
+        $voucher->status = 'aktif';
+        $voucher->activated_at = Carbon::now();
+        if ($voucher->duration_days) {
+            $voucher->expired_at = Carbon::now()->addDays($voucher->duration_days);
+        }
+        $voucher->save();
 
         return back()->with('success', 'Voucher berhasil diaktivasi!');
     }
