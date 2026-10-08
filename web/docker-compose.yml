@@ -1,0 +1,20 @@
+services:
+  pnetlab-bulk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pnetlab-bulk
+    restart: unless-stopped
+    volumes:
+      - ./.env:/app/.env
+      - ./storage:/app/storage
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
