@@ -37,6 +37,7 @@ class CheckoutController extends Controller
         \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
         \Midtrans\Config::$curlOptions = [
+            CURLOPT_HTTPHEADER => [],
             CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
             CURLOPT_CONNECTTIMEOUT => 15,
             CURLOPT_TIMEOUT => 30,
