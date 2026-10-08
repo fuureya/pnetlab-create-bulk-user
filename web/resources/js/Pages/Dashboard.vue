@@ -98,17 +98,17 @@ const toggleMemberPassword = (id) => {
                     </div>
                 </div>
                 
-                <div class="flex flex-wrap items-center gap-2.5">
+                <div class="grid grid-cols-2 sm:flex sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto shrink-0">
                     <Link 
                         href="/transaksi" 
-                        class="bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs flex items-center gap-2"
+                        class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs whitespace-nowrap text-center"
                     >
                         <i class="fa-solid fa-receipt text-xs text-gray-500"></i>
                         <span>Semua Transaksi</span>
                     </Link>
                     <Link 
                         :href="route('users')" 
-                        class="bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-shop-primary/20 hover:shadow-lg flex items-center gap-2"
+                        class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-3.5 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-shop-primary/20 hover:shadow-lg whitespace-nowrap text-center"
                     >
                         <i class="fa-solid fa-ticket text-xs"></i>
                         <span>Kelola Voucher Lab</span>
@@ -300,10 +300,11 @@ const toggleMemberPassword = (id) => {
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2.5">
+                <!-- Action Buttons: Always side-by-side (never stacked/numpuk) -->
+                <div class="grid grid-cols-2 sm:flex sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto shrink-0">
                     <Link 
                         href="/aktivasi-voucher" 
-                        class="bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center gap-2"
+                        class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-3.5 sm:px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all whitespace-nowrap text-center"
                     >
                         <i class="fa-solid fa-key text-xs text-shop-primary"></i>
                         <span>Aktivasi Voucher</span>
@@ -311,7 +312,7 @@ const toggleMemberPassword = (id) => {
 
                     <Link 
                         href="/#pricing" 
-                        class="bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-shop-primary/20 hover:shadow-lg transition-all flex items-center gap-2"
+                        class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-3.5 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-shop-primary/20 hover:shadow-lg transition-all whitespace-nowrap text-center"
                     >
                         <i class="fa-solid fa-cart-shopping text-xs"></i>
                         <span>Beli Paket Baru</span>
