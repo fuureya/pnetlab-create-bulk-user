@@ -124,12 +124,35 @@ const checkout = async (productId) => {
         }
     } catch (error) {
         isProcessing.value = false;
-        if (error.response && error.response.status === 401) {
-            window.location.href = '/login';
-        } else {
+        const status = error.response ? error.response.status : null;
+        
+        if (status === 401) {
             Swal.fire({
-                title: 'Gagal',
-                text: error.response?.data?.error || 'Gagal membuat transaksi, pastikan Anda sudah login.',
+                title: 'Belum Login',
+                text: 'Sesi Anda belum aktif atau telah berakhir. Silakan login terlebih dahulu.',
+                icon: 'warning',
+                confirmButtonText: 'Login Sekarang',
+                confirmButtonColor: '#BF070F'
+            }).then(() => {
+                window.location.href = '/login';
+            });
+        } else if (status === 419) {
+            Swal.fire({
+                title: 'Sesi Kedaluwarsa',
+                text: 'Halaman telah dibuka terlalu lama. Silakan refresh halaman dan coba kembali.',
+                icon: 'warning',
+                confirmButtonText: 'Refresh Halaman',
+                confirmButtonColor: '#BF070F'
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            const detailError = error.response?.data?.error 
+                || error.response?.data?.message 
+                || (error.message ? error.message : 'Terjadi kendala saat menghubungi server.');
+            Swal.fire({
+                title: 'Gagal Membuat Transaksi',
+                text: detailError,
                 icon: 'error',
                 confirmButtonColor: '#BF070F'
             });
