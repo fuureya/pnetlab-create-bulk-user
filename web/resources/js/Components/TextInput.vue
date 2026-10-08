@@ -1,6 +1,6 @@
 <template>
     <input
-        class="h-[40px] px-[16px] border border-[#E5E5E5] rounded-[4px] bg-[#FFFFFF] text-[#0F0F0F] text-[14px] font-[400] focus:border-[#065FD4] focus:ring-1 focus:ring-[#065FD4] focus:outline-none transition-colors"
+        class="h-11 px-4 border border-gray-300 rounded-xl bg-white text-gray-900 text-sm font-normal focus:border-shop-primary focus:ring-2 focus:ring-shop-primary/20 focus:outline-none transition-all placeholder:text-gray-400"
         v-model="model"
         ref="input"
     />
