@@ -97,6 +97,20 @@ const topologies = [
 
 const isProcessing = ref(false);
 
+const formatPrice = (price) => {
+    if (!price) return 'Rp 0';
+    if (typeof price === 'string' && price.toLowerCase().includes('rp')) {
+        return price;
+    }
+    const num = Number(String(price).replace(/[^0-9]/g, ''));
+    if (isNaN(num) || num === 0) return price;
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(num);
+};
+
 const checkout = async (productId) => {
     isProcessing.value = true;
     try {
@@ -587,7 +601,7 @@ const checkout = async (productId) => {
                         <p class="text-[13px] text-gray-500 mt-2 min-h-[40px]">{{ product.description }}</p>
                         
                         <div class="my-6">
-                            <span class="font-poppins text-3xl font-extrabold text-shop-primary">{{ product.price }}</span>
+                            <span class="font-poppins text-3xl font-extrabold text-shop-primary">{{ formatPrice(product.price) }}</span>
                         </div>
 
                         <ul class="space-y-3.5 mb-8 flex-1 text-[14px] text-gray-700">

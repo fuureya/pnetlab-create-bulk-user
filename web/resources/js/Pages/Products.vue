@@ -23,6 +23,20 @@ const isDeleteModalOpen = ref(false);
 const editMode = ref(false);
 const currentProductId = ref(null);
 
+const formatPrice = (price) => {
+    if (!price) return 'Rp 0';
+    if (typeof price === 'string' && price.toLowerCase().includes('rp')) {
+        return price;
+    }
+    const num = Number(String(price).replace(/[^0-9]/g, ''));
+    if (isNaN(num) || num === 0) return price;
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(num);
+};
+
 const form = useForm({
     name: '',
     duration_days: '',
@@ -221,7 +235,7 @@ const deleteProduct = () => {
                                 </span>
                             </td>
                             <td class="px-6 py-3.5 font-mono font-extrabold text-shop-primary">
-                                {{ product.price }}
+                                {{ formatPrice(product.price) }}
                             </td>
                             <td class="px-6 py-3.5">
                                 <span 
