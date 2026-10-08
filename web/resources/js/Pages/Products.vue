@@ -34,7 +34,12 @@ const form = useForm({
 
 const openCreateModal = () => {
     if (props.products.length >= 4) {
-        Swal.fire({ title: 'Batas Maksimal!', text: 'Maksimal 4 produk yang diperbolehkan. Hapus produk lama jika ingin menambah baru.', icon: 'warning' });
+        Swal.fire({ 
+            title: 'Batas Maksimal!', 
+            text: 'Maksimal 4 produk yang diperbolehkan untuk menjaga tampilan landing page tetap ideal. Hapus atau edit paket yang ada.', 
+            icon: 'warning',
+            confirmButtonColor: '#BF070F'
+        });
         return;
     }
     editMode.value = false;
@@ -78,7 +83,7 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal();
-                Swal.fire({ title: 'Berhasil!', text: 'Produk berhasil diperbarui.', icon: 'success', confirmButtonText: 'Oke' });
+                Swal.fire({ title: 'Berhasil!', text: 'Paket produk berhasil diperbarui.', icon: 'success', confirmButtonText: 'Oke', confirmButtonColor: '#BF070F' });
             },
             onError: () => {
                 Swal.close();
@@ -89,10 +94,10 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: (page) => {
                 if(page.props.errors && page.props.errors.message) {
-                    Swal.fire({ title: 'Gagal!', text: page.props.errors.message, icon: 'error' });
+                    Swal.fire({ title: 'Gagal!', text: page.props.errors.message, icon: 'error', confirmButtonColor: '#BF070F' });
                 } else {
                     closeModal();
-                    Swal.fire({ title: 'Berhasil!', text: 'Produk berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
+                    Swal.fire({ title: 'Berhasil!', text: 'Paket produk baru berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke', confirmButtonColor: '#BF070F' });
                 }
             },
             onError: () => {
@@ -108,156 +113,201 @@ const deleteProduct = () => {
         preserveScroll: true,
         onSuccess: () => {
             closeDeleteModal();
-            Swal.fire({ title: 'Berhasil!', text: 'Produk berhasil dihapus.', icon: 'success', confirmButtonText: 'Oke' });
+            Swal.fire({ title: 'Berhasil!', text: 'Paket produk berhasil dihapus.', icon: 'success', confirmButtonText: 'Oke', confirmButtonColor: '#BF070F' });
         },
     });
 };
 </script>
 
 <template>
-    <Head title="Products Management - Meraki Labs" />
+    <Head title="Manajemen Paket Produk - Meraki Labs" />
 
     <AuthenticatedLayout>
         
-        <!-- Header Actions -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs mb-6">
             <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Products / Pricing</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage pricing packages displayed on the landing page (Max 4).</p>
+                <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                    Manajemen Paket Produk
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Atur harga dan fitur paket langganan lab yang tampil di Landing Page (Maksimal 4 paket).
+                </p>
             </div>
-            <div class="flex gap-2">
-                <button @click="openCreateModal" class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2" :class="{'opacity-50 cursor-not-allowed': products.length >= 4}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    Create New Product
+            
+            <div>
+                <button 
+                    @click="openCreateModal" 
+                    class="bg-shop-primary hover:bg-shop-secondary text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-shop-md hover:shadow-shop-hover flex items-center gap-2"
+                    :class="{'opacity-50 cursor-not-allowed': products.length >= 4}"
+                >
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Tambah Paket Baru</span>
                 </button>
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto">
+        <!-- Table Section -->
+        <div class="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
+            <div class="px-6 py-4 border-b border-gray-200/80 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-sm font-bold text-gray-900">
+                    Daftar Paket Produk Aktif ({{ products.length }}/4)
+                </h3>
+            </div>
             
-            <!-- Table Section -->
-            <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                <div class="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center bg-[#F8F8F8]">
-                    <h3 class="text-[16px] font-[500] text-[#0F0F0F]">All Products ({{ products.length }}/4)</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider w-16">No.</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Nama Paket</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Durasi (Hari)</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Harga</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Rekomendasi?</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-[#E5E5E5]">
-                            <tr v-if="products.length === 0">
-                                <td colspan="6" class="px-6 py-8 text-center text-[#606060]">No products found. Create one to get started.</td>
-                            </tr>
-                            <tr v-for="(product, index) in products" :key="product.id" class="hover:bg-[#F8F8F8] transition-colors">
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    {{ index + 1 }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ product.name }}</p>
-                                    <p class="text-[12px] text-[#606060] mt-1">{{ product.description }}</p>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F]">
-                                    {{ product.duration_days }}
-                                </td>
-                                <td class="px-6 py-4 text-[14px] font-bold text-[#065FD4]">
-                                    {{ product.price }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span v-if="product.is_recommended" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#FFF4E5] text-[#FB8C00] border border-[#FB8C00]/20">
-                                        ★ Recommended
-                                    </span>
-                                    <span v-else class="text-[#606060] text-[12px]">-</span>
-                                </td>
-                                <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                    <button @click="openEditModal(product)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-gray-50/70 border-b border-gray-200 text-gray-500 font-mono text-[11px] uppercase">
+                            <th class="px-6 py-3.5 w-16">No.</th>
+                            <th class="px-6 py-3.5">Nama Paket</th>
+                            <th class="px-6 py-3.5">Durasi (Hari)</th>
+                            <th class="px-6 py-3.5">Harga</th>
+                            <th class="px-6 py-3.5">Status Rekomendasi</th>
+                            <th class="px-6 py-3.5 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-if="products.length === 0">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fa-solid fa-box-archive text-3xl mb-2 text-gray-300"></i>
+                                <p class="text-sm">Belum ada paket produk yang terdaftar.</p>
+                            </td>
+                        </tr>
+                        <tr 
+                            v-for="(product, index) in products" 
+                            :key="product.id" 
+                            class="hover:bg-gray-50/60 transition-colors"
+                        >
+                            <td class="px-6 py-3.5 font-mono text-gray-500">
+                                {{ index + 1 }}
+                            </td>
+                            <td class="px-6 py-3.5">
+                                <p class="font-bold text-gray-900">{{ product.name }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ product.description }}</p>
+                            </td>
+                            <td class="px-6 py-3.5 font-mono text-gray-700">
+                                {{ product.duration_days }} Hari
+                            </td>
+                            <td class="px-6 py-3.5 font-mono font-extrabold text-shop-primary">
+                                {{ product.price }}
+                            </td>
+                            <td class="px-6 py-3.5">
+                                <span 
+                                    v-if="product.is_recommended" 
+                                    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200"
+                                >
+                                    <i class="fa-solid fa-star text-[10px]"></i>
+                                    <span>Recommended</span>
+                                </span>
+                                <span v-else class="text-gray-400 text-xs font-mono">-</span>
+                            </td>
+                            <td class="px-6 py-3.5 text-right">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <button 
+                                        @click="openEditModal(product)" 
+                                        class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                                        title="Edit Produk"
+                                    >
+                                        <i class="fa-solid fa-pen-to-square text-sm"></i>
                                     </button>
-                                    <button @click="openDeleteModal(product.id)" class="p-1.5 text-[#FF0000] hover:bg-[#FEF2F2] rounded-[4px] transition-colors" title="Delete">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    <button 
+                                        @click="openDeleteModal(product.id)" 
+                                        class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" 
+                                        title="Hapus Produk"
+                                    >
+                                        <i class="fa-solid fa-trash-can text-sm"></i>
                                     </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- Create / Edit Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-6">
-                    {{ editMode ? 'Edit Produk' : 'Buat Produk Baru' }}
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-5">
+                    {{ editMode ? 'Edit Paket Produk' : 'Tambah Paket Baru' }}
                 </h2>
 
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <InputLabel for="name" value="Nama Paket (cth: 1 Minggu)" />
-                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <InputLabel for="name" value="Nama Paket (cth: Paket 1 Minggu)" class="font-semibold text-xs mb-1" />
+                        <TextInput id="name" type="text" class="block w-full" v-model="form.name" required autofocus />
+                        <InputError class="mt-1" :message="form.errors.name" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <InputLabel for="duration_days" value="Durasi Akses (Hari)" class="font-semibold text-xs mb-1" />
+                            <TextInput id="duration_days" type="number" min="1" class="block w-full" v-model="form.duration_days" required />
+                            <InputError class="mt-1" :message="form.errors.duration_days" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="price" value="Harga (cth: Rp 50.000)" class="font-semibold text-xs mb-1" />
+                            <TextInput id="price" type="text" class="block w-full" v-model="form.price" required />
+                            <InputError class="mt-1" :message="form.errors.price" />
+                        </div>
                     </div>
 
                     <div>
-                        <InputLabel for="duration_days" value="Durasi Akses (Hari)" />
-                        <TextInput id="duration_days" type="number" min="1" class="mt-1 block w-full" v-model="form.duration_days" required />
-                        <InputError class="mt-2" :message="form.errors.duration_days" />
+                        <InputLabel for="description" value="Deskripsi Singkat" class="font-semibold text-xs mb-1" />
+                        <textarea 
+                            id="description" 
+                            class="block w-full border-gray-300 focus:border-shop-primary focus:ring-shop-primary rounded-xl text-sm" 
+                            rows="2" 
+                            v-model="form.description"
+                            placeholder="Cocok untuk latihan praktikum dasar..."
+                        ></textarea>
+                        <InputError class="mt-1" :message="form.errors.description" />
                     </div>
 
                     <div>
-                        <InputLabel for="price" value="Harga (cth: Rp 50.000)" />
-                        <TextInput id="price" type="text" class="mt-1 block w-full" v-model="form.price" required />
-                        <InputError class="mt-2" :message="form.errors.price" />
+                        <InputLabel for="features" value="Daftar Fitur (Satu baris per fitur)" class="font-semibold text-xs mb-1" />
+                        <textarea 
+                            id="features" 
+                            class="block w-full border-gray-300 focus:border-shop-primary focus:ring-shop-primary rounded-xl text-sm" 
+                            rows="4" 
+                            v-model="form.features" 
+                            placeholder="Akses Lab Selama 7 Hari&#10;Full Access PNETLab&#10;Support WhatsApp 24/7"
+                        ></textarea>
+                        <InputError class="mt-1" :message="form.errors.features" />
                     </div>
 
-                    <div>
-                        <InputLabel for="description" value="Deskripsi Singkat" />
-                        <textarea id="description" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="2" v-model="form.description"></textarea>
-                        <InputError class="mt-2" :message="form.errors.description" />
-                    </div>
-
-                    <div>
-                        <InputLabel for="features" value="Fitur (Satu baris untuk setiap fitur)" />
-                        <textarea id="features" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="4" v-model="form.features" placeholder="Akses Lab Selama 7 Hari&#10;Full Access PNETLab&#10;Support WhatsApp"></textarea>
-                        <InputError class="mt-2" :message="form.errors.features" />
-                    </div>
-
-                    <div class="block mt-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" v-model="form.is_recommended" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                            <span class="ml-2 text-sm text-gray-600">Jadikan Paket Rekomendasi (Highlight)</span>
+                    <div class="pt-1">
+                        <label class="flex items-center cursor-pointer select-none">
+                            <input 
+                                type="checkbox" 
+                                v-model="form.is_recommended" 
+                                class="rounded border-gray-300 text-shop-primary shadow-xs focus:ring-shop-primary w-4 h-4"
+                            />
+                            <span class="ml-2.5 text-xs font-semibold text-gray-700">Jadikan Paket Rekomendasi (Highlight Utama di Landing Page)</span>
                         </label>
-                        <InputError class="mt-2" :message="form.errors.is_recommended" />
+                        <InputError class="mt-1" :message="form.errors.is_recommended" />
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
+                    <div class="mt-6 flex justify-end gap-3 pt-3 border-t border-gray-100">
                         <SecondaryButton @click="closeModal">Batal</SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            {{ editMode ? 'Simpan Perubahan' : 'Buat Produk' }}
+                        <PrimaryButton :disabled="form.processing">
+                            {{ editMode ? 'Simpan Perubahan' : 'Buat Paket' }}
                         </PrimaryButton>
                     </div>
                 </form>
             </div>
         </Modal>
 
-        <!-- Delete Confirmation Modal -->
+        <!-- Delete Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">
-                    Hapus Produk
-                </h2>
-                <p class="text-sm text-gray-600">
-                    Apakah Anda yakin ingin menghapus produk ini? Aksi ini tidak dapat dibatalkan.
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-2">Hapus Produk</h2>
+                <p class="text-sm text-gray-600 mb-6">
+                    Apakah Anda yakin ingin menghapus paket produk ini? Paket tidak akan tampil lagi di halaman depan.
                 </p>
-                <div class="mt-6 flex justify-end gap-3">
+                <div class="flex justify-end gap-3">
                     <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
                     <DangerButton @click="deleteProduct">Hapus</DangerButton>
                 </div>

@@ -1,8 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
-defineProps({
+const props = defineProps({
+    admin_stats: {
+        type: Object,
+        default: () => ({
+            total_vouchers: 0,
+            active_vouchers: 0,
+            unactive_vouchers: 0,
+            expired_vouchers: 0,
+            total_users: 0,
+            total_transactions: 0,
+            total_revenue: 0,
+        })
+    },
     stats: {
         type: Object,
         default: () => ({
@@ -20,117 +33,218 @@ defineProps({
         default: () => []
     }
 });
+
+const searchQuery = ref('');
+const copiedId = ref(null);
+
+const filteredRecentUsers = computed(() => {
+    if (!searchQuery.value) return props.recent_users;
+    const q = searchQuery.value.toLowerCase();
+    return props.recent_users.filter(v => 
+        (v.username && v.username.toLowerCase().includes(q)) ||
+        (v.status && v.status.toLowerCase().includes(q)) ||
+        (v.pod_id && v.pod_id.toString().includes(q))
+    );
+});
+
+const formatRupiah = (val) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+};
+
+const copyCredential = (text, id) => {
+    navigator.clipboard.writeText(text);
+    copiedId.value = id;
+    setTimeout(() => {
+        copiedId.value = null;
+    }, 2000);
+};
 </script>
 
 <template>
-    <Head title="Users Overview - Meraki Labs" />
+    <Head title="Dashboard - Meraki Labs" />
 
     <AuthenticatedLayout>
         
-        <!-- Admin Dashboard -->
-        <div v-if="$page.props.auth.user.role === 'admin'">
-            <!-- Header Actions -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
-            <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Users Overview</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage Meraki Labs users, pods, and access expiration.</p>
-            </div>
-            <button class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                Create New User
-            </button>
-        </div>
-
-        <!-- Content Area -->
-        <div class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto">
+        <!-- ADMIN DASHBOARD -->
+        <div v-if="$page.props.auth.user.role === 'admin'" class="space-y-6">
             
-            <!-- KPI Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Card 1 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex items-center justify-between">
+            <!-- Header Banner -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+                <div>
+                    <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                        Overview Lab & Statistik
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Monitoring ringkas penggunaan voucher, pod PNETLab, dan transaksi pengguna.
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap gap-2.5">
+                    <Link 
+                        :href="route('users')" 
+                        class="bg-shop-primary hover:bg-shop-secondary text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-shop-md hover:shadow-shop-hover flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Buat Voucher Lab</span>
+                    </Link>
+                    <Link 
+                        href="/transaksi" 
+                        class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-receipt text-xs text-gray-500"></i>
+                        <span>Semua Transaksi</span>
+                    </Link>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Card 1: Total Voucher -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-[14px] font-[500] text-[#606060] mb-1">Total Users</p>
-                        <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">1,248</h2>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Voucher</p>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-none">
+                            {{ admin_stats.total_vouchers }}
+                        </h3>
+                        <p class="text-[11px] text-gray-500 mt-1.5 font-medium">
+                            <span class="text-emerald-600 font-bold">{{ admin_stats.active_vouchers }} aktif</span>, 
+                            <span class="text-amber-600 font-bold">{{ admin_stats.unactive_vouchers }} belum</span>
+                        </p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[#065FD4]">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <div class="w-12 h-12 rounded-xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-ticket"></i>
                     </div>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex items-center justify-between">
+                <!-- Card 2: Voucher Aktif -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-[14px] font-[500] text-[#606060] mb-1">Active Pods</p>
-                        <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">14</h2>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Voucher Aktif</p>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 leading-none">
+                            {{ admin_stats.active_vouchers }}
+                        </h3>
+                        <p class="text-[11px] text-gray-500 mt-1.5 font-medium">Sedang digunakan dalam lab</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[#2BA640]">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-circle-check"></i>
                     </div>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex items-center justify-between">
+                <!-- Card 3: Total Pendaftar -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-[14px] font-[500] text-[#606060] mb-1">Expiring Soon</p>
-                        <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">8</h2>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Pendaftar</p>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-none">
+                            {{ admin_stats.total_users }}
+                        </h3>
+                        <p class="text-[11px] text-gray-500 mt-1.5 font-medium">Akun member terdaftar</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[#FF0000]">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4: Omset Transaksi -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Omset Berhasil</p>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-shop-primary leading-none truncate max-w-[180px]">
+                            {{ formatRupiah(admin_stats.total_revenue) }}
+                        </h3>
+                        <p class="text-[11px] text-gray-500 mt-1.5 font-medium">
+                            Dari {{ admin_stats.total_transactions }} total checkout
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Table Section -->
-            <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                <div class="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center bg-[#F8F8F8]">
-                    <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Recent Users</h3>
-                    <div class="relative">
-                        <input type="text" placeholder="Search users..." class="h-[36px] pl-10 pr-4 border border-[#E5E5E5] rounded-[9999px] text-[14px] focus:outline-none focus:border-[#065FD4] w-[250px]">
-                        <svg class="w-4 h-4 text-[#606060] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <!-- Recent Vouchers Table Section -->
+            <div class="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
+                <div class="px-6 py-4 border-b border-gray-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900">Voucher & User Lab Terbaru</h3>
+                        <p class="text-xs text-gray-500">6 data voucher terakhir yang terdaftar di sistem.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-60">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-gray-400"></i>
+                            <input 
+                                v-model="searchQuery"
+                                type="text" 
+                                placeholder="Cari username / pod..." 
+                                class="w-full h-9 pl-9 pr-3 rounded-xl border border-gray-200 text-xs focus:border-shop-primary focus:ring-1 focus:ring-shop-primary"
+                            />
+                        </div>
+                        <Link 
+                            :href="route('users')" 
+                            class="text-xs font-bold text-shop-primary hover:text-shop-secondary whitespace-nowrap px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                        >
+                            Lihat Semua &rarr;
+                        </Link>
                     </div>
                 </div>
+
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
                         <thead>
-                            <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">User</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Pod ID</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Role</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Expired At</th>
+                            <tr class="bg-gray-50/70 border-b border-gray-200 text-gray-500 font-mono text-[11px] uppercase">
+                                <th class="px-6 py-3.5">Username</th>
+                                <th class="px-6 py-3.5">Password</th>
+                                <th class="px-6 py-3.5">Pod ID</th>
+                                <th class="px-6 py-3.5">Status</th>
+                                <th class="px-6 py-3.5">Durasi</th>
+                                <th class="px-6 py-3.5 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#E5E5E5]">
-                            <tr v-for="voucher in recent_users" :key="voucher.id" :class="{'hover:bg-[#F8F8F8] transition-colors': true, 'bg-[#FEF2F2]/30': voucher.status === 'expired'}">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div :class="['w-8 h-8 rounded-full text-white flex items-center justify-center text-[12px] font-[500]', voucher.status === 'expired' ? 'bg-[#606060]' : 'bg-[#065FD4]']">
-                                            {{ (voucher.user?.name || voucher.username || '?').charAt(0).toUpperCase() }}
-                                        </div>
-                                        <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ voucher.user?.name || voucher.username }}</p>
-                                            <p class="text-[12px] text-[#606060]">{{ voucher.username }}</p>
-                                        </div>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr v-for="voucher in filteredRecentUsers" :key="voucher.id" class="hover:bg-gray-50/70 transition-colors">
+                                <td class="px-6 py-3.5 font-mono font-bold text-gray-900">
+                                    {{ voucher.username }}
+                                </td>
+                                <td class="px-6 py-3.5 font-mono text-gray-600">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>{{ voucher.password || '-' }}</span>
+                                        <button 
+                                            v-if="voucher.password"
+                                            @click="copyCredential(`User: ${voucher.username} | Pass: ${voucher.password}`, voucher.id)"
+                                            class="text-gray-400 hover:text-shop-primary p-1 transition-colors"
+                                            title="Salin kredensial"
+                                        >
+                                            <i v-if="copiedId === voucher.id" class="fa-solid fa-check text-emerald-600"></i>
+                                            <i v-else class="fa-solid fa-copy text-xs"></i>
+                                        </button>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
-                                    {{ voucher.pod_id }}
+                                <td class="px-6 py-3.5 font-mono text-gray-700">
+                                    <span class="px-2 py-0.5 rounded bg-gray-100 font-bold">Pod {{ voucher.pod_id }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    User
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span :class="['inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] border', voucher.status === 'aktif' ? 'bg-[#e6f4ea] text-[#2BA640] border-[#2BA640]/20' : 'bg-[#FEF2F2] text-[#FF0000] border-[#FF0000]/20']">
-                                        {{ voucher.status === 'aktif' ? 'Active' : 'Expired' }}
+                                <td class="px-6 py-3.5">
+                                    <span v-if="voucher.status === 'aktif'" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fa-solid fa-circle text-[6px]"></i> Aktif
+                                    </span>
+                                    <span v-else-if="voucher.status === 'expired'" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <i class="fa-solid fa-circle text-[6px]"></i> Expired
+                                    </span>
+                                    <span v-else class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <i class="fa-solid fa-circle text-[6px]"></i> Belum Aktif
                                     </span>
                                 </td>
-                                <td :class="['px-6 py-4 text-[14px]', voucher.status === 'aktif' ? 'text-[#606060]' : 'text-[#FF0000]']">
-                                    {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : 'Never' }}
+                                <td class="px-6 py-3.5 text-gray-500">
+                                    {{ voucher.duration_days }} Hari
+                                </td>
+                                <td class="px-6 py-3.5 text-right font-medium">
+                                    <Link :href="route('users')" class="text-shop-primary hover:underline font-bold text-xs">
+                                        Kelola
+                                    </Link>
                                 </td>
                             </tr>
-                            <tr v-if="!recent_users || recent_users.length === 0">
-                                <td colspan="5" class="px-6 py-4 text-center text-[14px] text-[#606060]">
-                                    No recent users found.
+                            <tr v-if="filteredRecentUsers.length === 0">
+                                <td colspan="6" class="px-6 py-10 text-center text-gray-400 italic">
+                                    Tidak ada data voucher yang cocok.
                                 </td>
                             </tr>
                         </tbody>
@@ -138,113 +252,131 @@ defineProps({
                 </div>
             </div>
 
-            </div>
         </div>
 
-        <!-- User Dashboard -->
-        <div v-else class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto font-['Roboto']">
-            <div class="mb-8">
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Selamat Datang, {{ $page.props.auth.user.name }}!</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Kelola transaksi dan voucher Anda di sini.</p>
+        <!-- MEMBER / USER DASHBOARD -->
+        <div v-else class="space-y-6">
+            
+            <!-- Welcome Header -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                        Halo, {{ $page.props.auth.user.name }}
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Selamat datang di portal member Meraki Labs. Kelola voucher dan akses lab Anda di sini.
+                    </p>
+                </div>
+                <Link 
+                    href="/#pricing" 
+                    class="bg-shop-primary hover:bg-shop-secondary text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-shop-md hover:shadow-shop-hover transition-all flex items-center gap-2"
+                >
+                    <i class="fa-solid fa-cart-shopping text-xs"></i>
+                    <span>Beli Paket Baru</span>
+                </Link>
             </div>
 
             <!-- User KPI Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                <!-- Card 1 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
-                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Total Transaksi</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.total_transactions }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Transaksi</p>
+                        <h3 class="text-2xl font-extrabold text-gray-900">{{ stats.total_transactions }}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
                 </div>
-                <!-- Card 2 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
-                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Aktif</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.active_vouchers }}</h2>
+
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Voucher Aktif</p>
+                        <h3 class="text-2xl font-extrabold text-emerald-600">{{ stats.active_vouchers }}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
                 </div>
-                <!-- Card 3 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between">
-                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Voucher Expired</p>
-                    <h2 class="text-[32px] font-[700] text-[#0F0F0F] leading-none">{{ stats.expired_vouchers }}</h2>
-                </div>
-                <!-- Card 4 -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] p-6 flex flex-col justify-between items-start">
-                    <p class="text-[14px] font-[500] text-[#606060] mb-2">Profil Akun</p>
-                    <a :href="route('profile.edit')" class="text-[14px] text-[#065FD4] font-[500] hover:underline mt-2 flex items-center gap-1">
-                        Edit Profile
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </a>
+
+                <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Voucher Expired</p>
+                        <h3 class="text-2xl font-extrabold text-rose-600">{{ stats.expired_vouchers }}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sections Grid -->
+            <!-- User Content: Voucher Saya & Transaksi -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Transaction History -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                    <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
-                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Riwayat Pembayaran</h3>
+                <!-- Voucher Saya -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="font-bold text-gray-900 text-sm">Voucher Lab Saya</h3>
+                        <Link href="/aktivasi-voucher" class="text-xs font-bold text-shop-primary hover:underline">
+                            Aktivasi &rarr;
+                        </Link>
                     </div>
-                    <div class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
-                        <div v-if="stats.total_transactions > 0">
-                            <p class="text-[14px] text-[#0F0F0F] font-[500] mb-2">Anda memiliki {{ stats.total_transactions }} riwayat pembayaran.</p>
-                            <Link href="/riwayat-transaksi" class="text-[14px] text-[#065FD4] font-[500] hover:underline">Lihat Selengkapnya &rarr;</Link>
+
+                    <div v-if="user_vouchers && user_vouchers.length > 0" class="divide-y divide-gray-100">
+                        <div v-for="v in user_vouchers" :key="v.id" class="p-4 sm:p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                            <div>
+                                <p class="font-mono font-bold text-gray-900 text-sm">{{ v.username }}</p>
+                                <p class="font-mono text-xs text-gray-500 mt-0.5">Password: {{ v.password }}</p>
+                                <span class="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold" :class="v.status === 'aktif' ? 'bg-emerald-50 text-emerald-700' : (v.status === 'expired' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700')">
+                                    {{ v.status }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Link 
+                                    v-if="v.status === 'belum aktif'"
+                                    href="/aktivasi-voucher" 
+                                    class="text-xs font-bold bg-shop-primary text-white py-1.5 px-3 rounded-xl shadow-xs"
+                                >
+                                    Aktivasi Sekarang
+                                </Link>
+                                <span v-else class="text-xs text-gray-400 font-mono">Pod {{ v.pod_id }}</span>
+                            </div>
                         </div>
-                        <div v-else>
-                            <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <p class="text-[14px] text-[#606060] font-[400]">Belum ada transaksi pembelian voucher.</p>
-                            <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#065FD4] hover:bg-[#0056b3] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                Beli Voucher
-                            </a>
-                        </div>
+                    </div>
+                    <div v-else class="p-8 text-center text-gray-400">
+                        <i class="fa-solid fa-ticket text-3xl mb-2 text-gray-300"></i>
+                        <p class="text-sm text-gray-600">Anda belum memiliki voucher lab.</p>
+                        <Link href="/#pricing" class="inline-block mt-3 text-xs font-bold text-shop-primary hover:underline">
+                            Pesan Paket Lab Sekarang
+                        </Link>
                     </div>
                 </div>
 
-                <!-- My Vouchers -->
-                <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                    <div class="px-6 py-4 border-b border-[#E5E5E5] bg-[#F8F8F8]">
-                        <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Voucher Saya</h3>
+                <!-- Riwayat Transaksi Ringkas -->
+                <div class="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                            <h3 class="font-bold text-gray-900 text-sm">Riwayat Pembayaran</h3>
+                            <Link href="/riwayat-transaksi" class="text-xs font-bold text-shop-primary hover:underline">
+                                Lihat Semua &rarr;
+                            </Link>
+                        </div>
+                        <div class="p-6 text-center">
+                            <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-300"></i>
+                            <p class="text-sm text-gray-700 font-medium">
+                                Total {{ stats.total_transactions }} transaksi tercatat.
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Cek status pembayaran dan kode voucher otomatis di halaman riwayat.
+                            </p>
+                        </div>
                     </div>
-                    <div v-if="user_vouchers && user_vouchers.length > 0" class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
-                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Username</th>
-                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Password</th>
-                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-[#E5E5E5]">
-                                <tr v-for="voucher in user_vouchers" :key="voucher.id" class="hover:bg-[#F8F8F8] transition-colors">
-                                    <td class="px-6 py-4 text-[14px] font-[500] text-[#0F0F0F] font-['Roboto_Mono']">
-                                        {{ voucher.username }}
-                                    </td>
-                                    <td class="px-6 py-4 text-[14px] font-[500] text-[#0F0F0F] font-['Roboto_Mono']">
-                                        {{ voucher.password }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span v-if="voucher.status === 'aktif'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20">Aktif</span>
-                                        <span v-else-if="voucher.status === 'expired'" class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#fce8e6] text-[#c5221f] border border-[#c5221f]/20">Expired</span>
-                                        <span v-else class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] bg-[#F2F2F2] text-[#606060] border border-[#E5E5E5]">Belum Aktif</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a v-if="voucher.status === 'belum aktif'" :href="route('aktivasi.index')" class="text-[12px] font-[500] text-[#065FD4] hover:underline">Aktivasi</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div v-else class="p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
-                        <svg class="w-12 h-12 text-[#E5E5E5] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-                        <p class="text-[14px] text-[#606060] font-[400]">Anda belum memiliki voucher.</p>
-                        <a href="/#pricing" class="inline-flex mt-4 text-[14px] font-[500] text-[#FFFFFF] bg-[#BF070F] hover:bg-[#8F050A] px-5 py-2.5 rounded-[9999px] transition-colors items-center gap-2">
-                            Beli Voucher
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        </a>
+                    <div class="p-4 bg-gray-50/70 border-t border-gray-100 text-center">
+                        <Link href="/riwayat-transaksi" class="text-xs font-bold text-shop-primary hover:underline">
+                            Buka Daftar Transaksi &rarr;
+                        </Link>
                     </div>
                 </div>
-                
             </div>
+
         </div>
 
     </AuthenticatedLayout>

@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -25,10 +25,72 @@ const editMode = ref(false);
 const currentVoucherId = ref(null);
 const visiblePasswords = ref({});
 const showFormPassword = ref(false);
+const copiedId = ref(null);
+const searchQuery = ref('');
+const statusFilter = ref('all');
 
 const togglePassword = (id) => {
     visiblePasswords.value[id] = !visiblePasswords.value[id];
 };
+
+const copyCredential = (text, id) => {
+    navigator.clipboard.writeText(text);
+    copiedId.value = id;
+    setTimeout(() => {
+        copiedId.value = null;
+    }, 2000);
+};
+
+const copyAllCredentials = () => {
+    if (!props.vouchers.data || props.vouchers.data.length === 0) return;
+    const text = props.vouchers.data.map(v => `Username: ${v.username} | Password: ${v.password || '-'} | Pod: ${v.pod_id} | Durasi: ${v.duration_days} Hari`).join("\n");
+    navigator.clipboard.writeText(text);
+    Swal.fire({
+        title: 'Berhasil Disalin!',
+        text: `${props.vouchers.data.length} kredensial voucher di halaman ini berhasil disalin ke clipboard.`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
+};
+
+const exportToCSV = () => {
+    if (!props.vouchers.data || props.vouchers.data.length === 0) return;
+    const rows = [["Username", "Password", "Pod ID", "Status", "Duration (Days)", "Expired At"]];
+    props.vouchers.data.forEach(v => {
+        rows.push([
+            v.username, 
+            v.password || '', 
+            v.pod_id, 
+            v.status, 
+            v.duration_days,
+            v.expired_at || ''
+        ]);
+    });
+    const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `meraki-vouchers-${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+const filteredVouchers = computed(() => {
+    let list = props.vouchers.data || [];
+    if (statusFilter.value !== 'all') {
+        list = list.filter(v => v.status === statusFilter.value);
+    }
+    if (searchQuery.value) {
+        const q = searchQuery.value.toLowerCase();
+        list = list.filter(v => 
+            (v.username && v.username.toLowerCase().includes(q)) ||
+            (v.pod_id && v.pod_id.toString().includes(q))
+        );
+    }
+    return list;
+});
 
 const form = useForm({
     username: '',
@@ -81,7 +143,6 @@ const openDeleteModal = (id) => {
 const closeModal = () => {
     isModalOpen.value = false;
     form.reset();
-    showFormPassword.value = false;
 };
 
 const closeDeleteModal = () => {
@@ -168,235 +229,381 @@ const manualBlock = (id) => {
 </script>
 
 <template>
-    <Head title="Vouchers Management - Meraki Labs" />
+    <Head title="Manajemen Voucher Lab - Meraki Labs" />
 
     <AuthenticatedLayout>
         
-        <!-- Header Actions -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs mb-6">
             <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Users</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Manage Meraki Labs vouchers, pods, and access expiration.</p>
+                <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                    Manajemen Voucher Lab
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Kelola akun kredensial akses PNETLab, alokasi pod, dan masa aktif voucher.
+                </p>
             </div>
-            <div class="flex gap-2">
-                <button @click="openBulkModal" class="bg-[#E5E5E5] hover:bg-[#D4D4D4] text-[#0F0F0F] px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                    Bulk Generate
+            
+            <div class="flex flex-wrap gap-2.5">
+                <button 
+                    @click="copyAllCredentials" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+                    title="Salin semua kredensial di halaman ini"
+                >
+                    <i class="fa-solid fa-copy text-xs"></i>
+                    <span>Salin Semua</span>
                 </button>
-                <button @click="openCreateModal" class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    Create New Voucher
+
+                <button 
+                    @click="exportToCSV" 
+                    class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+                    title="Export data ke file CSV"
+                >
+                    <i class="fa-solid fa-file-csv text-sm"></i>
+                    <span>Export CSV</span>
+                </button>
+
+                <button 
+                    @click="openBulkModal" 
+                    class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+                >
+                    <i class="fa-solid fa-layer-group text-xs"></i>
+                    <span>Bulk Generate</span>
+                </button>
+
+                <button 
+                    @click="openCreateModal" 
+                    class="bg-shop-primary hover:bg-shop-secondary text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-shop-md hover:shadow-shop-hover flex items-center gap-2"
+                >
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Buat Voucher</span>
                 </button>
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto">
-            
-            <!-- Table Section -->
-            <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                <div class="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center bg-[#F8F8F8]">
-                    <h3 class="text-[16px] font-[500] text-[#0F0F0F]">All Vouchers</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider w-16">No.</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">User (Username)</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Password</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Pod ID</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Expired At</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-[#E5E5E5]">
-                            <tr v-if="vouchers.data.length === 0">
-                                <td colspan="7" class="px-6 py-8 text-center text-[#606060]">No vouchers found. Create one to get started.</td>
-                            </tr>
-                            <tr v-for="(voucher, index) in vouchers.data" :key="voucher.id" class="hover:bg-[#F8F8F8] transition-colors" :class="{'bg-[#FEF2F2]/30': voucher.status === 'nonaktif'}">
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
-                                    {{ (vouchers.current_page - 1) * vouchers.per_page + index + 1 }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#065FD4] text-white flex items-center justify-center text-[12px] font-[500]">
-                                            {{ voucher.username.charAt(0).toUpperCase() }}
-                                        </div>
-                                        <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ voucher.username }}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F]">
-                                    <div class="flex items-center justify-between w-32">
-                                        <span class="font-['Roboto_Mono'] text-[#606060] tracking-widest" v-if="!visiblePasswords[voucher.id]">••••••••</span>
-                                        <span class="font-['Roboto_Mono']" v-else>{{ voucher.password }}</span>
-                                        <button @click="togglePassword(voucher.id)" class="text-[#606060] hover:text-[#065FD4] transition-colors p-1 rounded-full hover:bg-[#F2F2F2]">
-                                            <!-- Eye Open Icon -->
-                                            <svg v-if="!visiblePasswords[voucher.id]" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                            <!-- Eye Closed Icon -->
-                                            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F] font-['Roboto_Mono']">
-                                    {{ voucher.pod_id }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[12px] font-[500] capitalize"
-                                        :class="{
-                                            'bg-[#e6f4ea] text-[#2BA640] border border-[#2BA640]/20': voucher.status === 'aktif',
-                                            'bg-[#FEF2F2] text-[#FF0000] border border-[#FF0000]/20': voucher.status === 'nonaktif',
-                                            'bg-[#FFF4E5] text-[#FB8C00] border border-[#FB8C00]/20': voucher.status === 'belum aktif',
-                                            'bg-[#E8F0FE] text-[#065FD4] border border-[#065FD4]/20': voucher.status === 'terbeli',
-                                            'bg-[#F2F2F2] text-[#606060] border border-[#606060]/20': voucher.status === 'expired'
-                                        }"
-                                    >
-                                        {{ voucher.status }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-[14px]" :class="voucher.expired_at ? 'text-[#0F0F0F]' : 'text-[#606060]'">
-                                    {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : `Belum Diaktifkan (${voucher.duration_days} Hari)` }}
-                                </td>
-                                <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                    <button v-if="voucher.status !== 'aktif'" @click="manualActivate(voucher.id)" class="p-1.5 text-[#2BA640] hover:bg-[#e6f4ea] rounded-[4px] transition-colors" title="Aktivasi API Manual">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    </button>
-                                    <button v-if="voucher.status === 'aktif'" @click="manualBlock(voucher.id)" class="p-1.5 text-[#FB8C00] hover:bg-[#FFF4E5] rounded-[4px] transition-colors" title="Block/Pending API Manual">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                                    </button>
-                                    <button @click="openEditModal(voucher)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit Data">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                    </button>
-                                    <button @click="openDeleteModal(voucher.id)" class="p-1.5 text-[#FF0000] hover:bg-[#FEF2F2] rounded-[4px] transition-colors" title="Delete">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination Footer -->
-                <div class="px-6 py-4 border-t border-[#E5E5E5] flex items-center justify-between text-[14px] text-[#606060]">
-                    <div>Showing {{ vouchers.from || 0 }} to {{ vouchers.to || 0 }} of {{ vouchers.total }} vouchers</div>
-                    <div class="flex items-center gap-2" v-if="vouchers.links.length > 3">
-                        <template v-for="(link, p) in vouchers.links" :key="p">
-                            <Link v-if="link.url" :href="link.url" class="px-3 py-1 border border-[#E5E5E5] rounded-[4px]" :class="link.active ? 'bg-[#065FD4] text-white' : 'hover:bg-[#F8F8F8]'" v-html="link.label"></Link>
-                            <span v-else class="px-3 py-1 border border-[#E5E5E5] rounded-[4px] opacity-50" v-html="link.label"></span>
-                        </template>
-                    </div>
-                </div>
+        <!-- Filter & Search Bar -->
+        <div class="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-xs mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Tabs Status -->
+            <div class="flex flex-wrap gap-1.5 w-full md:w-auto">
+                <button 
+                    @click="statusFilter = 'all'" 
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                    :class="statusFilter === 'all' ? 'bg-shop-primary text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                >
+                    Semua
+                </button>
+                <button 
+                    @click="statusFilter = 'aktif'" 
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                    :class="statusFilter === 'aktif' ? 'bg-emerald-600 text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                >
+                    Aktif
+                </button>
+                <button 
+                    @click="statusFilter = 'belum aktif'" 
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                    :class="statusFilter === 'belum aktif' ? 'bg-amber-600 text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                >
+                    Belum Aktif
+                </button>
+                <button 
+                    @click="statusFilter = 'expired'" 
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+                    :class="statusFilter === 'expired' ? 'bg-rose-600 text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                >
+                    Expired
+                </button>
             </div>
 
+            <!-- Search Field -->
+            <div class="relative w-full md:w-72">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-gray-400"></i>
+                <input 
+                    v-model="searchQuery"
+                    type="text" 
+                    placeholder="Cari username atau Pod ID..." 
+                    class="w-full h-9 pl-9 pr-3 rounded-xl border border-gray-200 text-xs focus:border-shop-primary focus:ring-1 focus:ring-shop-primary"
+                />
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-gray-50/70 border-b border-gray-200 text-gray-500 font-mono text-[11px] uppercase">
+                            <th class="px-6 py-3.5 w-16">No.</th>
+                            <th class="px-6 py-3.5">Username</th>
+                            <th class="px-6 py-3.5">Password</th>
+                            <th class="px-6 py-3.5">Pod ID</th>
+                            <th class="px-6 py-3.5">Status</th>
+                            <th class="px-6 py-3.5">Expired At</th>
+                            <th class="px-6 py-3.5 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-if="filteredVouchers.length === 0">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fa-solid fa-ticket text-3xl mb-2 text-gray-300"></i>
+                                <p class="text-sm">Tidak ada data voucher yang ditemukan.</p>
+                            </td>
+                        </tr>
+                        <tr 
+                            v-for="(voucher, index) in filteredVouchers" 
+                            :key="voucher.id" 
+                            class="hover:bg-gray-50/60 transition-colors"
+                        >
+                            <td class="px-6 py-3.5 font-mono text-gray-500">
+                                {{ (vouchers.current_page - 1) * vouchers.per_page + index + 1 }}
+                            </td>
+                            <td class="px-6 py-3.5 font-mono font-bold text-gray-900">
+                                {{ voucher.username }}
+                            </td>
+                            <td class="px-6 py-3.5 font-mono text-gray-700">
+                                <div class="flex items-center gap-2">
+                                    <span v-if="!visiblePasswords[voucher.id]">••••••••</span>
+                                    <span v-else class="text-gray-900 font-semibold">{{ voucher.password }}</span>
+                                    
+                                    <button 
+                                        @click="togglePassword(voucher.id)" 
+                                        class="text-gray-400 hover:text-gray-700 p-1 transition-colors"
+                                        title="Tampilkan / Sembunyikan"
+                                    >
+                                        <i v-if="!visiblePasswords[voucher.id]" class="fa-solid fa-eye text-xs"></i>
+                                        <i v-else class="fa-solid fa-eye-slash text-xs"></i>
+                                    </button>
+
+                                    <button 
+                                        v-if="voucher.password"
+                                        @click="copyCredential(`User: ${voucher.username} | Pass: ${voucher.password}`, voucher.id)"
+                                        class="text-gray-400 hover:text-shop-primary p-1 transition-colors"
+                                        title="Salin Kredensial"
+                                    >
+                                        <i v-if="copiedId === voucher.id" class="fa-solid fa-check text-emerald-600 text-xs"></i>
+                                        <i v-else class="fa-solid fa-copy text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3.5 font-mono text-gray-700">
+                                <span class="px-2.5 py-0.5 rounded-lg bg-gray-100 font-bold text-xs">Pod {{ voucher.pod_id }}</span>
+                            </td>
+                            <td class="px-6 py-3.5">
+                                <span 
+                                    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize"
+                                    :class="{
+                                        'bg-emerald-50 text-emerald-700 border border-emerald-200': voucher.status === 'aktif',
+                                        'bg-rose-50 text-rose-700 border border-rose-200': voucher.status === 'nonaktif' || voucher.status === 'expired',
+                                        'bg-amber-50 text-amber-700 border border-amber-200': voucher.status === 'belum aktif',
+                                        'bg-blue-50 text-blue-700 border border-blue-200': voucher.status === 'terbeli'
+                                    }"
+                                >
+                                    <i class="fa-solid fa-circle text-[6px]"></i>
+                                    <span>{{ voucher.status }}</span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-3.5 text-xs text-gray-500 font-mono">
+                                {{ voucher.expired_at ? new Date(voucher.expired_at).toLocaleString() : `Belum Aktif (${voucher.duration_days} Hari)` }}
+                            </td>
+                            <td class="px-6 py-3.5 text-right">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <button 
+                                        v-if="voucher.status !== 'aktif'" 
+                                        @click="manualActivate(voucher.id)" 
+                                        class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" 
+                                        title="Aktivasi API Manual"
+                                    >
+                                        <i class="fa-solid fa-circle-play text-sm"></i>
+                                    </button>
+                                    <button 
+                                        v-if="voucher.status === 'aktif'" 
+                                        @click="manualBlock(voucher.id)" 
+                                        class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" 
+                                        title="Blokir / Stop Akses"
+                                    >
+                                        <i class="fa-solid fa-circle-pause text-sm"></i>
+                                    </button>
+                                    <button 
+                                        @click="openEditModal(voucher)" 
+                                        class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                                        title="Edit Data"
+                                    >
+                                        <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                    </button>
+                                    <button 
+                                        @click="openDeleteModal(voucher.id)" 
+                                        class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" 
+                                        title="Hapus Voucher"
+                                    >
+                                        <i class="fa-solid fa-trash-can text-sm"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3">
+                <div>Menampilkan {{ vouchers.from || 0 }} sampai {{ vouchers.to || 0 }} dari total {{ vouchers.total }} voucher</div>
+                <div class="flex items-center gap-1" v-if="vouchers.links.length > 3">
+                    <template v-for="(link, p) in vouchers.links" :key="p">
+                        <Link 
+                            v-if="link.url" 
+                            :href="link.url" 
+                            class="px-3 py-1.5 border border-gray-200 rounded-lg font-medium transition-colors" 
+                            :class="link.active ? 'bg-shop-primary text-white border-shop-primary font-bold' : 'hover:bg-gray-100 text-gray-700'" 
+                            v-html="link.label"
+                        ></Link>
+                        <span v-else class="px-3 py-1.5 border border-gray-100 rounded-lg opacity-40 text-gray-400" v-html="link.label"></span>
+                    </template>
+                </div>
+            </div>
         </div>
 
         <!-- Create / Edit Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-6">
-                    {{ editMode ? 'Edit Voucher' : 'Create New Voucher' }}
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-5">
+                    {{ editMode ? 'Edit Voucher Lab' : 'Buat Voucher Lab Baru' }}
                 </h2>
 
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <InputLabel for="username" value="Username" />
-                        <TextInput id="username" type="text" class="mt-1 block w-full" v-model="form.username" :readonly="editMode" :class="{'bg-gray-100 text-gray-500 cursor-not-allowed': editMode}" required autofocus />
-                        <InputError class="mt-2" :message="form.errors.username" />
+                        <InputLabel for="username" value="Username PNETLab" class="font-semibold text-xs mb-1" />
+                        <TextInput 
+                            id="username" 
+                            type="text" 
+                            class="block w-full" 
+                            v-model="form.username" 
+                            :readonly="editMode" 
+                            :class="{'bg-gray-100 text-gray-500 cursor-not-allowed': editMode}" 
+                            required 
+                            autofocus 
+                        />
+                        <InputError class="mt-1" :message="form.errors.username" />
                     </div>
 
                     <div>
-                        <InputLabel for="password" value="Password" />
-                        <div class="relative mt-1">
-                            <TextInput id="password" :type="showFormPassword ? 'text' : 'password'" class="block w-full pr-10" v-model="form.password" required />
-                            <button type="button" @click="showFormPassword = !showFormPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#606060] hover:text-[#065FD4] transition-colors">
-                                <svg v-if="!showFormPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        <InputLabel for="password" value="Password Lab" class="font-semibold text-xs mb-1" />
+                        <div class="relative">
+                            <TextInput 
+                                id="password" 
+                                :type="showFormPassword ? 'text' : 'password'" 
+                                class="block w-full pr-10" 
+                                v-model="form.password" 
+                                required 
+                            />
+                            <button 
+                                type="button" 
+                                @click="showFormPassword = !showFormPassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
+                            >
+                                <i v-if="!showFormPassword" class="fa-solid fa-eye text-xs"></i>
+                                <i v-else class="fa-solid fa-eye-slash text-xs"></i>
                             </button>
                         </div>
-                        <InputError class="mt-2" :message="form.errors.password" />
+                        <InputError class="mt-1" :message="form.errors.password" />
                     </div>
 
                     <div v-if="editMode">
-                        <InputLabel for="status" value="Status" />
-                        <select id="status" v-model="form.status" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]">
+                        <InputLabel for="status" value="Status Voucher" class="font-semibold text-xs mb-1" />
+                        <select 
+                            id="status" 
+                            v-model="form.status" 
+                            class="block w-full border-gray-300 focus:border-shop-primary focus:ring-shop-primary rounded-xl text-sm"
+                        >
                             <option value="aktif">Aktif</option>
                             <option value="nonaktif">Nonaktif</option>
                             <option value="terbeli">Terbeli</option>
                             <option value="belum aktif">Belum Aktif</option>
                             <option value="expired">Expired</option>
                         </select>
-                        <InputError class="mt-2" :message="form.errors.status" />
+                        <InputError class="mt-1" :message="form.errors.status" />
                     </div>
 
                     <div>
-                        <InputLabel for="duration_days" value="Paket Durasi Aktif" />
-                        <select id="duration_days" v-model="form.duration_days" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]" required>
+                        <InputLabel for="duration_days" value="Paket Durasi Aktif" class="font-semibold text-xs mb-1" />
+                        <select 
+                            id="duration_days" 
+                            v-model="form.duration_days" 
+                            class="block w-full border-gray-300 focus:border-shop-primary focus:ring-shop-primary rounded-xl text-sm" 
+                            required
+                        >
                             <option value="7">1 Minggu (7 Hari)</option>
                             <option value="14">2 Minggu (14 Hari)</option>
                             <option value="21">3 Minggu (21 Hari)</option>
                             <option value="30">1 Bulan (30 Hari)</option>
                         </select>
-                        <InputError class="mt-2" :message="form.errors.duration_days" />
+                        <InputError class="mt-1" :message="form.errors.duration_days" />
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
-                        <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            {{ editMode ? 'Save Changes' : 'Create' }}
+                    <div class="mt-6 flex justify-end gap-3 pt-3 border-t border-gray-100">
+                        <SecondaryButton @click="closeModal">Batal</SecondaryButton>
+                        <PrimaryButton :disabled="form.processing">
+                            {{ editMode ? 'Simpan Perubahan' : 'Buat Voucher' }}
                         </PrimaryButton>
                     </div>
                 </form>
             </div>
         </Modal>
 
-        <!-- Delete Confirmation Modal -->
+        <!-- Delete Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">
-                    Delete Voucher
-                </h2>
-                <p class="text-sm text-gray-600">
-                    Are you sure you want to delete this voucher? This action cannot be undone.
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-2">Hapus Voucher</h2>
+                <p class="text-sm text-gray-600 mb-6">
+                    Apakah Anda yakin ingin menghapus voucher ini? Tindakan ini tidak dapat dibatalkan.
                 </p>
-                <div class="mt-6 flex justify-end gap-3">
-                    <SecondaryButton @click="closeDeleteModal">Cancel</SecondaryButton>
-                    <DangerButton @click="deleteVoucher">Delete</DangerButton>
+                <div class="flex justify-end gap-3">
+                    <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
+                    <DangerButton @click="deleteVoucher">Hapus</DangerButton>
                 </div>
             </div>
         </Modal>
 
         <!-- Bulk Generate Modal -->
         <Modal :show="isBulkModalOpen" @close="closeBulkModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-6">
-                    Bulk Generate Vouchers
-                </h2>
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-5">Bulk Generate Voucher Lab</h2>
 
                 <form @submit.prevent="submitBulk" class="space-y-4">
                     <div>
-                        <InputLabel for="bulk_count" value="Jumlah Voucher (Max 100)" />
-                        <TextInput id="bulk_count" type="number" min="1" max="100" class="mt-1 block w-full" v-model="bulkForm.count" required autofocus />
-                        <InputError class="mt-2" :message="bulkForm.errors.count" />
+                        <InputLabel for="bulk_count" value="Jumlah Voucher (Max 100)" class="font-semibold text-xs mb-1" />
+                        <TextInput 
+                            id="bulk_count" 
+                            type="number" 
+                            min="1" 
+                            max="100" 
+                            class="block w-full" 
+                            v-model="bulkForm.count" 
+                            required 
+                            autofocus 
+                        />
+                        <InputError class="mt-1" :message="bulkForm.errors.count" />
                     </div>
 
                     <div>
-                        <InputLabel for="bulk_duration_days" value="Paket Durasi Aktif" />
-                        <select id="bulk_duration_days" v-model="bulkForm.duration_days" class="mt-1 block w-full border-[#E5E5E5] focus:border-[#065FD4] focus:ring-[#065FD4] rounded-[4px] shadow-sm text-[14px]" required>
+                        <InputLabel for="bulk_duration_days" value="Paket Durasi Aktif" class="font-semibold text-xs mb-1" />
+                        <select 
+                            id="bulk_duration_days" 
+                            v-model="bulkForm.duration_days" 
+                            class="block w-full border-gray-300 focus:border-shop-primary focus:ring-shop-primary rounded-xl text-sm" 
+                            required
+                        >
                             <option value="7">1 Minggu (7 Hari)</option>
                             <option value="14">2 Minggu (14 Hari)</option>
                             <option value="21">3 Minggu (21 Hari)</option>
                             <option value="30">1 Bulan (30 Hari)</option>
                         </select>
-                        <InputError class="mt-2" :message="bulkForm.errors.duration_days" />
+                        <InputError class="mt-1" :message="bulkForm.errors.duration_days" />
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
-                        <SecondaryButton @click="closeBulkModal">Cancel</SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': bulkForm.processing }" :disabled="bulkForm.processing">
-                            Generate
+                    <div class="mt-6 flex justify-end gap-3 pt-3 border-t border-gray-100">
+                        <SecondaryButton @click="closeBulkModal">Batal</SecondaryButton>
+                        <PrimaryButton :disabled="bulkForm.processing">
+                            Generate Voucher
                         </PrimaryButton>
                     </div>
                 </form>

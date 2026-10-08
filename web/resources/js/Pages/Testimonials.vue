@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -18,6 +18,7 @@ const props = defineProps({
     }
 });
 
+const searchQuery = ref('');
 const isModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const editMode = ref(false);
@@ -30,10 +31,21 @@ const form = useForm({
     color_theme: 'primary',
 });
 
+const filteredTestimonials = computed(() => {
+    if (!searchQuery.value) return props.testimonials.data;
+    const q = searchQuery.value.toLowerCase();
+    return props.testimonials.data.filter(t => 
+        (t.name && t.name.toLowerCase().includes(q)) ||
+        (t.role && t.role.toLowerCase().includes(q)) ||
+        (t.content && t.content.toLowerCase().includes(q))
+    );
+});
+
 const openCreateModal = () => {
     editMode.value = false;
     form.reset();
     form.clearErrors();
+    form.color_theme = 'primary';
     isModalOpen.value = true;
 };
 
@@ -64,7 +76,13 @@ const closeDeleteModal = () => {
 };
 
 const submit = () => {
-    Swal.fire({ title: 'Memproses...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    Swal.fire({ 
+        title: 'Memproses...', 
+        text: 'Mohon tunggu sebentar', 
+        allowOutsideClick: false, 
+        didOpen: () => { Swal.showLoading(); } 
+    });
+
     if (editMode.value) {
         form.put(route('testimonials.update', currentTestimonialId.value), {
             preserveScroll: true,
@@ -81,7 +99,7 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal();
-                Swal.fire({ title: 'Berhasil!', text: 'Testimoni berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
+                Swal.fire({ title: 'Berhasil!', text: 'Testimoni baru berhasil ditambahkan.', icon: 'success', confirmButtonText: 'Oke' });
             },
             onError: () => {
                 Swal.close();
@@ -91,7 +109,12 @@ const submit = () => {
 };
 
 const deleteTestimonial = () => {
-    Swal.fire({ title: 'Menghapus...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    Swal.fire({ 
+        title: 'Menghapus...', 
+        text: 'Mohon tunggu sebentar', 
+        allowOutsideClick: false, 
+        didOpen: () => { Swal.showLoading(); } 
+    });
     router.delete(route('testimonials.destroy', currentTestimonialId.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -106,80 +129,187 @@ const changePage = (url) => {
         router.get(url, {}, { preserveScroll: true, preserveState: true });
     }
 };
+
+const getThemeBadgeClasses = (theme) => {
+    switch (theme) {
+        case 'primary':
+            return 'bg-shop-primary/10 text-shop-primary border-shop-primary/20';
+        case 'secondary':
+            return 'bg-purple-100 text-purple-700 border-purple-200';
+        case 'success':
+            return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+        case 'warning':
+            return 'bg-amber-100 text-amber-700 border-amber-200';
+        case 'info':
+        default:
+            return 'bg-sky-100 text-sky-700 border-sky-200';
+    }
+};
 </script>
 
 <template>
-    <Head title="Testimonials Management - Meraki Labs" />
+    <Head title="Manajemen Testimoni - Meraki Labs" />
 
     <AuthenticatedLayout>
-        
         <!-- Header Actions -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center px-4 md:px-6 py-6 border-b border-[#E5E5E5] gap-4">
-            <div>
-                <h1 class="text-[24px] font-[700] text-[#0F0F0F]">Testimoni</h1>
-                <p class="text-[14px] text-[#606060] font-[400] mt-1">Kelola data testimoni yang ditampilkan di halaman landing.</p>
-            </div>
-            <div class="flex gap-2">
-                <button @click="openCreateModal" class="bg-[#065FD4] hover:bg-[#0056b3] text-white px-[16px] h-[36px] rounded-[9999px] text-[14px] font-[500] transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    Buat Testimoni
-                </button>
+        <div class="px-4 md:px-8 py-6 border-b border-gray-100 bg-white">
+            <div class="max-w-[2200px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-shop-primary/10 flex items-center justify-center text-shop-primary font-bold">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Testimoni Pelanggan</h1>
+                            <p class="text-sm text-gray-500 mt-0.5">Kelola ulasan & umpan balik praktikan yang dipublikasikan pada landing page.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button 
+                        @click="openCreateModal" 
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-shop-primary/20 transition-all hover:shadow-lg"
+                    >
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Tambah Testimoni</span>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Content Area -->
-        <div class="px-4 md:px-6 py-6 max-w-[2200px] mx-auto">
-            
-            <!-- Table Section -->
-            <div class="bg-[#FFFFFF] border border-[#E5E5E5] rounded-[12px] overflow-hidden">
-                <div class="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center bg-[#F8F8F8]">
-                    <h3 class="text-[16px] font-[500] text-[#0F0F0F]">Daftar Testimoni</h3>
+        <div class="px-4 md:px-8 py-8 max-w-[2200px] mx-auto space-y-6">
+
+            <!-- KPI Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Testimoni</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ testimonials.total || testimonials.data.length }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Ulasan terdaftar</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-quote-left"></i>
+                    </div>
                 </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Rating Kepuasan</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">5.0 <span class="text-xs font-normal text-gray-500">/ 5.0</span></p>
+                        <div class="flex items-center gap-1 text-amber-400 text-xs mt-1">
+                            <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Status Tampil</p>
+                        <p class="text-2xl font-bold text-emerald-600 mt-1">Publik</p>
+                        <p class="text-xs text-gray-400 mt-1">Aktif di homepage carousel</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="bg-white border border-gray-100 shadow-xs rounded-2xl overflow-hidden">
+                <!-- Search & Filter bar -->
+                <div class="px-6 py-4 border-b border-gray-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full md:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input 
+                            v-model="searchQuery" 
+                            type="text" 
+                            placeholder="Cari nama, role, atau ulasan..." 
+                            class="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-shop-primary/20 focus:border-shop-primary transition-all"
+                        />
+                    </div>
+                    <p class="text-xs text-gray-500">
+                        Menampilkan <strong class="text-gray-900">{{ filteredTestimonials.length }}</strong> dari {{ testimonials.total }} ulasan
+                    </p>
+                </div>
+
+                <!-- Table Content -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-[#FFFFFF] border-b border-[#E5E5E5]">
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider w-16">No.</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Pengguna</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider">Isi Testimoni</th>
-                                <th class="px-6 py-3 text-[12px] font-[500] text-[#606060] uppercase tracking-wider text-right">Aksi</th>
+                            <tr class="bg-gray-50/75 border-b border-gray-100">
+                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-16 text-center">No</th>
+                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Praktikan</th>
+                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rating & Ulasan</th>
+                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#E5E5E5]">
-                            <tr v-if="testimonials.data.length === 0">
-                                <td colspan="4" class="px-6 py-8 text-center text-[#606060]">Tidak ada testimoni.</td>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            <tr v-if="filteredTestimonials.length === 0">
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-2xl mb-3">
+                                            <i class="fa-regular fa-comment-dots"></i>
+                                        </div>
+                                        <p class="font-medium text-gray-600">Tidak ada testimoni yang ditemukan</p>
+                                        <p class="text-xs text-gray-400 mt-1">Ubah kata kunci pencarian atau buat testimoni baru.</p>
+                                    </div>
+                                </td>
                             </tr>
-                            <tr v-for="(testi, index) in testimonials.data" :key="testi.id" class="hover:bg-[#F8F8F8] transition-colors">
-                                <td class="px-6 py-4 text-[14px] text-[#606060]">
+                            <tr v-for="(testi, index) in filteredTestimonials" :key="testi.id" class="hover:bg-gray-50/60 transition-colors">
+                                <td class="px-6 py-4 text-center text-xs font-medium text-gray-400">
                                     {{ (testimonials.current_page - 1) * testimonials.per_page + index + 1 }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div :class="'w-10 h-10 rounded-[9999px] flex items-center justify-center font-[500] text-[16px] ' + 
-                                            (testi.color_theme === 'primary' ? 'bg-[#065FD4]/10 text-[#065FD4]' :
-                                            testi.color_theme === 'secondary' ? 'bg-[#C026D3]/10 text-[#C026D3]' :
-                                            testi.color_theme === 'success' ? 'bg-[#10B981]/10 text-[#10B981]' :
-                                            testi.color_theme === 'warning' ? 'bg-[#F59E0B]/10 text-[#F59E0B]' :
-                                            'bg-[#3B82F6]/10 text-[#3B82F6]')"
+                                        <div 
+                                            class="w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm shrink-0 shadow-xs"
+                                            :class="getThemeBadgeClasses(testi.color_theme)"
                                         >
                                             {{ testi.name.charAt(0).toUpperCase() }}
                                         </div>
                                         <div>
-                                            <p class="text-[14px] font-[500] text-[#0F0F0F]">{{ testi.name }}</p>
-                                            <p class="text-[12px] text-[#606060] mt-0.5">{{ testi.role }}</p>
+                                            <p class="font-semibold text-gray-900 leading-tight">{{ testi.name }}</p>
+                                            <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-briefcase text-[10px] text-gray-400"></i>
+                                                {{ testi.role || 'Praktikan Lab' }}
+                                            </p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-[14px] text-[#0F0F0F] max-w-[400px] truncate" :title="testi.content">
-                                    "{{ testi.content }}"
+                                <td class="px-6 py-4 max-w-lg">
+                                    <div class="space-y-1.5">
+                                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                            <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
+                                            <span class="text-[11px] font-semibold text-gray-400 ml-1">5.0</span>
+                                        </div>
+                                        <p class="text-xs text-gray-700 italic leading-relaxed line-clamp-2">
+                                            <i class="fa-solid fa-quote-left text-gray-300 mr-1 text-[10px]"></i>
+                                            {{ testi.content }}
+                                            <i class="fa-solid fa-quote-right text-gray-300 ml-1 text-[10px]"></i>
+                                        </p>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                    <button @click="openEditModal(testi)" class="p-1.5 text-[#065FD4] hover:bg-[#E5E5E5] rounded-[4px] transition-colors" title="Edit">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                    </button>
-                                    <button @click="openDeleteModal(testi.id)" class="p-1.5 text-[#FF0000] hover:bg-[#FEF2F2] rounded-[4px] transition-colors" title="Delete">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </button>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="inline-flex items-center gap-1">
+                                        <button 
+                                            @click="openEditModal(testi)" 
+                                            class="p-2 text-gray-400 hover:text-shop-primary hover:bg-shop-primary/10 rounded-lg transition-colors" 
+                                            title="Edit Testimoni"
+                                        >
+                                            <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                        </button>
+                                        <button 
+                                            @click="openDeleteModal(testi.id)" 
+                                            class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                                            title="Hapus Testimoni"
+                                        >
+                                            <i class="fa-solid fa-trash-can text-sm"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -187,9 +317,9 @@ const changePage = (url) => {
                 </div>
 
                 <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-[#E5E5E5] flex flex-col md:flex-row justify-between items-center gap-4 bg-[#FFFFFF]" v-if="testimonials.links.length > 3">
-                    <span class="text-[12px] text-[#606060]">
-                        Menampilkan {{ testimonials.from }} ke {{ testimonials.to }} dari {{ testimonials.total }} testimoni
+                <div class="px-6 py-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-white" v-if="testimonials.links && testimonials.links.length > 3">
+                    <span class="text-xs text-gray-500">
+                        Menampilkan <strong class="text-gray-900">{{ testimonials.from || 0 }}</strong> - <strong class="text-gray-900">{{ testimonials.to || 0 }}</strong> dari {{ testimonials.total }} testimoni
                     </span>
                     <div class="flex items-center gap-1">
                         <button 
@@ -198,61 +328,100 @@ const changePage = (url) => {
                             @click="changePage(link.url)"
                             v-html="link.label.replace('Previous', '&laquo;').replace('Next', '&raquo;')"
                             :disabled="!link.url"
-                            class="min-w-[32px] h-[32px] flex items-center justify-center px-2 rounded-[4px] text-[14px] transition-colors"
+                            class="min-w-[34px] h-[34px] flex items-center justify-center px-2.5 rounded-lg text-xs font-medium transition-colors"
                             :class="[
-                                link.active ? 'bg-[#F2F2F2] text-[#0F0F0F] font-[500]' : 'text-[#606060] hover:bg-[#F2F2F2]',
-                                !link.url ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                link.active ? 'bg-shop-primary text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100',
+                                !link.url ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                             ]"
                         ></button>
                     </div>
                 </div>
-
             </div>
         </div>
 
         <!-- Create / Edit Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-6">
-                    {{ editMode ? 'Edit Testimoni' : 'Buat Testimoni Baru' }}
-                </h2>
+            <div class="p-6">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid" :class="editMode ? 'fa-pen-to-square' : 'fa-plus'"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-gray-900">
+                            {{ editMode ? 'Edit Testimoni' : 'Buat Testimoni Baru' }}
+                        </h2>
+                    </div>
+                    <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-sm p-1 rounded-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <InputLabel for="name" value="Nama Pengguna" />
-                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <InputLabel for="name" value="Nama Pengguna / Praktikan" />
+                        <TextInput 
+                            id="name" 
+                            type="text" 
+                            class="mt-1 block w-full rounded-xl border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20" 
+                            placeholder="Contoh: Rian Pratama" 
+                            v-model="form.name" 
+                            required 
+                            autofocus 
+                        />
+                        <InputError class="mt-1 text-xs" :message="form.errors.name" />
                     </div>
 
                     <div>
-                        <InputLabel for="role" value="Jabatan / Pekerjaan" />
-                        <TextInput id="role" type="text" class="mt-1 block w-full" v-model="form.role" />
-                        <InputError class="mt-2" :message="form.errors.role" />
+                        <InputLabel for="role" value="Jabatan / Kampus / Instansi" />
+                        <TextInput 
+                            id="role" 
+                            type="text" 
+                            class="mt-1 block w-full rounded-xl border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20" 
+                            placeholder="Contoh: Network Engineer / IT Telkom" 
+                            v-model="form.role" 
+                        />
+                        <InputError class="mt-1 text-xs" :message="form.errors.role" />
                     </div>
 
                     <div>
-                        <InputLabel for="content" value="Isi Testimoni" />
-                        <textarea id="content" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="3" v-model="form.content" required></textarea>
-                        <InputError class="mt-2" :message="form.errors.content" />
+                        <InputLabel for="content" value="Isi Ulasan Testimoni" />
+                        <textarea 
+                            id="content" 
+                            class="mt-1 block w-full border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl shadow-xs text-sm" 
+                            rows="4" 
+                            placeholder="Ceritakan pengalaman belajar atau menggunakan server PNetLab..." 
+                            v-model="form.content" 
+                            required
+                        ></textarea>
+                        <InputError class="mt-1 text-xs" :message="form.errors.content" />
                     </div>
 
                     <div>
-                        <InputLabel for="color_theme" value="Tema Warna (Avatar Inisial)" />
-                        <select id="color_theme" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" v-model="form.color_theme" required>
-                            <option value="primary">Primary (Biru)</option>
-                            <option value="secondary">Secondary (Ungu)</option>
-                            <option value="info">Info (Biru Muda)</option>
-                            <option value="success">Success (Hijau)</option>
-                            <option value="warning">Warning (Oranye)</option>
+                        <InputLabel for="color_theme" value="Warna Aksen Avatar" />
+                        <select 
+                            id="color_theme" 
+                            class="mt-1 block w-full border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl shadow-xs text-sm" 
+                            v-model="form.color_theme" 
+                            required
+                        >
+                            <option value="primary">Merah Crimson (Brand Utama)</option>
+                            <option value="secondary">Ungu Lavender</option>
+                            <option value="info">Biru Langit</option>
+                            <option value="success">Hijau Emerald</option>
+                            <option value="warning">Kuning Amber</option>
                         </select>
-                        <InputError class="mt-2" :message="form.errors.color_theme" />
+                        <InputError class="mt-1 text-xs" :message="form.errors.color_theme" />
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
-                        <SecondaryButton @click="closeModal">Batal</SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    <div class="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                        <SecondaryButton @click="closeModal" class="rounded-xl">Batal</SecondaryButton>
+                        <button 
+                            type="submit" 
+                            :disabled="form.processing"
+                            class="bg-shop-primary hover:bg-shop-secondary text-white font-medium px-5 py-2 rounded-xl text-sm transition-all shadow-xs disabled:opacity-50"
+                        >
                             {{ editMode ? 'Simpan Perubahan' : 'Buat Testimoni' }}
-                        </PrimaryButton>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -260,19 +429,21 @@ const changePage = (url) => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal">
-            <div class="p-6 font-['Roboto']">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">
-                    Hapus Testimoni
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900 mb-1">
+                    Hapus Testimoni Ini?
                 </h2>
-                <p class="text-sm text-gray-600">
-                    Apakah Anda yakin ingin menghapus testimoni ini? Aksi ini tidak dapat dibatalkan.
+                <p class="text-sm text-gray-500">
+                    Apakah Anda yakin ingin menghapus testimoni ini secara permanen? Data yang sudah dihapus tidak dapat dipulihkan.
                 </p>
                 <div class="mt-6 flex justify-end gap-3">
-                    <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
-                    <DangerButton @click="deleteTestimonial">Hapus</DangerButton>
+                    <SecondaryButton @click="closeDeleteModal" class="rounded-xl">Batal</SecondaryButton>
+                    <DangerButton @click="deleteTestimonial" class="rounded-xl">Hapus Sekarang</DangerButton>
                 </div>
             </div>
         </Modal>
-
     </AuthenticatedLayout>
 </template>

@@ -39,8 +39,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
         if ($user->role === 'admin') {
-            $recentUsers = \App\Models\Voucher::with('user')->latest()->take(5)->get();
+            $totalVouchers = \App\Models\Voucher::count();
+            $activeVouchers = \App\Models\Voucher::where('status', 'aktif')->count();
+            $unactiveVouchers = \App\Models\Voucher::where('status', 'belum aktif')->count();
+            $expiredVouchers = \App\Models\Voucher::where('status', 'expired')->count();
+            $totalRegisteredUsers = \App\Models\User::where('role', 'user')->count();
+            $totalTransactions = \App\Models\Transaction::count();
+            $successfulRevenue = \App\Models\Transaction::where('status', 'success')->sum('gross_amount');
+            $recentUsers = \App\Models\Voucher::with('user')->latest()->take(6)->get();
+
             return Inertia::render('Dashboard', [
+                'admin_stats' => [
+                    'total_vouchers' => $totalVouchers,
+                    'active_vouchers' => $activeVouchers,
+                    'unactive_vouchers' => $unactiveVouchers,
+                    'expired_vouchers' => $expiredVouchers,
+                    'total_users' => $totalRegisteredUsers,
+                    'total_transactions' => $totalTransactions,
+                    'total_revenue' => $successfulRevenue,
+                ],
                 'recent_users' => $recentUsers
             ]);
         }

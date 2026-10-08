@@ -9,150 +9,241 @@ const sidebarExpanded = ref(true);
 </script>
 
 <template>
-    <div class="flex flex-col min-h-screen bg-[#FFFFFF] font-['Roboto'] text-[#0F0F0F]">
+    <div class="flex flex-col min-h-screen bg-[#F9FAFB] font-sans text-gray-800 selection:bg-shop-primary selection:text-white">
         
-        <!-- Topbar (56px) -->
-        <header class="h-[56px] bg-[#FFFFFF] flex items-center justify-between px-4 sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
-            <!-- Left: Hamburger & Logo -->
-            <div class="flex items-center gap-4">
-                <button @click="sidebarExpanded = !sidebarExpanded" class="p-2 rounded-full hover:bg-[#F2F2F2] transition text-[#0F0F0F]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        <!-- Topbar -->
+        <header class="h-16 bg-white/95 backdrop-blur-md flex items-center justify-between px-4 sm:px-6 sticky top-0 z-50 border-b border-gray-200/80 shadow-xs">
+            <!-- Left: Toggle & Logo -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <button 
+                    @click="sidebarExpanded = !sidebarExpanded" 
+                    class="p-2 rounded-xl hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors focus:outline-none"
+                    aria-label="Toggle Sidebar"
+                >
+                    <i class="fa-solid fa-bars-staggered text-lg"></i>
                 </button>
-                <Link :href="route('dashboard')" class="flex items-center gap-1" title="Meraki Labs Home">
-                    <img src="/img/logo.png" alt="Meraki Labs" class="h-8 md:h-10">
+                
+                <Link :href="route('dashboard')" class="flex items-center gap-2 group" title="Meraki Labs Dashboard">
+                    <img src="/img/logo.png" alt="Meraki Labs" class="h-8 md:h-9 transition-transform group-hover:scale-105">
                 </Link>
             </div>
             
-            <!-- Center: Spacer -->
-            <div class="flex-1"></div>
+            <!-- Right Actions & User Menu -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Role Badge -->
+                <span 
+                    v-if="$page.props.auth.user.role === 'admin'"
+                    class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-shop-primary/10 text-shop-primary border border-shop-primary/20"
+                >
+                    <i class="fa-solid fa-shield-halved text-[11px]"></i>
+                    <span>Administrator</span>
+                </span>
+                <span 
+                    v-else
+                    class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+                >
+                    <i class="fa-solid fa-circle-check text-[11px]"></i>
+                    <span>Member Lab</span>
+                </span>
 
-            <!-- Right: User -->
-            <div class="flex items-center gap-2">
-                <div class="ml-2">
-                    <Dropdown align="right" width="48">
-                        <template #trigger>
-                            <button class="flex items-center p-1 rounded-[9999px] hover:bg-[#F2F2F2] transition">
-                                <div class="w-[36px] h-[36px] rounded-[9999px] bg-[#065FD4] text-white flex items-center justify-center text-[14px] font-[500]">
-                                    {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
-                                </div>
-                            </button>
-                        </template>
-                        <template #content>
-                            <div class="py-2 w-[300px] shadow-[0_4px_32px_rgba(0,0,0,0.1)] rounded-[4px]">
-                                <div class="px-4 py-3 flex items-start gap-4 border-b border-[#E5E5E5]">
-                                    <div class="w-10 h-10 rounded-[9999px] bg-[#065FD4] text-white flex items-center justify-center text-[16px] font-[500] shrink-0">
-                                        {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
-                                    </div>
-                                    <div>
-                                        <p class="text-[16px] font-[500] text-[#0F0F0F]">{{ $page.props.auth.user.name }}</p>
-                                        <p class="text-[14px] font-[400] text-[#0F0F0F] mt-1">@{{ $page.props.auth.user.name.toLowerCase().replace(/\s+/g, '') }}</p>
-                                        <Link :href="route('profile.edit')" class="text-[14px] text-[#065FD4] font-[500] mt-2 block hover:underline">View your channel</Link>
-                                    </div>
-                                </div>
-                                <div class="py-2">
-                                    <DropdownLink :href="route('logout')" method="post" as="button" class="px-4 py-2 hover:bg-[#F2F2F2] flex items-center gap-4 text-[14px] font-[400] text-[#0F0F0F]">
-                                        <svg class="w-6 h-6 text-[#606060]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                                        Sign out
-                                    </DropdownLink>
-                                </div>
+                <!-- Quick Landing Page Link -->
+                <Link 
+                    href="/" 
+                    target="_blank"
+                    class="p-2 rounded-xl text-gray-500 hover:text-shop-primary hover:bg-gray-100 transition-colors"
+                    title="Buka Website Landing Page"
+                >
+                    <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                </Link>
+
+                <!-- Profile Dropdown -->
+                <Dropdown align="right" width="60">
+                    <template #trigger>
+                        <button class="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-shop-primary/20 transition-all focus:outline-none">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-shop-primary to-rose-600 text-white flex items-center justify-center text-sm font-bold shadow-xs">
+                                {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
                             </div>
-                        </template>
-                    </Dropdown>
-                </div>
+                        </button>
+                    </template>
+                    <template #content>
+                        <div class="py-1 min-w-[260px] bg-white rounded-xl shadow-shop-lg border border-gray-100 divide-y divide-gray-100">
+                            <!-- User Brief Header -->
+                            <div class="px-4 py-3">
+                                <p class="text-sm font-bold text-gray-900 truncate">{{ $page.props.auth.user.name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ $page.props.auth.user.email }}</p>
+                                <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase" :class="$page.props.auth.user.role === 'admin' ? 'bg-shop-primary/10 text-shop-primary' : 'bg-gray-100 text-gray-600'">
+                                    {{ $page.props.auth.user.role }}
+                                </span>
+                            </div>
+
+                            <!-- Links -->
+                            <div class="py-1">
+                                <Link 
+                                    :href="route('profile.edit')" 
+                                    class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 hover:text-shop-primary flex items-center gap-2.5 transition-colors"
+                                >
+                                    <i class="fa-solid fa-user-gear text-gray-400 text-sm"></i>
+                                    <span>Pengaturan Profil</span>
+                                </Link>
+                                <Link 
+                                    href="/aktivasi-voucher" 
+                                    class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-gray-700 hover:bg-gray-50 hover:text-shop-primary flex items-center gap-2.5 transition-colors"
+                                >
+                                    <i class="fa-solid fa-bolt text-shop-primary text-sm"></i>
+                                    <span>Aktivasi Voucher</span>
+                                </Link>
+                            </div>
+
+                            <!-- Logout -->
+                            <div class="py-1">
+                                <DropdownLink 
+                                    :href="route('logout')" 
+                                    method="post" 
+                                    as="button" 
+                                    class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 transition-colors font-semibold"
+                                >
+                                    <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                                    <span>Keluar (Logout)</span>
+                                </DropdownLink>
+                            </div>
+                        </div>
+                    </template>
+                </Dropdown>
             </div>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             <aside 
-                :class="sidebarExpanded ? 'w-[240px]' : 'w-[72px]'" 
-                class="hidden sm:flex flex-col shrink-0 bg-[#FFFFFF] hover:overflow-y-auto overflow-hidden transition-all duration-200 sticky top-[56px] h-[calc(100vh-56px)]"
+                :class="sidebarExpanded ? 'w-60' : 'w-20'" 
+                class="hidden sm:flex flex-col justify-between shrink-0 bg-white border-r border-gray-200/80 transition-all duration-300 sticky top-16 h-[calc(100vh-64px)] z-20"
             >
-                <div class="py-3 px-3 flex flex-col gap-1">
-                    <Link :href="route('dashboard')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('dashboard') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                        <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('dashboard')"><path d="M4 21V10.08l8-6.96 8 6.96V21h-6v-6h-4v6H4z"/></svg>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path d="M4 21V10.08l8-6.96 8 6.96V21h-6v-6h-4v6H4z"/></svg>
+                <div class="p-3 space-y-1">
+                    <!-- Nav Item: Overview -->
+                    <Link 
+                        :href="route('dashboard')" 
+                        class="flex items-center px-3.5 h-11 rounded-xl transition-all group"
+                        :class="route().current('dashboard') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                        title="Overview"
+                    >
+                        <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                            <i class="fa-solid fa-gauge-high text-base"></i>
                         </div>
-                        <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Overview</span>
-                        <span v-else class="text-[10px] font-[400] absolute mt-10">Overview</span>
+                        <span v-if="sidebarExpanded" class="text-sm truncate">Overview</span>
                     </Link>
 
                     <!-- User Only Links -->
                     <template v-if="$page.props.auth.user.role === 'user'">
-                        <Link href="/riwayat-transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/riwayat-transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/riwayat-transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        <Link 
+                            href="/riwayat-transaksi" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/riwayat-transaksi') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Riwayat Transaksi"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-receipt text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Riwayat Transaksi</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Transaksi</span>
                         </Link>
 
-                        <Link href="/aktivasi-voucher" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/aktivasi-voucher') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/aktivasi-voucher')"><path d="M15.5 2a6.5 6.5 0 0 0-6.02 9.02L2 18.5v3.5h3.5v-2h2v-2h2v-2h1.61a6.5 6.5 0 1 0 2.39-14M17 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+                        <Link 
+                            href="/aktivasi-voucher" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/aktivasi-voucher') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Aktivasi Voucher"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-bolt text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Aktivasi Voucher</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Aktivasi</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Aktivasi Voucher</span>
                         </Link>
                     </template>
 
                     <!-- Admin Only Links -->
                     <template v-if="$page.props.auth.user.role === 'admin'">
-                        <Link :href="route('users')" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="route().current('users') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="route().current('users')"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        <div v-if="sidebarExpanded" class="pt-4 pb-1 px-3">
+                            <span class="text-[11px] font-mono uppercase tracking-wider text-gray-400 font-bold">Admin Modules</span>
+                        </div>
+
+                        <!-- Users / Voucher Lab -->
+                        <Link 
+                            :href="route('users')" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="route().current('users') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Manajemen Voucher Lab"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-ticket text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Users</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Users</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Voucher Lab</span>
                         </Link>
 
-                        <Link href="/produk" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/produk') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/produk')"><path d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.466 1.64-1.196 2.062l-6.804 3.931a2.38 2.38 0 01-2.001 0l-6.804-3.931A2.38 2.38 0 013 16.811V7.189c0-.864.466-1.64 1.196-2.062l6.804-3.931c.622-.36 1.379-.36 2.001 0l6.804 3.931A2.38 2.38 0 0121 7.189v9.622z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
+                        <!-- Produk -->
+                        <Link 
+                            href="/produk" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/produk') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Paket Produk"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-box-archive text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Produk</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Produk</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Produk Paket</span>
                         </Link>
 
-                        <Link href="/transaksi" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/transaksi') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/transaksi')"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        <!-- Transaksi -->
+                        <Link 
+                            href="/transaksi" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/transaksi') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Transaksi Pengguna"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-file-invoice-dollar text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Transaksi</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Transaksi</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Transaksi</span>
                         </Link>
 
-                        <Link href="/testimoni" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/testimoni') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/testimoni')"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.897 5.515 5 7.022V22l5.064-2.25c.306.015.617.03 1.936.03 5.514 0 10-3.589 10-8s-4.486-8-10-8zm0 14c-1.127 0-2-.134-2.5-.236l-2.483 1.103.013-2.127c-2.023-1.077-3.03-2.883-3.03-4.74 0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+                        <!-- Testimoni -->
+                        <Link 
+                            href="/testimoni" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/testimoni') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Testimoni"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-comment-dots text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Testimoni</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Testimoni</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Testimoni</span>
                         </Link>
 
-                        <Link href="/pendaftar" class="flex items-center px-[16px] h-[40px] rounded-[8px] transition-colors" :class="$page.url.startsWith('/pendaftar') ? 'bg-[#F2F2F2] font-[700]' : 'hover:bg-[#F2F2F2] font-[400]'">
-                            <div class="flex items-center justify-center w-[24px] h-[24px] shrink-0" :class="sidebarExpanded ? 'mr-6' : 'mx-auto'">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" v-if="$page.url.startsWith('/pendaftar')"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" v-else><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                        <!-- Pendaftar Akun -->
+                        <Link 
+                            href="/pendaftar" 
+                            class="flex items-center px-3.5 h-11 rounded-xl transition-all"
+                            :class="$page.url.startsWith('/pendaftar') ? 'bg-shop-primary text-white font-bold shadow-shop-md' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium'"
+                            title="Pendaftar Akun Web"
+                        >
+                            <div class="flex items-center justify-center w-6 shrink-0" :class="sidebarExpanded ? 'mr-3' : 'mx-auto'">
+                                <i class="fa-solid fa-users text-base"></i>
                             </div>
-                            <span v-if="sidebarExpanded" class="text-[14px] truncate whitespace-nowrap">Pendaftar</span>
-                            <span v-else class="text-[10px] font-[400] absolute mt-10">Pendaftar</span>
+                            <span v-if="sidebarExpanded" class="text-sm truncate">Pendaftar Akun</span>
                         </Link>
                     </template>
                 </div>
 
-
+                <!-- Bottom Sidebar Cluster Status (Shown when expanded) -->
+                <div v-if="sidebarExpanded" class="p-3.5 m-3 rounded-2xl bg-gray-50 border border-gray-200/80 text-xs">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-gray-700">Simulator Core</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 font-mono">PNETLab Cluster Active</p>
+                </div>
             </aside>
 
             <!-- Main Content Area -->
-            <main class="flex-1 bg-[#FFFFFF] overflow-x-hidden">
+            <main class="flex-1 bg-[#F9FAFB] overflow-x-hidden p-4 sm:p-6 lg:p-8">
                 <slot />
             </main>
         </div>
