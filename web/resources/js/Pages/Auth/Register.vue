@@ -25,7 +25,7 @@ const showPasswordConfirmation = ref(false);
 
 <template>
     <GuestLayout
-        title="Buat Akun Baru 🚀"
+        title="Buat Akun Baru"
         subtitle="Daftar akun sekarang untuk mulai praktikum di simulator lab Meraki Labs."
         active-page="register"
     >

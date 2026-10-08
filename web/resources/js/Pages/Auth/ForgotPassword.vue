@@ -22,7 +22,7 @@ const submit = () => {
 
 <template>
     <GuestLayout
-        title="Lupa Kata Sandi? 🔒"
+        title="Lupa Kata Sandi?"
         subtitle="Masukkan alamat email akun Anda. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi."
         active-page="forgot-password"
     >

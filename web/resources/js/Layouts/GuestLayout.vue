@@ -76,15 +76,15 @@ defineProps({
                     
                     <div class="space-y-2 text-xs font-mono">
                         <div class="flex items-center justify-between text-gray-300">
-                            <span class="text-gray-400">⚡ Engine Simulator:</span>
+                            <span class="text-gray-400"><i class="fa-solid fa-microchip text-rose-400 mr-1.5"></i>Engine Simulator:</span>
                             <span class="text-white font-medium">PNETLab v6 Ready</span>
                         </div>
                         <div class="flex items-center justify-between text-gray-300">
-                            <span class="text-gray-400">🌐 Vendor Tersedia:</span>
+                            <span class="text-gray-400"><i class="fa-solid fa-network-wired text-rose-400 mr-1.5"></i>Vendor Tersedia:</span>
                             <span class="text-rose-300 font-medium">MikroTik, Cisco, Juniper</span>
                         </div>
                         <div class="flex items-center justify-between text-gray-300">
-                            <span class="text-gray-400">⏱️ Aksesibilitas:</span>
+                            <span class="text-gray-400"><i class="fa-solid fa-clock text-emerald-400 mr-1.5"></i>Aksesibilitas:</span>
                             <span class="text-emerald-400 font-medium">24/7 Nonstop Online</span>
                         </div>
                     </div>
@@ -179,7 +179,7 @@ defineProps({
                     :href="route('aktivasi.index')" 
                     class="hover:text-shop-primary font-semibold flex items-center gap-1.5 transition-colors"
                 >
-                    <span class="text-shop-primary">⚡</span>
+                    <i class="fa-solid fa-bolt text-shop-primary"></i>
                     <span>Aktivasi Kode Voucher</span>
                 </Link>
 

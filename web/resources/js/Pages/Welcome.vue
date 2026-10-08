@@ -23,7 +23,6 @@ defineProps({
 
 const openFaq = ref(null);
 const mobileMenuOpen = ref(false);
-const activeHeroTab = ref('ospf');
 
 const faqs = [
     {
@@ -55,7 +54,8 @@ const topologies = [
         desc: "Interkoneksi dinamis antara MikroTik RouterOS v7 dan Cisco IOS-XR dengan full routing table.",
         tags: ["MikroTik", "Cisco", "OSPFv3", "BGP"],
         nodes: "6 Nodes",
-        difficulty: "Menengah"
+        difficulty: "Menengah",
+        icon: "fa-solid fa-route"
     },
     {
         id: "vlan",
@@ -63,7 +63,8 @@ const topologies = [
         desc: "Simulasi segmentasi jaringan kantor, 802.1Q trunking, dan Router-on-a-Stick gateway.",
         tags: ["Cisco Switch", "VLAN", "Router-on-a-Stick"],
         nodes: "4 Nodes",
-        difficulty: "Pemula"
+        difficulty: "Pemula",
+        icon: "fa-solid fa-sitemap"
     },
     {
         id: "firewall",
@@ -71,7 +72,8 @@ const topologies = [
         desc: "Praktik proteksi jaringan, Port Forwarding (Dst-NAT), Masquerade, dan Mangle QoS.",
         tags: ["MikroTik", "Firewall", "NAT", "QoS"],
         nodes: "3 Nodes",
-        difficulty: "Pemula - Menengah"
+        difficulty: "Pemula - Menengah",
+        icon: "fa-solid fa-shield-halved"
     },
     {
         id: "vpn",
@@ -79,7 +81,8 @@ const topologies = [
         desc: "Membangun tunnel secure antar kantor cabang menggunakan Wireguard, IPsec IKEv2, dan GRE.",
         tags: ["Juniper", "MikroTik", "Wireguard", "IPsec"],
         nodes: "5 Nodes",
-        difficulty: "Lanjutan"
+        difficulty: "Lanjutan",
+        icon: "fa-solid fa-lock"
     },
     {
         id: "automation",
@@ -87,7 +90,8 @@ const topologies = [
         desc: "Push konfigurasi massal otomatis ke puluhan router menggunakan script Python dan Ansible.",
         tags: ["Linux", "Python", "Netmiko", "Ansible"],
         nodes: "5 Nodes",
-        difficulty: "Lanjutan"
+        difficulty: "Lanjutan",
+        icon: "fa-solid fa-code"
     }
 ];
 
@@ -151,7 +155,8 @@ const checkout = async (productId) => {
                         href="/aktivasi-voucher" 
                         class="hover:text-shop-primary font-bold text-gray-700 flex items-center gap-1.5 transition-colors"
                     >
-                        <span class="text-shop-primary">⚡</span> Aktivasi
+                        <i class="fa-solid fa-bolt text-shop-primary text-xs"></i>
+                        <span>Aktivasi</span>
                     </Link>
 
                     <Link 
@@ -159,9 +164,7 @@ const checkout = async (productId) => {
                         class="bg-shop-primary hover:bg-shop-secondary text-white px-5 py-2 rounded-full transition-all flex items-center gap-2 shadow-shop-md hover:shadow-shop-hover hover:-translate-y-0.5"
                     >
                         <span>Member Area</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
+                        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
                     </Link>
                 </div>
 
@@ -178,12 +181,8 @@ const checkout = async (productId) => {
                         class="p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
                         aria-label="Toggle Menu"
                     >
-                        <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <i v-if="!mobileMenuOpen" class="fa-solid fa-bars text-lg"></i>
+                        <i v-else class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
             </div>
@@ -197,11 +196,13 @@ const checkout = async (productId) => {
                 <a @click="mobileMenuOpen = false" href="#pricing" class="block py-1.5 hover:text-shop-primary">Pilihan Paket</a>
                 <a @click="mobileMenuOpen = false" href="#faq" class="block py-1.5 hover:text-shop-primary">FAQ</a>
                 <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <Link href="/aktivasi-voucher" class="w-full text-center py-2.5 rounded-xl border border-shop-primary text-shop-primary font-bold">
-                        ⚡ Aktivasi Voucher
+                    <Link href="/aktivasi-voucher" class="w-full text-center py-2.5 rounded-xl border border-shop-primary text-shop-primary font-bold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                        <span>Aktivasi Voucher</span>
                     </Link>
-                    <Link href="/login" class="w-full text-center py-2.5 rounded-xl bg-shop-primary text-white font-bold">
-                        Member Area (Login)
+                    <Link href="/login" class="w-full text-center py-2.5 rounded-xl bg-shop-primary text-white font-bold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+                        <span>Member Area (Login)</span>
                     </Link>
                 </div>
             </div>
@@ -226,25 +227,25 @@ const checkout = async (productId) => {
                     Praktik langsung <strong class="text-gray-800">MikroTik, Cisco, Juniper, dan Linux Server</strong> siap pakai 24/7. Tingkatkan skill networking & persiapan sertifikasi tanpa perlu laptop spesifikasi dewa.
                 </p>
 
-                <!-- Feature Checkmarks -->
-                <ul class="space-y-3 mb-10 text-[15px] text-gray-700 font-medium">
+                <!-- Feature Checkmarks with FontAwesome Icons -->
+                <ul class="space-y-3.5 mb-10 text-[15px] text-gray-700 font-medium">
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0 text-xs">
+                            <i class="fa-solid fa-check"></i>
                         </div>
-                        <span>Lab siap pakai instan tanpa installasi QEMU/IOL manual</span>
+                        <span>Lab siap pakai instan tanpa instalasi QEMU/IOL manual</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0 text-xs">
+                            <i class="fa-solid fa-check"></i>
                         </div>
                         <span>Akses online 24 jam nonstop via browser apa saja</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                        <div class="w-6 h-6 rounded-full bg-shop-success/15 flex items-center justify-center text-shop-success shrink-0 text-xs">
+                            <i class="fa-solid fa-check"></i>
                         </div>
-                        <span>Bebas bikin topologi multi-vendor sesuai kebutuhan</span>
+                        <span>Bebas rancang topologi multi-vendor sesuai kebutuhan</span>
                     </li>
                 </ul>
 
@@ -252,18 +253,17 @@ const checkout = async (productId) => {
                 <div class="flex flex-wrap gap-4 items-center">
                     <a 
                         href="#pricing" 
-                        class="bg-shop-primary hover:bg-shop-secondary text-white font-poppins font-bold py-3.5 px-8 rounded-full shadow-shop-md hover:shadow-shop-hover hover:-translate-y-0.5 transition-all duration-200 text-sm sm:text-base"
+                        class="bg-shop-primary hover:bg-shop-secondary text-white font-poppins font-bold py-3.5 px-8 rounded-full shadow-shop-md hover:shadow-shop-hover hover:-translate-y-0.5 transition-all duration-200 text-sm sm:text-base flex items-center gap-2"
                     >
-                        Mulai Belajar Sekarang 🚀
+                        <span>Mulai Belajar Sekarang</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
                     <a 
                         href="#topologi" 
                         class="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200 font-poppins font-bold py-3.5 px-6 rounded-full hover:-translate-y-0.5 transition-all text-sm sm:text-base flex items-center gap-2"
                     >
                         <span>Lihat Topologi</span>
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
                     </a>
                 </div>
             </div>
@@ -300,7 +300,7 @@ const checkout = async (productId) => {
 
                         <div class="flex items-center justify-between text-xs text-gray-400 font-mono mb-4">
                             <span>TOPOLOGY CANVAS // ACTIVE</span>
-                            <span class="text-shop-tertiary">Multi-Vendor Mesh</span>
+                            <span class="text-rose-400 font-medium">Multi-Vendor Mesh</span>
                         </div>
 
                         <!-- Nodes Flow Diagram -->
@@ -309,7 +309,7 @@ const checkout = async (productId) => {
                             <!-- Node 1: MikroTik Core -->
                             <div class="bg-gray-900/90 border border-shop-primary/60 rounded-xl p-3 shadow-md hover:border-shop-primary transition-colors">
                                 <div class="w-8 h-8 rounded-lg bg-shop-primary/20 text-shop-primary mx-auto flex items-center justify-center font-bold text-xs mb-1">
-                                    MT
+                                    <i class="fa-solid fa-server"></i>
                                 </div>
                                 <p class="text-xs font-bold text-white truncate">R1-MikroTik</p>
                                 <p class="text-[10px] font-mono text-gray-400">ROS v7.14</p>
@@ -327,7 +327,7 @@ const checkout = async (productId) => {
                             <!-- Node 2: Cisco L3 Switch -->
                             <div class="bg-gray-900/90 border border-blue-500/60 rounded-xl p-3 shadow-md hover:border-blue-400 transition-colors">
                                 <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 mx-auto flex items-center justify-center font-bold text-xs mb-1">
-                                    CS
+                                    <i class="fa-solid fa-network-wired"></i>
                                 </div>
                                 <p class="text-xs font-bold text-white truncate">SW1-Cisco</p>
                                 <p class="text-[10px] font-mono text-gray-400">IOS-XE 17.x</p>
@@ -364,14 +364,14 @@ const checkout = async (productId) => {
                         </div>
                     </div>
 
-                    <!-- Telemetry Floating Highlights -->
+                    <!-- Telemetry Floating Highlights with FontAwesome Icons -->
                     <div class="mt-4 flex flex-wrap items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-800/80">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-shop-tertiary">⚡</span>
+                            <i class="fa-solid fa-bolt text-rose-400"></i>
                             <span>Low Latency Response</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="text-emerald-400">✔</span>
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i>
                             <span>Dedicated CPU & RAM Pool</span>
                         </div>
                     </div>
@@ -421,8 +421,9 @@ const checkout = async (productId) => {
                 <!-- Step 1 -->
                 <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-shop-md transition-shadow relative">
                     <div class="w-12 h-12 rounded-xl bg-shop-primary/10 text-shop-primary font-poppins font-extrabold text-xl flex items-center justify-center mb-6">
-                        1
+                        <i class="fa-solid fa-list-check text-lg"></i>
                     </div>
+                    <div class="text-xs font-mono text-shop-primary font-bold mb-1">LANGKAH 01</div>
                     <h3 class="font-poppins text-xl font-bold text-gray-900 mb-3">Pilih Paket Belajar</h3>
                     <p class="text-gray-600 text-sm leading-relaxed">
                         Tentukan durasi akses lab (1, 2, 3, atau 4 minggu) sesuai kebutuhan latihan atau target ujian sertifikasi Anda.
@@ -432,8 +433,9 @@ const checkout = async (productId) => {
                 <!-- Step 2 -->
                 <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-shop-md transition-shadow relative">
                     <div class="w-12 h-12 rounded-xl bg-shop-primary/10 text-shop-primary font-poppins font-extrabold text-xl flex items-center justify-center mb-6">
-                        2
+                        <i class="fa-solid fa-credit-card text-lg"></i>
                     </div>
+                    <div class="text-xs font-mono text-shop-primary font-bold mb-1">LANGKAH 02</div>
                     <h3 class="font-poppins text-xl font-bold text-gray-900 mb-3">Dapatkan Kode Voucher</h3>
                     <p class="text-gray-600 text-sm leading-relaxed">
                         Selesaikan transaksi secara aman dengan QRIS / Bank Transfer via Midtrans. Kredensial akun lab aktif seketika.
@@ -443,8 +445,9 @@ const checkout = async (productId) => {
                 <!-- Step 3 -->
                 <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-shop-md transition-shadow relative">
                     <div class="w-12 h-12 rounded-xl bg-shop-primary/10 text-shop-primary font-poppins font-extrabold text-xl flex items-center justify-center mb-6">
-                        3
+                        <i class="fa-solid fa-display text-lg"></i>
                     </div>
+                    <div class="text-xs font-mono text-shop-primary font-bold mb-1">LANGKAH 03</div>
                     <h3 class="font-poppins text-xl font-bold text-gray-900 mb-3">Aktivasi & Mulai Lab</h3>
                     <p class="text-gray-600 text-sm leading-relaxed">
                         Masukkan kode voucher di halaman Aktivasi, login ke portal PNETLab, dan bangun topologi jaringan Anda langsung di browser.
@@ -469,7 +472,8 @@ const checkout = async (productId) => {
                     <!-- Tech Stack -->
                     <div class="bg-shop-background border border-gray-200 rounded-2xl p-8 hover:shadow-shop-md transition-shadow">
                         <h3 class="font-poppins text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-3">
-                            <span class="text-shop-primary">⚡</span> Teknologi yang Tersedia
+                            <i class="fa-solid fa-microchip text-shop-primary"></i>
+                            <span>Teknologi yang Tersedia</span>
                         </h3>
                         <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-[15px] font-medium text-gray-700">
                             <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-shop-primary"></span> MikroTik RouterOS v6 & v7</div>
@@ -483,16 +487,37 @@ const checkout = async (productId) => {
                         </div>
                     </div>
                     
-                    <!-- Suitable For -->
+                    <!-- Suitable For with FontAwesome Icons -->
                     <div class="bg-shop-background border border-gray-200 rounded-2xl p-8 hover:shadow-shop-md transition-shadow">
                         <h3 class="font-poppins text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-3">
-                            <span class="text-shop-secondary">🎯</span> Sangat Cocok Untuk
+                            <i class="fa-solid fa-bullseye text-shop-secondary"></i>
+                            <span>Sangat Cocok Untuk</span>
                         </h3>
                         <div class="space-y-3.5 text-[15px] font-medium text-gray-700">
-                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"><span class="text-xl">👨‍🎓</span> Mahasiswa & Pelajar Teknik Jaringan (TKJ/TI)</div>
-                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"><span class="text-xl">🛠️</span> Network Engineer & System Administrator</div>
-                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"><span class="text-xl">📜</span> Persiapan Ujian Sertifikasi MikroTik (MTCNA, MTCRE, MTCINE)</div>
-                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm"><span class="text-xl">🎖️</span> Persiapan Ujian Sertifikasi Cisco (CCNA 200-301, CCNP)</div>
+                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                                <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                                </div>
+                                <span>Mahasiswa & Pelajar Teknik Jaringan (TKJ / TI)</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                                <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-network-wired text-sm"></i>
+                                </div>
+                                <span>Network Engineer & System Administrator</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                                <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-certificate text-sm"></i>
+                                </div>
+                                <span>Persiapan Sertifikasi MikroTik (MTCNA, MTCRE, MTCINE)</span>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                                <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-award text-sm"></i>
+                                </div>
+                                <span>Persiapan Sertifikasi Cisco (CCNA 200-301, CCNP)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -503,7 +528,7 @@ const checkout = async (productId) => {
         <section id="topologi" class="max-w-7xl mx-auto px-4 md:px-8 py-20">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <span class="font-sans text-[11px] font-bold uppercase tracking-[0.1em] text-shop-primary bg-shop-primary/10 py-1 px-3.5 rounded-full mb-3 inline-block">
-                    Katalog Praktek
+                    Katalog Praktik
                 </span>
                 <h2 class="font-poppins text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
                     Skenario Topologi Siap Anda Bangun
@@ -522,7 +547,10 @@ const checkout = async (productId) => {
                     <div>
                         <div class="flex items-center justify-between text-xs font-mono text-gray-500 mb-3">
                             <span class="bg-gray-100 px-2.5 py-0.5 rounded-full text-gray-700 font-semibold">{{ topo.difficulty }}</span>
-                            <span class="text-shop-primary font-bold">{{ topo.nodes }}</span>
+                            <span class="text-shop-primary font-bold flex items-center gap-1.5">
+                                <i :class="topo.icon"></i>
+                                <span>{{ topo.nodes }}</span>
+                            </span>
                         </div>
                         <h4 class="font-poppins text-lg font-bold text-gray-900 mb-2 leading-snug">{{ topo.title }}</h4>
                         <p class="text-gray-600 text-sm leading-relaxed mb-6">{{ topo.desc }}</p>
@@ -569,7 +597,7 @@ const checkout = async (productId) => {
 
                         <ul class="space-y-3.5 mb-8 flex-1 text-[14px] text-gray-700">
                             <li v-for="(feature, idx) in product.features" :key="idx" class="flex items-start gap-2.5">
-                                <span class="text-shop-success font-bold">✔</span> 
+                                <i class="fa-solid fa-check text-shop-success text-xs mt-1"></i>
                                 <span>{{ feature }}</span>
                             </li>
                         </ul>
@@ -590,7 +618,7 @@ const checkout = async (productId) => {
             </div>
         </section>
 
-        <!-- Why Choose Us -->
+        <!-- Why Choose Us with FontAwesome Icons -->
         <section class="bg-gray-950 text-white py-20 relative overflow-hidden">
             <div class="absolute -top-24 -right-24 w-80 h-80 bg-shop-primary opacity-25 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 w-96 h-96 bg-shop-secondary opacity-20 rounded-full blur-3xl pointer-events-none"></div>
@@ -603,32 +631,44 @@ const checkout = async (productId) => {
                 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-shop-primary text-white rounded-xl flex items-center justify-center text-xl mb-4 shadow-lg shadow-shop-primary/20">🚀</div>
+                        <div class="w-12 h-12 bg-shop-primary text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-shop-primary/20">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Server Stabil & Performa Tinggi</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Dedicated resources untuk mencegah lag saat menyalakan banyak router dan node simulasi sekaligus.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-shop-secondary text-white rounded-xl flex items-center justify-center text-xl mb-4 shadow-lg shadow-shop-secondary/20">🔒</div>
+                        <div class="w-12 h-12 bg-shop-secondary text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-shop-secondary/20">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Akses Aman & Terisolasi</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Tiap akun memiliki workspace lab mandiri tanpa interferensi pengguna lain.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center text-xl mb-4 shadow-lg shadow-red-600/20">🌍</div>
+                        <div class="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-red-600/20">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Akses Dari Mana Saja</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Cukup gunakan laptop dan koneksi internet, Anda bisa praktikum dari rumah, kafe, atau kampus.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl mb-4">💬</div>
+                        <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Technical Support Siap Bantu</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Mengalami kendala saat konfigurasi atau topologi? Tim teknis kami siap memandu via WhatsApp.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-gray-700 text-white rounded-xl flex items-center justify-center text-xl mb-4">⚙️</div>
+                        <div class="w-12 h-12 bg-gray-700 text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-gray-700/20">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Ekosistem Multi-Vendor</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Mendukung kolaborasi MikroTik, Cisco, Juniper, Linux, dan Windows Server tanpa instalasi ulang.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                        <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-xl mb-4">💰</div>
+                        <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-lg mb-4 shadow-lg shadow-amber-500/20">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
                         <h4 class="font-poppins text-lg font-bold mb-2">Hemat Jutaan Rupiah</h4>
                         <p class="text-gray-400 text-sm leading-relaxed">Tidak perlu beli router fisik bekas atau rakit PC server belasan juta untuk sekadar belajar.</p>
                     </div>
@@ -651,8 +691,10 @@ const checkout = async (productId) => {
                 <!-- Auto-sliding track -->
                 <div class="flex gap-6 animate-slide group-hover:[animation-play-state:paused] w-max px-4">
                     <div v-for="(testi, index) in [...testimonials, ...testimonials]" :key="index" class="w-[320px] md:w-[400px] shrink-0 bg-shop-background border border-gray-200 p-8 rounded-2xl relative shadow-sm hover:shadow-md transition-shadow">
-                        <div class="text-shop-primary text-4xl absolute top-4 right-6 opacity-25 font-serif">"</div>
-                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10 h-[65px] overflow-hidden line-clamp-3">{{ testi.content }}</p>
+                        <div class="text-shop-primary text-3xl absolute top-5 right-6 opacity-25">
+                            <i class="fa-solid fa-quote-right"></i>
+                        </div>
+                        <p class="text-[15px] text-gray-700 italic mb-6 relative z-10 h-[65px] overflow-hidden line-clamp-3 leading-relaxed">{{ testi.content }}</p>
                         <div class="flex items-center gap-3">
                             <div :class="'w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0 ' + 
                                 (testi.color_theme === 'primary' ? 'bg-shop-primary/10 text-shop-primary' :
@@ -688,7 +730,9 @@ const checkout = async (productId) => {
                 <div v-for="(faq, index) in faqs" :key="index" class="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
                     <button @click="openFaq === index ? openFaq = null : openFaq = index" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-gray-50/50 transition-colors">
                         <span class="font-poppins font-semibold text-[16px] text-gray-900 pr-4">{{ faq.q }}</span>
-                        <span class="text-shop-primary text-xl font-mono transition-transform duration-200 shrink-0" :class="{ 'rotate-45': openFaq === index }">+</span>
+                        <span class="text-shop-primary text-base transition-transform duration-200 shrink-0" :class="{ 'rotate-45': openFaq === index }">
+                            <i class="fa-solid fa-plus"></i>
+                        </span>
                     </button>
                     <div v-show="openFaq === index" class="px-6 pb-5 text-[15px] text-gray-600 border-t border-gray-100 pt-3">
                         {{ faq.a }}
@@ -709,23 +753,37 @@ const checkout = async (productId) => {
                     Jangan buang waktu berjam-jam untuk error instalasi lab lokal. Fokus pada pemahaman materi dan latihan praktik bersama Meraki Labs.
                 </p>
                 <div class="flex flex-wrap justify-center gap-3 mb-10 text-xs sm:text-sm font-bold">
-                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20">✅ MikroTik RouterOS</span>
-                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20">✅ Cisco IOS & Nexus</span>
-                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20">✅ Juniper vSRX</span>
-                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20">✅ Linux Server & Docker</span>
+                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-300"></i>
+                        <span>MikroTik RouterOS</span>
+                    </span>
+                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-300"></i>
+                        <span>Cisco IOS & Nexus</span>
+                    </span>
+                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-300"></i>
+                        <span>Juniper vSRX</span>
+                    </span>
+                    <span class="bg-white/15 backdrop-blur-sm py-1.5 px-4 rounded-full border border-white/20 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-300"></i>
+                        <span>Linux Server & Docker</span>
+                    </span>
                 </div>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a 
                         href="#pricing" 
-                        class="bg-white text-shop-primary font-poppins font-bold py-3.5 px-8 rounded-full hover:bg-gray-100 shadow-shop-lg hover:-translate-y-0.5 transition-all text-sm sm:text-base"
+                        class="bg-white text-shop-primary font-poppins font-bold py-3.5 px-8 rounded-full hover:bg-gray-100 shadow-shop-lg hover:-translate-y-0.5 transition-all text-sm sm:text-base flex items-center gap-2"
                     >
-                        Pilih Paket Belajar
+                        <span>Pilih Paket Belajar</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
                     <a 
                         href="https://wa.me/08000000000" 
                         target="_blank" 
                         class="bg-shop-secondary/80 hover:bg-shop-secondary text-white border border-white/30 font-poppins font-bold py-3.5 px-8 rounded-full shadow-shop-lg hover:-translate-y-0.5 transition-all text-sm sm:text-base flex items-center gap-2"
                     >
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
                         <span>Konsultasi WhatsApp</span>
                     </a>
                 </div>
@@ -794,7 +852,7 @@ const checkout = async (productId) => {
             </div>
         </footer>
 
-        <!-- Floating WhatsApp Support Button -->
+        <!-- Floating WhatsApp Support Button with FontAwesome -->
         <a 
             href="https://wa.me/08000000000" 
             target="_blank" 
@@ -802,9 +860,7 @@ const checkout = async (productId) => {
             class="fixed bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center gap-2.5 group"
             title="Chat Admin WhatsApp"
         >
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.288.043.088.072.19.014.305-.058.115-.087.187-.173.289l-.26.309c-.087.094-.179.196-.077.371.101.174.452.744.97 1.206.666.593 1.228.777 1.401.864.173.086.275.072.376-.043.101-.116.433-.506.549-.679.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.044.073.044.42-.1.825z"/>
-            </svg>
+            <i class="fa-brands fa-whatsapp text-2xl"></i>
             <span class="hidden sm:inline font-bold text-xs pr-1">Tanya Admin</span>
         </a>
 

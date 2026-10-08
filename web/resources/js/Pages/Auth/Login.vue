@@ -59,7 +59,7 @@ onMounted(() => {
 
 <template>
     <GuestLayout
-        title="Selamat Datang Kembali 👋"
+        title="Selamat Datang Kembali"
         subtitle="Masuk ke akun Meraki Labs Anda untuk mengakses dashboard dan mengelola simulasi lab."
         active-page="login"
     >
@@ -79,8 +79,8 @@ onMounted(() => {
         <!-- Voucher Quick Activation Banner -->
         <div class="mb-6 p-3.5 bg-gradient-to-r from-shop-primary/5 via-shop-primary/10 to-transparent border border-shop-primary/20 rounded-xl flex items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-shop-primary/10 flex items-center justify-center text-shop-primary text-sm font-bold shrink-0">
-                    ⚡
+                <div class="w-7 h-7 rounded-lg bg-shop-primary/10 flex items-center justify-center text-shop-primary text-xs font-bold shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div>
                     <p class="font-bold text-gray-900 leading-tight">Punya Voucher Lab?</p>
