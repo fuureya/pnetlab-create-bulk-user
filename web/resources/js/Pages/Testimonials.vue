@@ -32,9 +32,10 @@ const form = useForm({
 });
 
 const filteredTestimonials = computed(() => {
-    if (!searchQuery.value) return props.testimonials.data;
+    let list = props.testimonials.data || [];
+    if (!searchQuery.value) return list;
     const q = searchQuery.value.toLowerCase();
-    return props.testimonials.data.filter(t => 
+    return list.filter(t => 
         (t.name && t.name.toLowerCase().includes(q)) ||
         (t.role && t.role.toLowerCase().includes(q)) ||
         (t.content && t.content.toLowerCase().includes(q))
@@ -124,12 +125,6 @@ const deleteTestimonial = () => {
     });
 };
 
-const changePage = (url) => {
-    if (url) {
-        router.get(url, {}, { preserveScroll: true, preserveState: true });
-    }
-};
-
 const getThemeBadgeClasses = (theme) => {
     switch (theme) {
         case 'primary':
@@ -151,190 +146,197 @@ const getThemeBadgeClasses = (theme) => {
     <Head title="Manajemen Testimoni - Meraki Labs" />
 
     <AuthenticatedLayout>
-        <!-- Header Actions -->
-        <div class="px-4 md:px-8 py-6 border-b border-gray-100 bg-white">
-            <div class="max-w-[2200px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        
+        <!-- Header Toolbar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs mb-6">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-lg font-bold shrink-0">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
                 <div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-shop-primary/10 flex items-center justify-center text-shop-primary font-bold">
-                            <i class="fa-solid fa-comments"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Testimoni Pelanggan</h1>
-                            <p class="text-sm text-gray-500 mt-0.5">Kelola ulasan & umpan balik praktikan yang dipublikasikan pada landing page.</p>
-                        </div>
+                    <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                        Testimoni Pelanggan
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-0.5">
+                        Kelola ulasan & umpan balik praktikan yang dipublikasikan pada landing page utama.
+                    </p>
+                </div>
+            </div>
+            
+            <div>
+                <button 
+                    @click="openCreateModal" 
+                    class="bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shadow-shop-primary/20 hover:shadow-lg flex items-center gap-2"
+                >
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Tambah Testimoni</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+            <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Testimoni</p>
+                    <h3 class="text-2xl font-extrabold text-gray-900 leading-none">
+                        {{ testimonials.total || testimonials.data.length }}
+                    </h3>
+                    <p class="text-[11px] text-gray-500 mt-1.5 font-medium">Ulasan terverifikasi</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-quote-left"></i>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Rating Kepuasan</p>
+                    <h3 class="text-2xl font-extrabold text-gray-900 leading-none flex items-baseline gap-1">
+                        <span>5.0</span>
+                        <span class="text-xs font-normal text-gray-400">/ 5.0</span>
+                    </h3>
+                    <div class="flex items-center gap-1 text-amber-400 text-xs mt-1.5">
+                        <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button 
-                        @click="openCreateModal" 
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-shop-primary/20 transition-all hover:shadow-lg"
-                    >
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        <span>Tambah Testimoni</span>
-                    </button>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status Publikasi</p>
+                    <h3 class="text-2xl font-extrabold text-emerald-600 leading-none">Aktif</h3>
+                    <p class="text-[11px] text-gray-500 mt-1.5 font-medium">Tampil di slider testimonial</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-globe"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="px-4 md:px-8 py-8 max-w-[2200px] mx-auto space-y-6">
-
-            <!-- KPI Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Testimoni</p>
-                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ testimonials.total || testimonials.data.length }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Ulasan terdaftar</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-quote-left"></i>
-                    </div>
+        <!-- Table Card -->
+        <div class="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-xs">
+            <!-- Search & Filter bar -->
+            <div class="px-6 py-4 border-b border-gray-200/80 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input 
+                        v-model="searchQuery" 
+                        type="text" 
+                        placeholder="Cari nama, instansi, atau ulasan..." 
+                        class="w-full h-10 pl-9 pr-4 text-xs bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-shop-primary/20 focus:border-shop-primary transition-all"
+                    />
                 </div>
-
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Rating Kepuasan</p>
-                        <p class="text-2xl font-bold text-gray-900 mt-1">5.0 <span class="text-xs font-normal text-gray-500">/ 5.0</span></p>
-                        <div class="flex items-center gap-1 text-amber-400 text-xs mt-1">
-                            <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
-                        </div>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Status Tampil</p>
-                        <p class="text-2xl font-bold text-emerald-600 mt-1">Publik</p>
-                        <p class="text-xs text-gray-400 mt-1">Aktif di homepage carousel</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-globe"></i>
-                    </div>
-                </div>
+                <p class="text-xs text-gray-500">
+                    Menampilkan <strong class="text-gray-900">{{ filteredTestimonials.length }}</strong> dari {{ testimonials.total }} ulasan
+                </p>
             </div>
 
-            <!-- Table Card -->
-            <div class="bg-white border border-gray-100 shadow-xs rounded-2xl overflow-hidden">
-                <!-- Search & Filter bar -->
-                <div class="px-6 py-4 border-b border-gray-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full md:w-80">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input 
-                            v-model="searchQuery" 
-                            type="text" 
-                            placeholder="Cari nama, role, atau ulasan..." 
-                            class="w-full pl-10 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-shop-primary/20 focus:border-shop-primary transition-all"
-                        />
-                    </div>
-                    <p class="text-xs text-gray-500">
-                        Menampilkan <strong class="text-gray-900">{{ filteredTestimonials.length }}</strong> dari {{ testimonials.total }} ulasan
-                    </p>
-                </div>
-
-                <!-- Table Content -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50/75 border-b border-gray-100">
-                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-16 text-center">No</th>
-                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Praktikan</th>
-                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rating & Ulasan</th>
-                                <th class="px-6 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm">
-                            <tr v-if="filteredTestimonials.length === 0">
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-400">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-2xl mb-3">
-                                            <i class="fa-regular fa-comment-dots"></i>
-                                        </div>
-                                        <p class="font-medium text-gray-600">Tidak ada testimoni yang ditemukan</p>
-                                        <p class="text-xs text-gray-400 mt-1">Ubah kata kunci pencarian atau buat testimoni baru.</p>
+            <!-- Table Content -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-gray-50/70 border-b border-gray-200 text-gray-500 font-mono text-[11px] uppercase">
+                            <th class="px-6 py-3.5 w-16 text-center">No</th>
+                            <th class="px-6 py-3.5">Praktikan</th>
+                            <th class="px-6 py-3.5">Rating & Ulasan</th>
+                            <th class="px-6 py-3.5 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-if="filteredTestimonials.length === 0">
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 text-2xl mb-3">
+                                        <i class="fa-solid fa-comment-slash"></i>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr v-for="(testi, index) in filteredTestimonials" :key="testi.id" class="hover:bg-gray-50/60 transition-colors">
-                                <td class="px-6 py-4 text-center text-xs font-medium text-gray-400">
-                                    {{ (testimonials.current_page - 1) * testimonials.per_page + index + 1 }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div 
-                                            class="w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm shrink-0 shadow-xs"
-                                            :class="getThemeBadgeClasses(testi.color_theme)"
-                                        >
-                                            {{ testi.name.charAt(0).toUpperCase() }}
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold text-gray-900 leading-tight">{{ testi.name }}</p>
-                                            <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5">
-                                                <i class="fa-solid fa-briefcase text-[10px] text-gray-400"></i>
-                                                {{ testi.role || 'Praktikan Lab' }}
-                                            </p>
-                                        </div>
+                                    <p class="font-medium text-gray-600">Tidak ada ulasan ditemukan</p>
+                                    <p class="text-xs text-gray-400 mt-1">Ubah kata kunci pencarian atau tambah testimoni baru.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-for="(testi, index) in filteredTestimonials" :key="testi.id" class="hover:bg-gray-50/60 transition-colors">
+                            <td class="px-6 py-4 text-center font-mono text-gray-400 text-xs">
+                                {{ (testimonials.current_page - 1) * testimonials.per_page + index + 1 }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div 
+                                        class="w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm shrink-0 shadow-xs"
+                                        :class="getThemeBadgeClasses(testi.color_theme)"
+                                    >
+                                        {{ testi.name.charAt(0).toUpperCase() }}
                                     </div>
-                                </td>
-                                <td class="px-6 py-4 max-w-lg">
-                                    <div class="space-y-1.5">
-                                        <div class="flex items-center gap-1 text-amber-400 text-xs">
-                                            <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
-                                            <span class="text-[11px] font-semibold text-gray-400 ml-1">5.0</span>
-                                        </div>
-                                        <p class="text-xs text-gray-700 italic leading-relaxed line-clamp-2">
-                                            <i class="fa-solid fa-quote-left text-gray-300 mr-1 text-[10px]"></i>
-                                            {{ testi.content }}
-                                            <i class="fa-solid fa-quote-right text-gray-300 ml-1 text-[10px]"></i>
+                                    <div>
+                                        <p class="font-bold text-gray-900 leading-tight">{{ testi.name }}</p>
+                                        <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-briefcase text-[10px] text-gray-400"></i>
+                                            {{ testi.role || 'Praktikan Lab' }}
                                         </p>
                                     </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="inline-flex items-center gap-1">
-                                        <button 
-                                            @click="openEditModal(testi)" 
-                                            class="p-2 text-gray-400 hover:text-shop-primary hover:bg-shop-primary/10 rounded-lg transition-colors" 
-                                            title="Edit Testimoni"
-                                        >
-                                            <i class="fa-solid fa-pen-to-square text-sm"></i>
-                                        </button>
-                                        <button 
-                                            @click="openDeleteModal(testi.id)" 
-                                            class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
-                                            title="Hapus Testimoni"
-                                        >
-                                            <i class="fa-solid fa-trash-can text-sm"></i>
-                                        </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 max-w-lg">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                        <i class="fa-solid fa-star" v-for="i in 5" :key="i"></i>
+                                        <span class="text-[11px] font-semibold text-gray-400 ml-1">5.0</span>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    <p class="text-xs text-gray-700 italic leading-relaxed line-clamp-2">
+                                        <i class="fa-solid fa-quote-left text-gray-300 mr-1 text-[10px]"></i>
+                                        {{ testi.content }}
+                                        <i class="fa-solid fa-quote-right text-gray-300 ml-1 text-[10px]"></i>
+                                    </p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-flex items-center gap-1">
+                                    <button 
+                                        @click="openEditModal(testi)" 
+                                        class="w-8 h-8 rounded-xl flex items-center justify-center text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors" 
+                                        title="Edit Testimoni"
+                                    >
+                                        <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                    </button>
+                                    <button 
+                                        @click="openDeleteModal(testi.id)" 
+                                        class="w-8 h-8 rounded-xl flex items-center justify-center text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors" 
+                                        title="Hapus Testimoni"
+                                    >
+                                        <i class="fa-solid fa-trash-can text-sm"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-white" v-if="testimonials.links && testimonials.links.length > 3">
-                    <span class="text-xs text-gray-500">
-                        Menampilkan <strong class="text-gray-900">{{ testimonials.from || 0 }}</strong> - <strong class="text-gray-900">{{ testimonials.to || 0 }}</strong> dari {{ testimonials.total }} testimoni
-                    </span>
-                    <div class="flex items-center gap-1">
-                        <button 
-                            v-for="(link, index) in testimonials.links" 
-                            :key="index"
-                            @click="changePage(link.url)"
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-white" v-if="testimonials.links && testimonials.links.length > 3">
+                <span class="text-xs text-gray-500">
+                    Menampilkan <strong class="text-gray-900">{{ testimonials.from || 0 }}</strong> - <strong class="text-gray-900">{{ testimonials.to || 0 }}</strong> dari {{ testimonials.total }} testimoni
+                </span>
+                <div class="flex items-center gap-1">
+                    <template v-for="(link, index) in testimonials.links" :key="index">
+                        <Link 
+                            v-if="link.url"
+                            :href="link.url"
                             v-html="link.label.replace('Previous', '&laquo;').replace('Next', '&raquo;')"
-                            :disabled="!link.url"
-                            class="min-w-[34px] h-[34px] flex items-center justify-center px-2.5 rounded-lg text-xs font-medium transition-colors"
+                            class="min-w-[34px] h-[34px] flex items-center justify-center px-2.5 rounded-xl text-xs font-medium transition-all"
                             :class="[
-                                link.active ? 'bg-shop-primary text-white shadow-xs' : 'text-gray-600 hover:bg-gray-100',
-                                !link.url ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                                link.active ? 'bg-shop-primary text-white shadow-xs font-bold' : 'text-gray-600 hover:bg-gray-100',
                             ]"
-                        ></button>
-                    </div>
+                        />
+                        <span 
+                            v-else
+                            v-html="link.label.replace('Previous', '&laquo;').replace('Next', '&raquo;')"
+                            class="min-w-[34px] h-[34px] flex items-center justify-center px-2.5 rounded-xl text-xs text-gray-300 opacity-50 cursor-not-allowed"
+                        />
+                    </template>
                 </div>
             </div>
         </div>
@@ -342,27 +344,33 @@ const getThemeBadgeClasses = (theme) => {
         <!-- Create / Edit Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
             <div class="p-6">
+                <!-- Modal Header -->
                 <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-shop-primary/10 text-shop-primary flex items-center justify-center text-sm font-bold">
-                            <i class="fa-solid" :class="editMode ? 'fa-pen-to-square' : 'fa-plus'"></i>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-base font-bold shrink-0">
+                            <i class="fa-solid" :class="editMode ? 'fa-pen-to-square' : 'fa-comments'"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900">
-                            {{ editMode ? 'Edit Testimoni' : 'Buat Testimoni Baru' }}
-                        </h2>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900 tracking-tight">
+                                {{ editMode ? 'Edit Testimoni' : 'Buat Testimoni Baru' }}
+                            </h2>
+                            <p class="text-xs text-gray-500">
+                                {{ editMode ? 'Perbarui kutipan atau profil praktikan' : 'Tambahkan ulasan praktikan yang akan ditampilkan di halaman utama' }}
+                            </p>
+                        </div>
                     </div>
-                    <button @click="closeModal" class="text-gray-400 hover:text-gray-600 text-sm p-1 rounded-lg">
+                    <button @click="closeModal" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <InputLabel for="name" value="Nama Pengguna / Praktikan" />
+                        <InputLabel for="name" value="Nama Lengkap Praktikan" class="font-semibold text-xs mb-1" />
                         <TextInput 
                             id="name" 
                             type="text" 
-                            class="mt-1 block w-full rounded-xl border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20" 
+                            class="block w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 text-sm" 
                             placeholder="Contoh: Rian Pratama" 
                             v-model="form.name" 
                             required 
@@ -372,24 +380,24 @@ const getThemeBadgeClasses = (theme) => {
                     </div>
 
                     <div>
-                        <InputLabel for="role" value="Jabatan / Kampus / Instansi" />
+                        <InputLabel for="role" value="Jabatan / Instansi / Kampus" class="font-semibold text-xs mb-1" />
                         <TextInput 
                             id="role" 
                             type="text" 
-                            class="mt-1 block w-full rounded-xl border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20" 
-                            placeholder="Contoh: Network Engineer / IT Telkom" 
+                            class="block w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 text-sm" 
+                            placeholder="Contoh: Network Engineer / IT Telkom University" 
                             v-model="form.role" 
                         />
                         <InputError class="mt-1 text-xs" :message="form.errors.role" />
                     </div>
 
                     <div>
-                        <InputLabel for="content" value="Isi Ulasan Testimoni" />
+                        <InputLabel for="content" value="Isi Ulasan Testimoni" class="font-semibold text-xs mb-1" />
                         <textarea 
                             id="content" 
-                            class="mt-1 block w-full border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl shadow-xs text-sm" 
+                            class="block w-full border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl text-sm" 
                             rows="4" 
-                            placeholder="Ceritakan pengalaman belajar atau menggunakan server PNetLab..." 
+                            placeholder="Ceritakan pengalaman belajar atau kestabilan server PNETLab..." 
                             v-model="form.content" 
                             required
                         ></textarea>
@@ -397,10 +405,10 @@ const getThemeBadgeClasses = (theme) => {
                     </div>
 
                     <div>
-                        <InputLabel for="color_theme" value="Warna Aksen Avatar" />
+                        <InputLabel for="color_theme" value="Warna Aksen Avatar Inisial" class="font-semibold text-xs mb-1" />
                         <select 
                             id="color_theme" 
-                            class="mt-1 block w-full border-gray-200 focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl shadow-xs text-sm" 
+                            class="block w-full border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 rounded-xl text-sm" 
                             v-model="form.color_theme" 
                             required
                         >
@@ -413,15 +421,16 @@ const getThemeBadgeClasses = (theme) => {
                         <InputError class="mt-1 text-xs" :message="form.errors.color_theme" />
                     </div>
 
-                    <div class="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                        <SecondaryButton @click="closeModal" class="rounded-xl">Batal</SecondaryButton>
-                        <button 
-                            type="submit" 
-                            :disabled="form.processing"
-                            class="bg-shop-primary hover:bg-shop-secondary text-white font-medium px-5 py-2 rounded-xl text-sm transition-all shadow-xs disabled:opacity-50"
-                        >
-                            {{ editMode ? 'Simpan Perubahan' : 'Buat Testimoni' }}
-                        </button>
+                    <!-- Modal Footer -->
+                    <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <SecondaryButton @click="closeModal">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                            <span>Batal</span>
+                        </SecondaryButton>
+                        <PrimaryButton :disabled="form.processing">
+                            <i class="fa-solid fa-check text-xs"></i>
+                            <span>{{ editMode ? 'Simpan Perubahan' : 'Buat Testimoni' }}</span>
+                        </PrimaryButton>
                     </div>
                 </form>
             </div>
@@ -430,20 +439,30 @@ const getThemeBadgeClasses = (theme) => {
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal">
             <div class="p-6">
-                <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900 tracking-tight">Hapus Testimoni Ini?</h2>
+                        <p class="text-xs text-gray-500">Testimoni akan dihapus permanen dari basis data.</p>
+                    </div>
                 </div>
-                <h2 class="text-lg font-bold text-gray-900 mb-1">
-                    Hapus Testimoni Ini?
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Apakah Anda yakin ingin menghapus testimoni ini secara permanen? Data yang sudah dihapus tidak dapat dipulihkan.
+                <p class="text-sm text-gray-600 mb-6 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                    Ulasan ini tidak akan tampil lagi di halaman utama landing page. Tindakan ini tidak dapat dibatalkan.
                 </p>
-                <div class="mt-6 flex justify-end gap-3">
-                    <SecondaryButton @click="closeDeleteModal" class="rounded-xl">Batal</SecondaryButton>
-                    <DangerButton @click="deleteTestimonial" class="rounded-xl">Hapus Sekarang</DangerButton>
+                <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                    <SecondaryButton @click="closeDeleteModal">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                        <span>Batal</span>
+                    </SecondaryButton>
+                    <DangerButton @click="deleteTestimonial">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                        <span>Hapus Testimoni</span>
+                    </DangerButton>
                 </div>
             </div>
         </Modal>
+
     </AuthenticatedLayout>
 </template>

@@ -1,6 +1,16 @@
+<script setup>
+defineProps({
+    type: {
+        type: String,
+        default: 'submit',
+    },
+});
+</script>
+
 <template>
     <button
-        class="inline-flex items-center justify-center rounded-[9999px] bg-shop-primary px-[16px] h-[36px] text-[14px] font-[500] text-[#FFFFFF] transition-colors duration-200 hover:bg-shop-secondary focus:outline-none"
+        :type="type"
+        class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-shop-primary/20 hover:shadow-lg transition-all focus:outline-hidden focus:ring-2 focus:ring-shop-primary/30 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none"
     >
         <slot />
     </button>
