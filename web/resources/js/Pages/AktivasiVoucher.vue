@@ -1,7 +1,13 @@
 <script setup>
-import { Head, useForm, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, useForm, Link, usePage } from '@inertiajs/vue3';
+import { ref, onMounted, watch } from 'vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import InputError from '@/Components/InputError.vue';
+import Swal from 'sweetalert2';
 
+const page = usePage();
 const showPassword = ref(false);
 
 const form = useForm({
@@ -9,128 +15,262 @@ const form = useForm({
     password: '',
 });
 
+onMounted(() => {
+    // Auto-fill username if passed in URL query (e.g., /aktivasi-voucher?username=labuser01)
+    const urlParams = new URLSearchParams(window.location.search);
+    const u = urlParams.get('username');
+    if (u) {
+        form.username = u;
+    }
+});
+
+// Watch flash success
+watch(() => page.props.flash?.success, (val) => {
+    if (val) {
+        Swal.fire({
+            title: 'Aktivasi Berhasil!',
+            text: val,
+            icon: 'success',
+            confirmButtonText: 'Buka Dashboard',
+            confirmButtonColor: '#BF070F',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/dashboard';
+            }
+        });
+    }
+});
+
 const submit = () => {
+    Swal.fire({
+        title: 'Mengaktifkan Voucher...',
+        text: 'Menghubungkan akun ke server PNETLab',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     form.post(route('aktivasi.activate'), {
-        onFinish: () => form.reset('password'),
+        preserveScroll: true,
+        onSuccess: () => {
+            // Success handled by flash watch or SweetAlert
+            form.reset('password');
+        },
+        onError: () => {
+            Swal.close();
+        },
+        onFinish: () => {
+            if (!page.props.flash?.success) {
+                Swal.close();
+            }
+        }
     });
 };
 </script>
 
 <template>
-    <Head title="Aktivasi Voucher" />
+    <Head title="Aktivasi Voucher Lab - Meraki Labs" />
 
-    <div class="min-h-screen bg-shop-background font-sans text-gray-800 selection:bg-shop-primary selection:text-white flex flex-col">
+    <AuthenticatedLayout>
         
-        <!-- Navigation -->
-        <nav class="sticky top-0 z-50 bg-shop-surface/90 backdrop-blur-md border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-                <Link href="/" class="font-poppins text-2xl font-extrabold text-gray-900 tracking-tight">
-                    PNET<span class="text-shop-primary">Lab</span>
-                </Link>
-
-                <!-- Right Links -->
-                <div class="hidden md:flex gap-8 items-center font-sans font-semibold text-[15px] text-gray-600">
-                    <Link href="/" class="hover:text-shop-primary transition">Home</Link>
-                    <Link href="/#about" class="hover:text-shop-primary transition">About</Link>
-                    <Link href="/#pricing" class="hover:text-shop-primary transition">Pricing</Link>
-                    <Link href="/aktivasi-voucher" class="text-shop-primary transition">Aktivasi</Link>
+        <!-- Header Toolbar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs mb-6">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-lg font-bold shrink-0">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                        Aktivasi Voucher Lab
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-0.5">
+                        Masukkan kredensial voucher Anda untuk memulai masa aktif dan membuka akses server PNETLab.
+                    </p>
                 </div>
             </div>
-        </nav>
 
-        <!-- Main Content -->
-        <main class="flex-1 relative flex flex-col justify-center items-center px-4 py-12 overflow-hidden">
-            <!-- Abstract Background Blobs -->
-            <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-shop-primary rounded-full mix-blend-multiply filter blur-[128px] opacity-30 animate-blob"></div>
-            <div class="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-shop-secondary rounded-full mix-blend-multiply filter blur-[128px] opacity-30 animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-shop-tertiary rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-4000"></div>
+            <Link 
+                href="/dashboard" 
+                class="bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-xs flex items-center gap-2"
+            >
+                <i class="fa-solid fa-arrow-left text-xs text-gray-500"></i>
+                <span>Kembali ke Dashboard</span>
+            </Link>
+        </div>
 
-            <div class="w-full sm:max-w-[440px] bg-shop-surface rounded-2xl border border-gray-200 p-8 md:p-10 shadow-shop-md hover:shadow-shop-hover transition-all duration-300 relative z-10">
-                <div class="text-center mb-8">
-                    <h1 class="font-poppins text-3xl font-extrabold text-gray-900 leading-tight mb-2 tracking-tight">Aktivasi Voucher</h1>
-                    <p class="font-sans text-[15px] text-gray-600">Masukkan kredensial voucher untuk membuka akses lab simulasi Anda.</p>
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left: Form Aktivasi (7 cols) -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-gray-200/80 p-6 sm:p-8 shadow-xs">
+                <div class="border-b border-gray-100 pb-5 mb-6">
+                    <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2.5">
+                        <i class="fa-solid fa-shield-halved text-shop-primary"></i>
+                        <span>Form Verifikasi Voucher</span>
+                    </h2>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Pastikan Anda memasukkan username dan password persis seperti yang tertera di struk pembelian.
+                    </p>
                 </div>
 
-                <div v-if="$page.props.flash && $page.props.flash.success" class="mb-6 p-4 rounded-xl bg-shop-success/10 text-shop-success border border-shop-success/20 flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="font-sans font-semibold text-[14px]">{{ $page.props.flash.success }}</span>
-                </div>
-
-                <form @submit.prevent="submit" class="space-y-6">
+                <!-- Flash Success Alert -->
+                <div 
+                    v-if="$page.props.flash && $page.props.flash.success" 
+                    class="mb-6 p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-start gap-3"
+                >
+                    <i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5 shrink-0"></i>
                     <div>
-                        <label for="username" class="block font-sans font-bold text-[13px] text-gray-900 mb-2 uppercase tracking-wide">Username</label>
-                        <input
-                            id="username"
-                            type="text"
-                            class="block w-full h-12 px-4 border-gray-300 rounded-xl focus:border-shop-primary focus:ring-shop-primary focus:ring-opacity-50 text-gray-900 placeholder-gray-400 font-mono"
-                            v-model="form.username"
-                            required
-                            autofocus
-                            placeholder="CTH: VOUCHER-001"
-                        />
-                        <div v-if="form.errors.username" class="mt-2 text-sm text-shop-error font-medium">
-                            {{ form.errors.username }}
+                        <p class="font-bold text-sm">{{ $page.props.flash.success }}</p>
+                        <p class="text-xs text-emerald-700 mt-0.5">Akun pod PNETLab Anda telah aktif dan siap digunakan sekarang.</p>
+                    </div>
+                </div>
+
+                <form @submit.prevent="submit" class="space-y-5">
+                    <div>
+                        <InputLabel for="username" value="Username Voucher" class="font-semibold text-xs mb-1" />
+                        <div class="relative">
+                            <TextInput
+                                id="username"
+                                type="text"
+                                class="block w-full pl-10 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 text-sm font-mono"
+                                v-model="form.username"
+                                required
+                                autofocus
+                                placeholder="Contoh: labuser01"
+                            />
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-user text-xs"></i>
+                            </div>
                         </div>
+                        <InputError class="mt-1 text-xs" :message="form.errors.username" />
                     </div>
 
                     <div>
-                        <label for="password" class="block font-sans font-bold text-[13px] text-gray-900 mb-2 uppercase tracking-wide">Password</label>
+                        <InputLabel for="password" value="Password Lab" class="font-semibold text-xs mb-1" />
                         <div class="relative">
-                            <input
+                            <TextInput
                                 id="password"
                                 :type="showPassword ? 'text' : 'password'"
-                                class="block w-full h-12 px-4 pr-10 border-gray-300 rounded-xl focus:border-shop-primary focus:ring-shop-primary focus:ring-opacity-50 text-gray-900 placeholder-gray-400 font-mono tracking-widest"
+                                class="block w-full pl-10 pr-10 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-shop-primary focus:ring-shop-primary/20 text-sm font-mono tracking-wider"
                                 v-model="form.password"
                                 required
                                 placeholder="••••••••"
                             />
-                            <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
-                                <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                </svg>
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-lock text-xs"></i>
+                            </div>
+                            <button 
+                                type="button" 
+                                @click="showPassword = !showPassword" 
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
+                            >
+                                <i class="fa-solid text-xs" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                             </button>
                         </div>
-                        <div v-if="form.errors.password" class="mt-2 text-sm text-shop-error font-medium">
-                            {{ form.errors.password }}
-                        </div>
+                        <InputError class="mt-1 text-xs" :message="form.errors.password" />
                     </div>
 
-                    <div class="pt-4">
+                    <div class="pt-3">
                         <button
                             type="submit"
-                            class="w-full inline-block bg-shop-primary text-white font-sans font-bold py-[16px] px-[36px] rounded-full hover:bg-[#C026D3] shadow-shop-md hover:shadow-shop-hover hover:-translate-y-0.5 transition-all duration-200 text-[16px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] py-3.5 px-6 text-sm font-bold text-white shadow-md shadow-shop-primary/25 hover:shadow-lg transition-all disabled:opacity-50 disabled:pointer-events-none"
                             :disabled="form.processing"
                         >
-                            <span v-if="form.processing">Memproses...</span>
-                            <span v-else>Aktifkan Sekarang</span>
+                            <i class="fa-solid fa-bolt text-xs"></i>
+                            <span v-if="form.processing">Memproses Aktivasi...</span>
+                            <span v-else>Aktifkan Akses Lab Sekarang</span>
                         </button>
                     </div>
                 </form>
-            </div>
-        </main>
-    </div>
-</template>
 
-<style>
-@keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
-}
-.animate-blob {
-  animation: blob 7s infinite;
-}
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-</style>
+                <div class="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-gray-400"></i>
+                        Enkripsi API 256-Bit
+                    </span>
+                    <Link href="/riwayat-transaksi" class="text-shop-primary hover:underline font-semibold flex items-center gap-1">
+                        <span>Lihat Kredensial di Transaksi</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </Link>
+                </div>
+            </div>
+
+            <!-- Right: Panduan Aktivasi & Help (5 cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- 3 Langkah Aktivasi -->
+                <div class="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-xs">
+                    <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-shop-primary"></i>
+                        <span>Cara Aktivasi Voucher</span>
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-7 h-7 rounded-lg bg-shop-primary/10 text-shop-primary font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                1
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Salin Kredensial</h4>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                    Cek menu <Link href="/dashboard" class="text-shop-primary font-semibold underline">Dashboard</Link> atau riwayat transaksi untuk melihat username & password voucher Anda.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-7 h-7 rounded-lg bg-shop-primary/10 text-shop-primary font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                2
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Input & Verifikasi</h4>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                    Masukkan kredensial pada formulir di sebelah kiri dan klik tombol <strong>Aktifkan Akses Lab</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-7 h-7 rounded-lg bg-shop-primary/10 text-shop-primary font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                3
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Pod Langsung Siap</h4>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                    Sistem akan menghubungkan akun ke server PNETLab dan durasi hari aktif mulai berjalan otomatis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bantuan Cepat -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white shadow-xs">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-shop-primary text-lg mb-3">
+                        <i class="fa-solid fa-headset text-white"></i>
+                    </div>
+                    <h3 class="text-base font-bold tracking-tight">Butuh Bantuan Aktivasi?</h3>
+                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                        Jika username voucher tidak ditemukan atau ada kendala koneksi ke server lab, tim support kami siap membantu 24/7.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <span class="text-xs text-gray-400">WhatsApp Support</span>
+                        <a 
+                            href="https://wa.me/6281234567890" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                            <span>Hubungi CS</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </AuthenticatedLayout>
+</template>

@@ -36,6 +36,7 @@ const props = defineProps({
 
 const searchQuery = ref('');
 const copiedId = ref(null);
+const memberVisiblePasswords = ref({});
 
 const filteredRecentUsers = computed(() => {
     if (!searchQuery.value) return props.recent_users;
@@ -51,12 +52,25 @@ const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
 };
 
+const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
+};
+
 const copyCredential = (text, id) => {
     navigator.clipboard.writeText(text);
     copiedId.value = id;
     setTimeout(() => {
         copiedId.value = null;
     }, 2000);
+};
+
+const toggleMemberPassword = (id) => {
+    memberVisiblePasswords.value[id] = !memberVisiblePasswords.value[id];
 };
 </script>
 
@@ -65,7 +79,7 @@ const copyCredential = (text, id) => {
 
     <AuthenticatedLayout>
         
-        <!-- ADMIN DASHBOARD -->
+        <!-- ================= ADMIN DASHBOARD ================= -->
         <div v-if="$page.props.auth.user.role === 'admin'" class="space-y-6">
             
             <!-- Header Toolbar -->
@@ -261,41 +275,59 @@ const copyCredential = (text, id) => {
 
         </div>
 
-        <!-- MEMBER / USER DASHBOARD -->
+        <!-- ================= MEMBER / USER DASHBOARD ================= -->
         <div v-else class="space-y-6">
             
-            <!-- Welcome Header -->
-            <div class="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-lg font-bold shrink-0">
-                        <i class="fa-solid fa-user-graduate"></i>
+            <!-- Welcome Header Hero -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-shop-primary to-shop-secondary text-white flex items-center justify-center font-extrabold text-2xl shadow-md shadow-shop-primary/20 shrink-0">
+                        {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
                     </div>
                     <div>
-                        <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
-                            Halo, {{ $page.props.auth.user.name }}
-                        </h1>
-                        <p class="text-sm text-gray-500 mt-0.5">
-                            Selamat datang di portal member Meraki Labs. Kelola voucher dan akses lab Anda di sini.
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl font-poppins font-extrabold text-gray-900 tracking-tight">
+                                Halo, {{ $page.props.auth.user.name }}
+                            </h1>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                                <i class="fa-solid fa-graduation-cap text-[10px] text-gray-500"></i>
+                                Member Lab
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">
+                            Selamat datang di portal member Meraki Labs. Kelola akun voucher simulasi dan akses lab Anda di sini.
                         </p>
                     </div>
                 </div>
-                <Link 
-                    href="/#pricing" 
-                    class="bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-shop-primary/20 hover:shadow-lg transition-all flex items-center gap-2"
-                >
-                    <i class="fa-solid fa-cart-shopping text-xs"></i>
-                    <span>Beli Paket Baru</span>
-                </Link>
+
+                <div class="flex items-center gap-2.5">
+                    <Link 
+                        href="/aktivasi-voucher" 
+                        class="bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-key text-xs text-shop-primary"></i>
+                        <span>Aktivasi Voucher</span>
+                    </Link>
+
+                    <Link 
+                        href="/#pricing" 
+                        class="bg-gradient-to-r from-shop-primary to-shop-secondary hover:brightness-110 active:scale-[0.98] text-white px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-shop-primary/20 hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-cart-shopping text-xs"></i>
+                        <span>Beli Paket Baru</span>
+                    </Link>
+                </div>
             </div>
 
             <!-- User KPI Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Transaksi</p>
-                        <h3 class="text-2xl font-extrabold text-gray-900">{{ stats.total_transactions }}</h3>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Pembelian</p>
+                        <h3 class="text-2xl font-extrabold text-gray-900 leading-none">{{ stats.total_transactions }}</h3>
+                        <p class="text-[11px] text-gray-400 mt-1">Transaksi tercatat</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-receipt"></i>
                     </div>
                 </div>
@@ -303,9 +335,10 @@ const copyCredential = (text, id) => {
                 <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Voucher Aktif</p>
-                        <h3 class="text-2xl font-extrabold text-emerald-600">{{ stats.active_vouchers }}</h3>
+                        <h3 class="text-2xl font-extrabold text-emerald-600 leading-none">{{ stats.active_vouchers }}</h3>
+                        <p class="text-[11px] text-gray-400 mt-1">Siap digunakan di PNETLab</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
                 </div>
@@ -313,83 +346,174 @@ const copyCredential = (text, id) => {
                 <div class="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Voucher Expired</p>
-                        <h3 class="text-2xl font-extrabold text-rose-600">{{ stats.expired_vouchers }}</h3>
+                        <h3 class="text-2xl font-extrabold text-rose-600 leading-none">{{ stats.expired_vouchers }}</h3>
+                        <p class="text-[11px] text-gray-400 mt-1">Masa aktif habis</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- User Content: Voucher Saya & Transaksi -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Voucher Saya -->
-                <div class="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <h3 class="font-bold text-gray-900 text-sm">Voucher Lab Saya</h3>
+            <!-- User Content: Voucher Saya & Riwayat Transaksi -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Voucher Saya (7 cols) -->
+                <div class="lg:col-span-7 bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-ticket text-shop-primary text-sm"></i>
+                            <h3 class="font-bold text-gray-900 text-sm">Voucher Lab Saya</h3>
+                        </div>
                         <Link href="/aktivasi-voucher" class="text-xs font-bold text-shop-primary hover:underline flex items-center gap-1">
-                            <span>Aktivasi</span>
+                            <span>Aktivasi Voucher</span>
                             <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </Link>
                     </div>
 
                     <div v-if="user_vouchers && user_vouchers.length > 0" class="divide-y divide-gray-100">
-                        <div v-for="v in user_vouchers" :key="v.id" class="p-4 sm:p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-                            <div>
-                                <p class="font-mono font-bold text-gray-900 text-sm">{{ v.username }}</p>
-                                <p class="font-mono text-xs text-gray-500 mt-0.5">Password: {{ v.password }}</p>
-                                <span class="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold" :class="v.status === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (v.status === 'expired' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200')">
-                                    {{ v.status }}
-                                </span>
+                        <div 
+                            v-for="v in user_vouchers" 
+                            :key="v.id" 
+                            class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors"
+                        >
+                            <div class="space-y-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono font-bold text-gray-900 text-sm">{{ v.username }}</span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-gray-100 font-mono text-[11px] font-bold text-gray-600 border border-gray-200">
+                                        Pod {{ v.pod_id }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-xs font-mono text-gray-600">
+                                    <span>Pass:</span>
+                                    <span v-if="!memberVisiblePasswords[v.id]">••••••••</span>
+                                    <span v-else class="font-bold text-gray-900">{{ v.password }}</span>
+
+                                    <button 
+                                        @click="toggleMemberPassword(v.id)" 
+                                        class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                                        title="Lihat / Sembunyikan Password"
+                                    >
+                                        <i class="fa-solid text-[10px]" :class="memberVisiblePasswords[v.id] ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+
+                                    <button 
+                                        @click="copyCredential(`User: ${v.username} | Pass: ${v.password}`, v.id)"
+                                        class="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-shop-primary hover:bg-shop-primary/10 transition-colors"
+                                        title="Salin Kredensial"
+                                    >
+                                        <i v-if="copiedId === v.id" class="fa-solid fa-check text-emerald-600 text-[10px]"></i>
+                                        <i v-else class="fa-solid fa-copy text-[10px]"></i>
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-2 pt-0.5">
+                                    <span 
+                                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold" 
+                                        :class="{
+                                            'bg-emerald-50 text-emerald-700 border border-emerald-200': v.status === 'aktif',
+                                            'bg-rose-50 text-rose-700 border border-rose-200': v.status === 'expired',
+                                            'bg-amber-50 text-amber-700 border border-amber-200': v.status === 'belum aktif',
+                                        }"
+                                    >
+                                        <i class="fa-solid fa-circle text-[6px]"></i>
+                                        <span>{{ v.status }}</span>
+                                    </span>
+
+                                    <span class="text-[11px] text-gray-400 font-mono" v-if="v.status === 'aktif'">
+                                        Hingga {{ formatDate(v.expired_at) }}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2">
+
+                            <div class="flex items-center gap-2 self-start sm:self-center">
                                 <Link 
                                     v-if="v.status === 'belum aktif'"
-                                    href="/aktivasi-voucher" 
-                                    class="text-xs font-bold bg-shop-primary hover:bg-shop-secondary text-white py-2 px-3.5 rounded-xl shadow-xs transition-colors"
+                                    :href="`/aktivasi-voucher?username=${encodeURIComponent(v.username)}`" 
+                                    class="text-xs font-bold bg-shop-primary hover:bg-shop-secondary text-white py-2 px-3.5 rounded-xl shadow-xs transition-all flex items-center gap-1.5"
                                 >
-                                    Aktivasi Sekarang
+                                    <i class="fa-solid fa-bolt text-[10px]"></i>
+                                    <span>Aktifkan Sekarang</span>
                                 </Link>
-                                <span v-else class="text-xs text-gray-500 font-mono font-bold bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200">Pod {{ v.pod_id }}</span>
+                                <span 
+                                    v-else-if="v.status === 'aktif'"
+                                    class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5"
+                                >
+                                    <i class="fa-solid fa-circle-check text-[10px]"></i>
+                                    <span>Siap Digunakan</span>
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div v-else class="p-8 text-center text-gray-400">
-                        <i class="fa-solid fa-ticket text-3xl mb-2 text-gray-300"></i>
-                        <p class="text-sm text-gray-600">Anda belum memiliki voucher lab.</p>
-                        <Link href="/#pricing" class="inline-block mt-3 text-xs font-bold text-shop-primary hover:underline">
-                            Pesan Paket Lab Sekarang &rarr;
+                        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 text-2xl mb-3 mx-auto">
+                            <i class="fa-solid fa-ticket"></i>
+                        </div>
+                        <p class="font-medium text-gray-600 text-sm">Anda belum memiliki voucher lab.</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Beli paket lab untuk mulai praktikum simulasi topologi jaringan.</p>
+                        <Link href="/#pricing" class="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-shop-primary hover:underline">
+                            <span>Pesan Paket Lab Sekarang</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </Link>
                     </div>
                 </div>
 
-                <!-- Riwayat Transaksi Ringkas -->
-                <div class="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs flex flex-col justify-between">
-                    <div>
-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <h3 class="font-bold text-gray-900 text-sm">Riwayat Pembayaran</h3>
+                <!-- Info & Transaksi Ringkas (5 cols) -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Box Riwayat -->
+                    <div class="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-receipt text-shop-primary text-sm"></i>
+                                <h3 class="font-bold text-gray-900 text-sm">Riwayat Pembayaran</h3>
+                            </div>
                             <Link href="/riwayat-transaksi" class="text-xs font-bold text-shop-primary hover:underline flex items-center gap-1">
                                 <span>Lihat Semua</span>
                                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
                             </Link>
                         </div>
                         <div class="p-6 text-center">
-                            <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-300"></i>
-                            <p class="text-sm text-gray-700 font-medium">
-                                Total {{ stats.total_transactions }} transaksi tercatat.
+                            <div class="w-12 h-12 rounded-2xl bg-shop-primary/10 text-shop-primary flex items-center justify-center text-xl mx-auto mb-3">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+                            <p class="text-sm text-gray-800 font-bold">
+                                Total {{ stats.total_transactions }} Transaksi
                             </p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                Cek status pembayaran dan kode voucher otomatis di halaman riwayat.
+                            <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                                Cek status pembayaran Midtrans dan dapatkan struk pembelian di menu riwayat transaksi.
                             </p>
+                            <Link 
+                                href="/riwayat-transaksi" 
+                                class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-colors"
+                            >
+                                <span>Buka Riwayat Transaksi</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </Link>
                         </div>
                     </div>
-                    <div class="p-4 bg-gray-50/70 border-t border-gray-100 text-center">
-                        <Link href="/riwayat-transaksi" class="text-xs font-bold text-shop-primary hover:underline inline-flex items-center gap-1.5">
-                            <span>Buka Daftar Transaksi</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </Link>
+
+                    <!-- Box Status Server PNETLab -->
+                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white shadow-xs">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="relative flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Server Online</span>
+                            </div>
+                            <span class="text-[11px] text-gray-400 font-mono">PNETLab v5.x</span>
+                        </div>
+                        <h4 class="text-sm font-bold">Lab Virtual Siap Digunakan</h4>
+                        <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                            Server beroperasi 24/7 dengan resource CPU & RAM dedicated untuk simulasi router, switch, dan firewall Anda.
+                        </p>
                     </div>
+
                 </div>
+
             </div>
 
         </div>

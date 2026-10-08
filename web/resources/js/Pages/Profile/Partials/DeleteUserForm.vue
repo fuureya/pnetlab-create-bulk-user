@@ -17,89 +17,101 @@ const form = useForm({
 
 const confirmUserDeletion = () => {
     confirmingUserDeletion.value = true;
-
-    nextTick(() => passwordInput.value.focus());
+    nextTick(() => passwordInput.value?.focus());
 };
 
 const deleteUser = () => {
     form.delete(route('profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
+        onError: () => passwordInput.value?.focus(),
         onFinish: () => form.reset(),
     });
 };
 
 const closeModal = () => {
     confirmingUserDeletion.value = false;
-
     form.clearErrors();
     form.reset();
 };
 </script>
 
 <template>
-    <section class="space-y-6">
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                Delete Account
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                Once your account is deleted, all of its resources and data will
-                be permanently deleted. Before deleting your account, please
-                download any data or information that you wish to retain.
-            </p>
+    <section class="max-w-2xl">
+        <header class="flex items-start gap-3.5 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-gray-900 tracking-tight">
+                    Zona Bahaya: Hapus Akun
+                </h2>
+                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Setelah akun Anda dihapus, semua data profil, riwayat pembelian, dan akses voucher lab Anda akan dihapus secara permanen.
+                </p>
+            </div>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+        <div>
+            <DangerButton @click="confirmUserDeletion">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+                <span>Hapus Akun Saya</span>
+            </DangerButton>
+        </div>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
-                <h2
-                    class="text-lg font-medium text-gray-900"
-                >
-                    Are you sure you want to delete your account?
-                </h2>
+                <!-- Modal Header -->
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900 tracking-tight">
+                            Yakin Ingin Menghapus Akun?
+                        </h2>
+                        <p class="text-xs text-gray-500">
+                            Tindakan ini permanen dan tidak dapat dipulihkan kembali.
+                        </p>
+                    </div>
+                </div>
 
-                <p class="mt-1 text-sm text-gray-600">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Please enter your password to
-                    confirm you would like to permanently delete your account.
+                <p class="text-xs text-gray-600 mb-5 bg-rose-50/50 p-3.5 rounded-xl border border-rose-100 leading-relaxed">
+                    Seluruh voucher lab yang sedang aktif atau riwayat transaksi Anda akan hilang dari sistem. Masukkan kata sandi akun Anda untuk mengonfirmasi penghapusan.
                 </p>
 
-                <div class="mt-6">
+                <div class="space-y-2">
                     <InputLabel
-                        for="password"
-                        value="Password"
-                        class="sr-only"
+                        for="delete_password"
+                        value="Kata Sandi Akun"
+                        class="font-semibold text-xs"
                     />
 
                     <TextInput
-                        id="password"
+                        id="delete_password"
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-3/4"
-                        placeholder="Password"
+                        class="block w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-rose-500 focus:ring-rose-500/20 text-sm"
+                        placeholder="Masukkan kata sandi untuk konfirmasi"
                         @keyup.enter="deleteUser"
                     />
 
-                    <InputError :message="form.errors.password" class="mt-2" />
+                    <InputError :message="form.errors.password" class="text-xs" />
                 </div>
 
-                <div class="mt-6 flex justify-end">
+                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <SecondaryButton @click="closeModal">
-                        Cancel
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                        <span>Batal</span>
                     </SecondaryButton>
 
                     <DangerButton
-                        class="ms-3"
-                        :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Delete Account
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                        <span>Konfirmasi Hapus Akun</span>
                     </DangerButton>
                 </div>
             </div>
